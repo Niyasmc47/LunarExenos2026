@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
-import { SouthPoleDualMaps } from './SouthPoleDualMaps';
+import { TerrainViewer3D } from '../terrain-explorer/TerrainViewer3D';
 import { RegionSelectionToolbar } from './RegionSelectionToolbar';
 import { RegionalMapCanvas } from './RegionalMapCanvas';
 import { HillshadeControls } from './HillshadeControls';
@@ -9,8 +9,8 @@ import { RegionalStatisticsPanel } from './RegionalStatisticsPanel';
 import { ExportToolbar } from './ExportToolbar';
 import {
   Mountain,
-  Layers,
   Map,
+  Box,
   SlidersHorizontal,
   ChevronRight,
   ChevronLeft
@@ -32,67 +32,64 @@ export const TerrainExplorer: React.FC = () => {
           <div className="flex items-center gap-2">
             <Mountain className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-200 uppercase tracking-wider hidden sm:inline">
-              DYNAMIC LUNAR TERRAIN ANALYSIS SYSTEM
+              LUNAR TERRAIN EXPLORER
+            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              NASA LOLA DATA
             </span>
           </div>
 
-          <div className="flex items-center gap-1 bg-[#070b12] p-1 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-1.5 bg-[#070b12] p-1 rounded-lg border border-slate-800">
             <button
-              onClick={() => setWorkspaceMode('south-pole-overview')}
+              onClick={() => setWorkspaceMode('3d-terrain')}
+              title="Interactive 3D lunar terrain mesh with altitude relief and orbit controls"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
-                workspaceMode === 'south-pole-overview'
+                workspaceMode === '3d-terrain'
+                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Box className="w-3.5 h-3.5" />
+              <span>3D TERRAIN VIEW</span>
+            </button>
+
+            <button
+              onClick={() => setWorkspaceMode('2d-map')}
+              title="2D map with elevation, slope hazard classification and transects"
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
+                workspaceMode === '2d-map'
                   ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Map className="w-3.5 h-3.5" />
-              <span>SOUTH POLE OVERVIEW</span>
-            </button>
-
-            <button
-              onClick={() => setWorkspaceMode('selected-region')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
-                workspaceMode === 'selected-region'
-                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>SELECTED REGION ANALYSIS</span>
+              <span>2D MAP VIEW</span>
             </button>
           </div>
         </div>
 
-        {/* WORKSPACE MODE 1: SOUTH POLE DUAL MAPS OVERVIEW */}
-        {workspaceMode === 'south-pole-overview' && (
-          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-            <SouthPoleDualMaps />
-          </div>
-        )}
+        {/* Region Selection Toolbar */}
+        <RegionSelectionToolbar />
 
-        {/* WORKSPACE MODE 2: SELECTED REGION DYNAMIC ANALYSIS */}
-        {workspaceMode === 'selected-region' && (
-          <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
-            {/* Region Selection Toolbar & Automatic Discovery Banner */}
-            <RegionSelectionToolbar />
+        {/* Hillshade Controls if active in 2D mode */}
+        {workspaceMode === '2d-map' && activeLayerMode === 'hillshade' && <HillshadeControls />}
 
-            {/* Hillshade Controls if active */}
-            {activeLayerMode === 'hillshade' && <HillshadeControls />}
+        {/* Primary Viewport: 3D Terrain Mesh OR 2D Regional Map */}
+        <div className="flex-1 min-h-[280px] overflow-hidden">
+          {workspaceMode === '3d-terrain' ? (
+            <TerrainViewer3D />
+          ) : (
+            <RegionalMapCanvas />
+          )}
+        </div>
 
-            {/* Dynamic Map Canvas */}
-            <div className="flex-1 min-h-[260px] overflow-hidden">
-              <RegionalMapCanvas />
-            </div>
+        {/* Bottom Elevation Profile Transect */}
+        <div className="h-44 shrink-0 min-h-[150px]">
+          <DynamicElevationProfile />
+        </div>
 
-            {/* Bottom Elevation Profile Transect */}
-            <div className="h-48 shrink-0 min-h-[160px]">
-              <DynamicElevationProfile />
-            </div>
-
-            {/* Scientific Data Export Toolbar */}
-            <ExportToolbar />
-          </div>
-        )}
+        {/* Scientific Data Export Toolbar */}
+        <ExportToolbar />
       </div>
 
       {/* Right Collapsible Inspection & Statistics Sidebar */}

@@ -6,7 +6,7 @@ import {
   TransectProfileResponse,
 } from '../types/dynamicAnalysis';
 
-export type WorkspaceMode = 'south-pole-overview' | 'selected-region';
+export type WorkspaceMode = '3d-terrain' | '2d-map';
 export type ActiveLayerMode = 'elevation' | 'slope' | 'hillshade' | '3d-mesh';
 export type ColormapName = 'hypsometric' | 'turbo' | 'viridis' | 'magma';
 
@@ -105,7 +105,7 @@ interface DynamicAnalysisState {
 }
 
 export const useDynamicAnalysisStore = create<DynamicAnalysisState>((set) => ({
-  workspaceMode: 'south-pole-overview',
+  workspaceMode: '3d-terrain',
   selectedRegionBbox: PREDEFINED_SITES[0].bbox,
   activeDatasetId: 'site01',
 
