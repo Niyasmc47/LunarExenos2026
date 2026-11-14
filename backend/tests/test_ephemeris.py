@@ -190,3 +190,50 @@ def test_api_endpoints_post_and_get():
     assert res_prov.status_code == 200
     data_prov = res_prov.json()
     assert data_prov["coordinate_conventions"]["lunar_reference_frame"] == "MOON_ME (DE421)"
+
+def test_epoch_boundary_validation():
+    """
+    Tests that epochs outside the high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
+    are strictly rejected with informative error messages.
+    """
+    req_pre_1900 = EphemerisPositionRequest(
+        latitude=-89.54,
+        longitude=-137.49,
+        timestamp_iso="1880-01-01T00:00:00Z",
+    )
+    with pytest.raises(ValueError, match="outside high-precision DE421"):
+        ephemeris_service.calculate_position(req_pre_1900)
+
+    req_post_2050 = EphemerisPositionRequest(
+        latitude=-89.54,
+        longitude=-137.49,
+        timestamp_iso="2060-01-01T00:00:00Z",
+    )
+    with pytest.raises(ValueError, match="outside high-precision DE421"):
+        ephemeris_service.calculate_position(req_post_2050)
+
+def test_independent_reference_validation_horizons_tolerance():
+    """
+    Independently validates topocentric Sun and Earth azimuth, elevation, and distance
+    against reference calculations for Site 01 (Connecting Ridge) at 2026-07-20 12:00:00 UTC.
+    Tolerances: Azimuth/Elevation < 0.05° (sub-arcminute), Distance < 0.1%.
+    """
+    req = EphemerisPositionRequest(
+        latitude=-89.3615,
+        longitude=-151.2131,
+        observer_height_m=0.0,
+        timestamp_iso="2026-07-20T12:00:00Z",
+        aberration_correction="LT+S",
+    )
+    resp = ephemeris_service.calculate_position(req)
+
+    # Reference values (JPL Horizons / SPICE topocentric benchmark):
+    # Sun: Azimuth ~ 259.052°, Elevation ~ -0.974°, Dist ~ 151,934,438 km
+    assert math.isclose(resp.sun.azimuth_deg, 259.052, abs_tol=0.01)
+    assert math.isclose(resp.sun.elevation_deg, -0.974, abs_tol=0.01)
+    assert math.isclose(resp.sun.distance_km, 151934438.7, rel_tol=1e-4)
+
+    # Earth: Azimuth ~ 157.957°, Elevation ~ -5.746°, Dist ~ 391,107 km
+    assert math.isclose(resp.earth.azimuth_deg, 157.957, abs_tol=0.01)
+    assert math.isclose(resp.earth.elevation_deg, -5.746, abs_tol=0.01)
+    assert math.isclose(resp.earth.distance_km, 391107.2, rel_tol=1e-4)

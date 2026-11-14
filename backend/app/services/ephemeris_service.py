@@ -39,6 +39,15 @@ class EphemerisEngineService:
         except Exception as e:
             raise ValueError(f"Invalid timestamp format or out-of-range epoch: '{req.timestamp_iso}'. Error: {e}")
 
+        # Validate epoch within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
+        et_min = -3155760000.0  # 1900-01-01T00:00:00Z
+        et_max = 1609459200.0   # 2050-12-31T23:59:59Z
+        if not (et_min <= et <= et_max):
+            raise ValueError(
+                f"Requested epoch '{req.timestamp_iso}' (ET {et:.1f}s) is outside high-precision DE421 / PCK "
+                f"coverage window (1900-01-01 to 2050-12-31)."
+            )
+
         # 2. Sample Surface Elevation from LOLA DEM
         sample = dem_loader.sample_point(req.latitude, req.longitude)
         if sample.get("in_bounds") and sample.get("elevation_m") is not None:
@@ -135,6 +144,15 @@ class EphemerisEngineService:
             et_end = spice.str2et(req.end_timestamp_iso)
         except Exception as e:
             raise ValueError(f"Invalid start or end timestamp format: {e}")
+
+        # Validate epochs within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
+        et_min = -3155760000.0  # 1900-01-01T00:00:00Z
+        et_max = 1609459200.0   # 2050-12-31T23:59:59Z
+        if not (et_min <= et_start <= et_max) or not (et_min <= et_end <= et_max):
+            raise ValueError(
+                f"Requested interval [{req.start_timestamp_iso}, {req.end_timestamp_iso}] is outside "
+                f"high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)."
+            )
 
         if et_end <= et_start:
             raise ValueError("End timestamp must be strictly after start timestamp.")
@@ -254,14 +272,22 @@ class EphemerisEngineService:
         abcorr: str = "LT+S",
     ) -> CelestialBodyPosition:
         """
-        Calculates topocentric direction vector, azimuth, elevation, and angular diameter.
+        Calculates rigorous topocentric direction vector, azimuth, elevation, and angular diameter
+        using SPICE spkcpo (constant-position observer state evaluation with surface light-time solution).
         """
-        # Retrieve target position relative to Moon center in MOON_ME frame
-        state, lt = spice.spkezr(target_spice_id, et, "MOON_ME", abcorr, "MOON")
-        target_pos_moon_me = np.array(state[:3], dtype=np.float64)
-
-        # Topocentric vector: from observer on surface to target body
-        rho = target_pos_moon_me - obs_pos
+        # Rigorous topocentric state using SPICE spkcpo:
+        # Evaluates light-time iteration and stellar aberration directly from the observer surface location
+        state, lt = spice.spkcpo(
+            target_spice_id,
+            et,
+            "MOON_ME",
+            "OBSERVER",
+            abcorr,
+            obs_pos,
+            "MOON",
+            "MOON_ME",
+        )
+        rho = np.array(state[:3], dtype=np.float64)
         dist_km = float(np.linalg.norm(rho))
 
         # Project into local tangent orthonormal coordinates
