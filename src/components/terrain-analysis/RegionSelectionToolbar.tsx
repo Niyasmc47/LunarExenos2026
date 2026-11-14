@@ -8,7 +8,10 @@ import {
   CheckCircle2,
   Bookmark,
   Square,
-  Ruler
+  Ruler,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export const RegionSelectionToolbar: React.FC = () => {
@@ -29,6 +32,7 @@ export const RegionSelectionToolbar: React.FC = () => {
   const [maxLat, setMaxLat] = useState<string>(selectedRegionBbox.maxLat.toFixed(4));
   const [minLon, setMinLon] = useState<string>(selectedRegionBbox.minLon.toFixed(4));
   const [maxLon, setMaxLon] = useState<string>(selectedRegionBbox.maxLon.toFixed(4));
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Sync inputs when store bbox changes
   useEffect(() => {
@@ -73,15 +77,15 @@ export const RegionSelectionToolbar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl text-xs font-mono">
+    <div className="flex flex-col gap-2 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-2.5 shadow-xl text-xs font-mono">
       {/* Top Predefined Sites Selector */}
-      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
-        <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
-          <Bookmark className="w-4 h-4 text-emerald-400" />
-          <span>PREDEFINED LUNAR REGIONS:</span>
-        </div>
-
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 text-slate-300 font-semibold mr-1">
+            <Bookmark className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[11px] uppercase">LANDING SITE:</span>
+          </div>
+
           {PREDEFINED_SITES.map((site) => (
             <button
               key={site.id}
@@ -89,9 +93,9 @@ export const RegionSelectionToolbar: React.FC = () => {
                 selectPredefinedSite(site.id);
                 setTimeout(() => handleTriggerDiscovery(), 50);
               }}
-              className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
+              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
                 selectedRegionBbox.minLat === site.bbox.minLat
-                  ? 'bg-emerald-500 text-black shadow-md'
+                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
                   : 'bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-slate-700'
               }`}
             >
@@ -99,7 +103,20 @@ export const RegionSelectionToolbar: React.FC = () => {
             </button>
           ))}
         </div>
+
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          title="Toggle NASA dataset discovery and bounding box editor"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-[11px] transition-colors"
+        >
+          <SlidersHorizontal className="w-3 h-3" />
+          <span>{showAdvanced ? 'Hide Technical Details' : 'Advanced Coordinates & NASA Data'}</span>
+          {showAdvanced ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        </button>
       </div>
+
+      {showAdvanced && (
+        <div className="border-t border-slate-800 pt-2 space-y-2">
 
       {/* Manual Bounding Box Editor & Area Calculation */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
@@ -249,6 +266,8 @@ export const RegionSelectionToolbar: React.FC = () => {
               <span>{warn}</span>
             </div>
           ))}
+        </div>
+      )}
         </div>
       )}
     </div>

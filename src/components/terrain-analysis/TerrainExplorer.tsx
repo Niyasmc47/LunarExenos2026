@@ -13,7 +13,8 @@ import {
   Box,
   SlidersHorizontal,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  LineChart
 } from 'lucide-react';
 
 export const TerrainExplorer: React.FC = () => {
@@ -22,6 +23,7 @@ export const TerrainExplorer: React.FC = () => {
   const activeLayerMode = useDynamicAnalysisStore((state) => state.activeLayerMode);
 
   const [panelOpen, setPanelOpen] = useState(true);
+  const [showTransect, setShowTransect] = useState(false);
 
   return (
     <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
@@ -75,7 +77,7 @@ export const TerrainExplorer: React.FC = () => {
         {workspaceMode === '2d-map' && activeLayerMode === 'hillshade' && <HillshadeControls />}
 
         {/* Primary Viewport: 3D Terrain Mesh OR 2D Regional Map */}
-        <div className="flex-1 min-h-[280px] overflow-hidden">
+        <div className="flex-1 min-h-[300px] overflow-hidden">
           {workspaceMode === '3d-terrain' ? (
             <TerrainViewer3D />
           ) : (
@@ -83,13 +85,29 @@ export const TerrainExplorer: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Elevation Profile Transect */}
-        <div className="h-44 shrink-0 min-h-[150px]">
-          <DynamicElevationProfile />
-        </div>
+        {/* Bottom Elevation Profile Transect (Collapsible) */}
+        {showTransect && (
+          <div className="h-44 shrink-0 min-h-[150px] transition-all">
+            <DynamicElevationProfile />
+          </div>
+        )}
 
-        {/* Scientific Data Export Toolbar */}
-        <ExportToolbar />
+        {/* Action Controls & Data Exports Strip */}
+        <div className="shrink-0 flex items-center justify-between flex-wrap gap-2">
+          <button
+            onClick={() => setShowTransect(!showTransect)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+              showTransect
+                ? 'bg-emerald-500 text-black shadow-md'
+                : 'bg-[#0c121e] hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800'
+            }`}
+          >
+            <LineChart className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
+          </button>
+
+          <ExportToolbar />
+        </div>
       </div>
 
       {/* Right Collapsible Inspection & Statistics Sidebar */}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { useLocationStore } from '../../stores/locationStore';
 import { fetchRegionalStatistics } from '../../services/dynamicAnalysisApi';
@@ -9,7 +9,9 @@ import {
   Info,
   CheckCircle2,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export const RegionalStatisticsPanel: React.FC = () => {
@@ -23,6 +25,8 @@ export const RegionalStatisticsPanel: React.FC = () => {
   const statisticsLoading = useDynamicAnalysisStore((state) => state.statisticsLoading);
   const setStatisticsLoading = useDynamicAnalysisStore((state) => state.setStatisticsLoading);
   const currentPointTelemetry = useDynamicAnalysisStore((state) => state.currentPointTelemetry);
+
+  const [showProvenance, setShowProvenance] = useState(false);
 
   useEffect(() => {
     setStatisticsLoading(true);
@@ -70,10 +74,15 @@ export const RegionalStatisticsPanel: React.FC = () => {
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   {currentPointTelemetry.quality_status}
                 </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+              ) : currentPointTelemetry ? (
+                <span className="inline-flex items-center gap-1 text-[11px] text-amber-400">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                   Outside Active DEM
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
+                  <Info className="w-3.5 h-3.5 text-slate-400" />
+                  Click terrain to sample
                 </span>
               )}
             </div>
@@ -84,7 +93,7 @@ export const RegionalStatisticsPanel: React.FC = () => {
             <div className="text-base font-bold text-slate-100">
               {currentPointTelemetry?.in_bounds && typeof currentPointTelemetry.elevation_m === 'number'
                 ? `${currentPointTelemetry.elevation_m > 0 ? '+' : ''}${currentPointTelemetry.elevation_m} m`
-                : 'N/A'}
+                : currentPointTelemetry ? 'Outside Bounds' : '—'}
             </div>
           </div>
 
@@ -92,8 +101,8 @@ export const RegionalStatisticsPanel: React.FC = () => {
             <div className="text-[10px] text-slate-500">LOCAL SLOPE</div>
             <div className="text-base font-bold text-slate-100">
               {currentPointTelemetry?.in_bounds && typeof currentPointTelemetry.slope_deg === 'number'
-                ? `${currentPointTelemetry.slope_deg}°`
-                : 'N/A'}
+                ? `${currentPointTelemetry.slope_deg}° ${currentPointTelemetry.slope_deg <= 10 ? '(Safe)' : ''}`
+                : currentPointTelemetry ? 'N/A' : '—'}
             </div>
             {currentPointTelemetry?.slope_source && (
               <div className="text-[9px] text-slate-500 capitalize">
@@ -192,23 +201,31 @@ export const RegionalStatisticsPanel: React.FC = () => {
         )}
       </div>
 
-      {/* SECTION 3: SCIENTIFIC DATA PROVENANCE */}
-      <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3.5 shadow-xl space-y-2">
-        <div className="flex items-center gap-1.5 font-bold uppercase text-slate-200 border-b border-slate-800 pb-2">
-          <Info className="w-4 h-4 text-emerald-400" />
-          <span>SCIENTIFIC DATA PROVENANCE</span>
-        </div>
-
-        <div className="space-y-1.5 text-[10px] text-slate-400">
-          <div><strong className="text-slate-300">Dataset:</strong> {regionalStatistics?.dataset_name || 'NASA LOLA South Pole DEM'}</div>
-          <div><strong className="text-slate-300">Reference Frame:</strong> MOON_ME (DE421)</div>
-          <div><strong className="text-slate-300">Projection:</strong> South Polar Stereographic (R = 1,737,400 m)</div>
-          <div><strong className="text-slate-300">Citation:</strong> {regionalStatistics?.citation || 'Barker et al., 2021/2023'}</div>
-          <div className="p-2 rounded bg-[#070b12] border border-amber-900/40 text-amber-300/90 text-[9px] leading-relaxed">
-            <strong className="text-amber-200 block mb-0.5">Scientific Caveat:</strong>
-            Pixel spacing reflects nominal interpolation raster mesh. ~90% of pixels between orbital tracks are mathematically interpolated.
+      {/* SECTION 3: SCIENTIFIC DATA PROVENANCE (Collapsible) */}
+      <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl space-y-2">
+        <button
+          onClick={() => setShowProvenance(!showProvenance)}
+          className="w-full flex items-center justify-between text-slate-300 hover:text-emerald-400 font-bold uppercase text-[11px] transition-colors"
+        >
+          <div className="flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5 text-emerald-400" />
+            <span>SCIENTIFIC PROVENANCE & DATUM</span>
           </div>
-        </div>
+          {showProvenance ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+
+        {showProvenance && (
+          <div className="space-y-1.5 text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+            <div><strong className="text-slate-300">Dataset:</strong> {regionalStatistics?.dataset_name || 'NASA LOLA South Pole DEM'}</div>
+            <div><strong className="text-slate-300">Reference Frame:</strong> MOON_ME (DE421)</div>
+            <div><strong className="text-slate-300">Projection:</strong> South Polar Stereographic (R = 1,737,400 m)</div>
+            <div><strong className="text-slate-300">Citation:</strong> {regionalStatistics?.citation || 'Barker et al., 2021/2023'}</div>
+            <div className="p-2 rounded bg-[#070b12] border border-amber-900/40 text-amber-300/90 text-[9px] leading-relaxed">
+              <strong className="text-amber-200 block mb-0.5">Scientific Caveat:</strong>
+              Pixel spacing reflects nominal interpolation raster mesh. ~90% of pixels between orbital tracks are mathematically interpolated.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
