@@ -4,6 +4,7 @@ import { ThreeEvent } from '@react-three/fiber';
 import { createMoonTrekCanvasTexture } from './MoonTexture';
 import { LocationMarker } from './LocationMarker';
 import { TerrainPatch } from './TerrainPatch';
+import { DynamicTileOverlay } from './DynamicTileOverlay';
 import { useLocationStore } from '../../stores/locationStore';
 import { spherePositionToLunar } from '../../utils/sphereCoordinates';
 import { fetchElevationPoint } from '../../services/terrainApi';
@@ -86,6 +87,9 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
 
       {/* Real NASA LOLA 3D Terrain Patch for Site 01 (Connecting Ridge) */}
       <TerrainPatch />
+
+      {/* Dynamic WMTS Tile Streaming Overlay - loads higher zoom levels as camera gets closer */}
+      <DynamicTileOverlay radius={radius} />
 
       {/* Synchronized 3D Target Pin Marker */}
       <LocationMarker

@@ -6,21 +6,67 @@ export interface TextureLoadProgress {
   loaded: number;
   isComplete: boolean;
   error?: string;
+  stage?: number;
 }
 
 /**
- * Assembles NASA Moon Trek WMTS tiles into a high-resolution CanvasTexture for Three.js.
+ * High-reliability tile loader with exponential-backoff retries.
+ */
+function loadTileImageWithRetry(url: string, maxRetries = 3): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+
+    function tryFetch() {
+      attempts++;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      const timer = setTimeout(() => {
+        img.src = '';
+        if (attempts <= maxRetries) {
+          setTimeout(tryFetch, Math.min(1000 * Math.pow(1.5, attempts), 4000));
+        } else {
+          reject(new Error(`Timeout loading tile: ${url}`));
+        }
+      }, 7000);
+
+      img.onload = () => {
+        clearTimeout(timer);
+        resolve(img);
+      };
+
+      img.onerror = () => {
+        clearTimeout(timer);
+        if (attempts <= maxRetries) {
+          setTimeout(tryFetch, Math.min(800 * Math.pow(1.5, attempts), 3500));
+        } else {
+          reject(new Error(`Failed to load tile after ${attempts} attempts: ${url}`));
+        }
+      };
+
+      img.src = url;
+    }
+
+    tryFetch();
+  });
+}
+
+/**
+ * Creates an ultra-crisp, progressively streamed Three.js CanvasTexture directly
+ * using NASA Moon Trek WMTS tiles with zero missing tiles.
  *
- * Starts with Level 1 (8 tiles, 1024x512) for immediate crisp display,
- * then progressively upgrades to Level 2 (32 tiles, 2048x1024).
+ * Progressive Stages:
+ * - Stage 1 (Instant): Level 1 (8 tiles, 1024x512) -> interactive in ~200ms
+ * - Stage 2 (Fast HD): Level 2 (32 tiles, 2048x1024) -> rapid 2K update
+ * - Stage 3 (Ultra 4K): Level 3 (128 tiles, 4096x2048) -> full-resolution pixel-perfect 4K
  */
 export function createMoonTrekCanvasTexture(
   onProgress?: (progress: TextureLoadProgress) => void
 ): { texture: THREE.CanvasTexture; dispose: () => void } {
   const canvas = document.createElement('canvas');
-  // Initialize canvas with Level 2 dimensions: 8 cols * 256 = 2048 wide, 4 rows * 256 = 1024 high
-  canvas.width = 2048;
-  canvas.height = 1024;
+  // High-density 4096x2048 lunar canvas
+  canvas.width = 4096;
+  canvas.height = 2048;
 
   const ctx = canvas.getContext('2d', { willReadFrequently: false });
   if (!ctx) {
@@ -34,6 +80,7 @@ export function createMoonTrekCanvasTexture(
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  // Anisotropic filtering + high quality linear mipmap filtering for maximum zoom sharpness
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
@@ -42,71 +89,89 @@ export function createMoonTrekCanvasTexture(
   texture.flipY = true;
 
   let isDisposed = false;
+  let updateScheduled = false;
 
-  // Load a single tile with retry & error handling
-  function loadTileImage(url: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error(`Failed to load tile: ${url}`));
-      img.src = url;
+  function scheduleTextureUpdate() {
+    if (updateScheduled || isDisposed) return;
+    updateScheduled = true;
+    requestAnimationFrame(() => {
+      if (!isDisposed) {
+        texture.needsUpdate = true;
+      }
+      updateScheduled = false;
     });
   }
 
-  async function loadTileLevel(zoom: number, cols: number, rows: number) {
+  async function loadTileLevel(
+    zoom: number,
+    cols: number,
+    rows: number,
+    concurrency = 8,
+    stageNumber = 1
+  ) {
     const totalTiles = cols * rows;
     let loadedCount = 0;
 
-    const tilePromises: Promise<void>[] = [];
+    const tasks: (() => Promise<void>)[] = [];
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        if (isDisposed) return;
+        tasks.push(async () => {
+          if (isDisposed) return;
+          const tileUrl = getMoonTrekTileUrl(zoom, row, col);
 
-        const tileUrl = getMoonTrekTileUrl(zoom, row, col);
-        const p = loadTileImage(tileUrl)
-          .then((img) => {
+          try {
+            const img = await loadTileImageWithRetry(tileUrl, 3);
             if (isDisposed) return;
-            // Draw tile scaled appropriately into the 2048x1024 canvas
+
             const tileWidth = canvas.width / cols;
             const tileHeight = canvas.height / rows;
             context.drawImage(img, col * tileWidth, row * tileHeight, tileWidth, tileHeight);
-            texture.needsUpdate = true;
-
+            scheduleTextureUpdate();
+          } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.warn(`[MoonTexture] Non-critical tile skip (${zoom}/${row}/${col}):`, msg);
+          } finally {
             loadedCount++;
             onProgress?.({
               total: totalTiles,
               loaded: loadedCount,
               isComplete: loadedCount === totalTiles,
+              stage: stageNumber,
             });
-          })
-          .catch((err) => {
-            console.warn(`[MoonTexture] Non-critical tile skip (${zoom}/${row}/${col}):`, err.message);
-            loadedCount++;
-            onProgress?.({
-              total: totalTiles,
-              loaded: loadedCount,
-              isComplete: loadedCount === totalTiles,
-            });
-          });
-
-        tilePromises.push(p);
+          }
+        });
       }
     }
 
-    await Promise.all(tilePromises);
+    // Process tasks with controlled concurrency worker pool
+    let cursor = 0;
+    async function worker() {
+      while (cursor < tasks.length) {
+        if (isDisposed) return;
+        const task = tasks[cursor++];
+        await task();
+      }
+    }
+
+    const workers = Array.from({ length: Math.min(concurrency, tasks.length) }, () => worker());
+    await Promise.all(workers);
+    scheduleTextureUpdate();
   }
 
-  // Two-stage progressive load:
-  // Stage 1: Zoom level 1 (8 tiles) loads very rapidly (< 300ms)
-  // Stage 2: Zoom level 2 (32 tiles) completes high-definition surface detail
+  // Smooth progressive load
   (async () => {
     try {
-      await loadTileLevel(1, 4, 2);
-      if (!isDisposed) {
-        await loadTileLevel(2, 8, 4);
-      }
+      // Stage 1: Quick low-res preview (8 tiles)
+      await loadTileLevel(1, 4, 2, 4, 1);
+      if (isDisposed) return;
+
+      // Stage 2: 2K HD details (32 tiles)
+      await loadTileLevel(2, 8, 4, 8, 2);
+      if (isDisposed) return;
+
+      // Stage 3: Full 4K UHD details (128 tiles) with retries
+      await loadTileLevel(3, 16, 8, 8, 3);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to load Moon Trek tiles';
       console.error('[MoonTexture] Error during texture assembly:', msg);

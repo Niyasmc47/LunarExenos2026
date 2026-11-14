@@ -50,3 +50,21 @@ code, kbd, samp, pre, .font-mono {
 .animate-spin-slow {
   animation: spinSlow 20s linear infinite;
 }
+
+/* Cesium Viewer Customization */
+.cesium-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+.cesium-widget,
+.cesium-widget canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+}

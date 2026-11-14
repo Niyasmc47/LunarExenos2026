@@ -8,7 +8,7 @@ import { useLocationStore } from '../../stores/locationStore';
 import { formatCoordinates } from '../../utils/lunarCoordinates';
 import { lunarToSpherePosition } from '../../utils/sphereCoordinates';
 import { fetchElevationPoint } from '../../services/terrainApi';
-import { Globe, Crosshair, RotateCcw, Loader2, Sparkles } from 'lucide-react';
+import { Globe, Crosshair, RotateCcw, Sparkles } from 'lucide-react';
 
 export const LunarGlobe: React.FC = () => {
   const controlsRef = useRef<OrbitControlsImpl>(null);
@@ -17,8 +17,6 @@ export const LunarGlobe: React.FC = () => {
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
   const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
-  const globeLoading = useLocationStore((state) => state.globeLoading);
-  const globeError = useLocationStore((state) => state.globeError);
 
   // Jump to Site01 Connecting Ridge (LOLA 5m DEM)
   const handleFlyToSite01 = () => {
@@ -31,7 +29,7 @@ export const LunarGlobe: React.FC = () => {
 
     if (!controlsRef.current) return;
     const pos = lunarToSpherePosition(lat, lon, 2.0);
-    const camPos = pos.clone().normalize().multiplyScalar(2.65);
+    const camPos = pos.clone().normalize().multiplyScalar(2.4);
     controlsRef.current.object.position.set(camPos.x, camPos.y, camPos.z);
     controlsRef.current.target.set(pos.x * 0.9, pos.y * 0.9, pos.z * 0.9);
     controlsRef.current.update();
@@ -41,8 +39,7 @@ export const LunarGlobe: React.FC = () => {
   const handleFocusMarker = () => {
     if (!controlsRef.current) return;
     const markerPos = lunarToSpherePosition(selectedLatitude, selectedLongitude, 2.0);
-    // Camera position: along the normal vector outwards at distance ~4.5
-    const camPos = markerPos.clone().normalize().multiplyScalar(4.5);
+    const camPos = markerPos.clone().normalize().multiplyScalar(3.0);
 
     controlsRef.current.object.position.set(camPos.x, camPos.y, camPos.z);
     controlsRef.current.target.set(0, 0, 0);
@@ -52,7 +49,7 @@ export const LunarGlobe: React.FC = () => {
   // Reset to Near-side Prime Meridian view (0, 0)
   const handleResetView = () => {
     if (!controlsRef.current) return;
-    controlsRef.current.object.position.set(0, 0, 5.0);
+    controlsRef.current.object.position.set(0, 0, 4.5);
     controlsRef.current.target.set(0, 0, 0);
     controlsRef.current.update();
   };
@@ -60,7 +57,7 @@ export const LunarGlobe: React.FC = () => {
   // View South Pole
   const handleViewSouthPole = () => {
     if (!controlsRef.current) return;
-    controlsRef.current.object.position.set(0, -5.0, 0.01);
+    controlsRef.current.object.position.set(0, -4.5, 0.01);
     controlsRef.current.target.set(0, 0, 0);
     controlsRef.current.update();
   };
@@ -68,7 +65,7 @@ export const LunarGlobe: React.FC = () => {
   // View North Pole
   const handleViewNorthPole = () => {
     if (!controlsRef.current) return;
-    controlsRef.current.object.position.set(0, 5.0, 0.01);
+    controlsRef.current.object.position.set(0, 4.5, 0.01);
     controlsRef.current.target.set(0, 0, 0);
     controlsRef.current.update();
   };
@@ -87,7 +84,7 @@ export const LunarGlobe: React.FC = () => {
 
         <div className="flex items-center gap-2 pointer-events-auto">
           <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[11px] font-mono text-slate-300">
-            TEXTURE: <span className="text-emerald-400">NASA 2048 HD</span>
+            TEXTURE: <span className="text-emerald-400 font-semibold">NASA 4K UHD (L3)</span>
           </div>
         </div>
       </div>
@@ -138,11 +135,12 @@ export const LunarGlobe: React.FC = () => {
       {/* Three.js Canvas Container */}
       <div className="w-full h-full cursor-grab active:cursor-grabbing">
         <Canvas
-          camera={{ position: [0, 0, 5.0], fov: 45 }}
+          camera={{ position: [0, 0, 4.5], fov: 45, near: 0.05, far: 50.0 }}
           gl={{
             antialias: true,
             toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 1.05,
+            toneMappingExposure: 1.15,
+            powerPreference: 'high-performance',
           }}
         >
           <color attach="background" args={['#04060a']} />
@@ -150,30 +148,31 @@ export const LunarGlobe: React.FC = () => {
           {/* Deep space starry environment */}
           <Stars radius={80} depth={40} count={2200} factor={4} saturation={0} fade speed={0.6} />
 
-          {/* Realistic solar and ambient space lighting */}
-          <ambientLight intensity={0.16} />
+          {/* High-fidelity solar and space lighting */}
+          <ambientLight intensity={0.2} />
           <directionalLight
             position={[10, 6, 8]}
-            intensity={2.2}
-            color="#fffcf2"
+            intensity={2.4}
+            color="#fffcf5"
             castShadow
           />
-          {/* Subtle earthshine / back fill light */}
-          <directionalLight position={[-8, -4, -6]} intensity={0.08} color="#94a3b8" />
+          {/* Earthshine fill light */}
+          <directionalLight position={[-8, -4, -6]} intensity={0.12} color="#94a3b8" />
 
           <Suspense fallback={null}>
             <MoonSphere radius={2.0} />
           </Suspense>
 
+          {/* Orbit Controls with close-up zoom range */}
           <OrbitControls
             ref={controlsRef}
             enablePan={true}
             enableZoom={true}
-            minDistance={2.3}
-            maxDistance={12.0}
+            minDistance={2.08}
+            maxDistance={8.0}
             dampingFactor={0.08}
             rotateSpeed={0.8}
-            zoomSpeed={0.9}
+            zoomSpeed={1.0}
           />
         </Canvas>
       </div>
@@ -189,28 +188,10 @@ export const LunarGlobe: React.FC = () => {
           <span className="text-slate-500 text-[11px] hidden sm:inline">(Click globe to relocate)</span>
         </div>
 
-        <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[10px] text-slate-400 font-mono pointer-events-auto">
-          NASA / Moon Trek LRO Mosaic
+        <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[11px] font-mono text-slate-400 hidden md:flex items-center gap-1.5">
+          <span>DRAG: Orbit • SCROLL: Zoom In • CLICK: Pick Coords</span>
         </div>
       </div>
-
-      {/* Globe Loading Spinner */}
-      {globeLoading && (
-        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2.5 bg-[#0c121e]/90 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-200 text-xs font-mono shadow-xl">
-            <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
-            <span>ASSEMBLING NASA MOON TREK GLOBE TEXTURE...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error Banner */}
-      {globeError && (
-        <div className="absolute top-16 left-3 right-3 z-30 flex items-center gap-2 bg-amber-950/90 border border-amber-700/70 text-amber-200 px-3 py-2 rounded-lg text-xs font-mono backdrop-blur-md">
-          <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-          <span>{globeError}</span>
-        </div>
-      )}
     </div>
   );
 };
