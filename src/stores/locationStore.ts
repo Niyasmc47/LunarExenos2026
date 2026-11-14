@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { ActiveView, LocationSource, LunarCoordinates } from '../types/lunar';
+import { ElevationPoint, TerrainMetadata } from '../types/terrain';
 import { clampLatitude, normalizeLongitude } from '../utils/lunarCoordinates';
 
 interface LocationState {
@@ -18,6 +19,15 @@ interface LocationState {
   globeError: string | null;
   liveCapabilitiesActive: boolean;
 
+  // Terrain Engine State (MVP 2)
+  terrainEnabled: boolean;
+  terrainExaggeration: number;
+  terrainLod: 'low' | 'medium' | 'high';
+  elevationLayerVisible: boolean;
+  elevationLayerType: 'elevation' | 'slope';
+  currentElevationData: ElevationPoint | null;
+  terrainMetadata: TerrainMetadata | null;
+
   // Actions
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => void;
   setActiveView: (view: ActiveView) => void;
@@ -26,6 +36,16 @@ interface LocationState {
   setGlobeLoading: (loading: boolean) => void;
   setGlobeError: (error: string | null) => void;
   setLiveCapabilitiesActive: (active: boolean) => void;
+
+  // Terrain Actions
+  setTerrainEnabled: (enabled: boolean) => void;
+  setTerrainExaggeration: (exaggeration: number) => void;
+  setTerrainLod: (lod: 'low' | 'medium' | 'high') => void;
+  setElevationLayerVisible: (visible: boolean) => void;
+  setElevationLayerType: (type: 'elevation' | 'slope') => void;
+  setCurrentElevationData: (data: ElevationPoint | null) => void;
+  setTerrainMetadata: (meta: TerrainMetadata | null) => void;
+
   resetToDefault: () => void;
 }
 
@@ -42,11 +62,20 @@ export const useLocationStore = create<LocationState>((set, get) => ({
 
   activeView: 'split',
 
-  mapLoading: true,
+  mapLoading: false,
   mapError: null,
   globeLoading: true,
   globeError: null,
-  liveCapabilitiesActive: false,
+  liveCapabilitiesActive: true,
+
+  // MVP 2 Terrain state defaults
+  terrainEnabled: true,
+  terrainExaggeration: 1.0,
+  terrainLod: 'medium',
+  elevationLayerVisible: true,
+  elevationLayerType: 'elevation',
+  currentElevationData: null,
+  terrainMetadata: null,
 
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => {
     const clampedLat = clampLatitude(lat);
@@ -80,6 +109,14 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   setGlobeError: (error: string | null) => set({ globeError: error }),
 
   setLiveCapabilitiesActive: (active: boolean) => set({ liveCapabilitiesActive: active }),
+
+  setTerrainEnabled: (enabled: boolean) => set({ terrainEnabled: enabled }),
+  setTerrainExaggeration: (exaggeration: number) => set({ terrainExaggeration: exaggeration }),
+  setTerrainLod: (lod: 'low' | 'medium' | 'high') => set({ terrainLod: lod }),
+  setElevationLayerVisible: (visible: boolean) => set({ elevationLayerVisible: visible }),
+  setElevationLayerType: (type: 'elevation' | 'slope') => set({ elevationLayerType: type }),
+  setCurrentElevationData: (data: ElevationPoint | null) => set({ currentElevationData: data }),
+  setTerrainMetadata: (meta: TerrainMetadata | null) => set({ terrainMetadata: meta }),
 
   resetToDefault: () =>
     set({

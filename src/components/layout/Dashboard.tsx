@@ -3,6 +3,7 @@ import { useLocationStore } from '../../stores/locationStore';
 import { LunarGlobe } from '../lunar-globe/LunarGlobe';
 import { LunarMap } from '../lunar-map/LunarMap';
 import { CoordinatePanel } from '../controls/CoordinatePanel';
+import { TerrainPanel } from '../controls/TerrainPanel';
 import { ViewSwitcher } from '../controls/ViewSwitcher';
 import { SlidersHorizontal, ChevronRight, ChevronLeft } from 'lucide-react';
 
@@ -64,6 +65,7 @@ export const Dashboard: React.FC = () => {
         {panelOpen && (
           <div className="w-full h-full overflow-y-auto pr-0.5 space-y-3">
             <CoordinatePanel />
+            <TerrainPanel />
           </div>
         )}
       </div>

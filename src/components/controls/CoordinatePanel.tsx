@@ -24,6 +24,7 @@ export const CoordinatePanel: React.FC = () => {
   const selectedLocationSource = useLocationStore((state) => state.selectedLocationSource);
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
   const resetToDefault = useLocationStore((state) => state.resetToDefault);
+  const currentElevationData = useLocationStore((state) => state.currentElevationData);
 
   // Local form state
   const [latInput, setLatInput] = useState<string>(selectedLatitude.toFixed(4));
@@ -230,6 +231,26 @@ export const CoordinatePanel: React.FC = () => {
               {selectedLatitude >= 0 ? 'North' : 'South'}
             </div>
           </div>
+          {currentElevationData?.in_bounds && (
+            <>
+              <div>
+                <div className="text-[10px] text-slate-500">LOLA ELEVATION</div>
+                <div className="text-emerald-400 font-bold text-[11px]">
+                  {currentElevationData.elevation_m !== null && currentElevationData.elevation_m !== undefined
+                    ? `${currentElevationData.elevation_m > 0 ? '+' : ''}${currentElevationData.elevation_m.toFixed(1)} m`
+                    : 'N/A'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-slate-500">LOCAL SLOPE</div>
+                <div className="text-slate-200 font-bold text-[11px]">
+                  {currentElevationData.slope_deg !== null && currentElevationData.slope_deg !== undefined
+                    ? `${currentElevationData.slope_deg.toFixed(1)}°`
+                    : 'N/A'}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

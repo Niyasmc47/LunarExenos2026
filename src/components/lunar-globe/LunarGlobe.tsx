@@ -14,8 +14,29 @@ export const LunarGlobe: React.FC = () => {
 
   const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
+  const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
+  const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
   const globeLoading = useLocationStore((state) => state.globeLoading);
   const globeError = useLocationStore((state) => state.globeError);
+
+  // Jump to Site01 Connecting Ridge (LOLA 5m DEM)
+  const handleFlyToSite01 = () => {
+    const lat = -89.4632;
+    const lon = -137.4896;
+    setSelectedCoordinates(lat, lon, 'preset');
+    import('../../services/terrainApi').then(({ fetchElevationPoint }) => {
+      fetchElevationPoint(lat, lon).then((pt) => {
+        if (pt) setCurrentElevationData(pt);
+      });
+    });
+
+    if (!controlsRef.current) return;
+    const pos = lunarToSpherePosition(lat, lon, 2.0);
+    const camPos = pos.clone().normalize().multiplyScalar(2.65);
+    controlsRef.current.object.position.set(camPos.x, camPos.y, camPos.z);
+    controlsRef.current.target.set(pos.x * 0.9, pos.y * 0.9, pos.z * 0.9);
+    controlsRef.current.update();
+  };
 
   // Recenter camera to focus on the current marker
   const handleFocusMarker = () => {
@@ -74,6 +95,14 @@ export const LunarGlobe: React.FC = () => {
 
       {/* Floating 3D Navigation Quick-Buttons */}
       <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
+        <button
+          onClick={handleFlyToSite01}
+          title="Fly directly to Site 01 (Connecting Ridge LOLA 3D Terrain)"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded transition-colors"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+          <span>SITE 01 TERRAIN</span>
+        </button>
         <button
           onClick={handleFocusMarker}
           title="Focus Camera on Selected Landing Site"

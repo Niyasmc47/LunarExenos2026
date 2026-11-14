@@ -1,16 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
+import ImageLayer from 'ol/layer/Image.js';
+import Static from 'ol/source/ImageStatic.js';
 import { defaults as defaultControls } from 'ol/control.js';
 import { useLocationStore } from '../../stores/locationStore';
 import { createMoonTrekLayer, LUNAR_PROJECTION } from './WmtsLayer';
 import { createMarkerLayer } from './MapMarker';
 import { clampLatitude, normalizeLongitude, formatCoordinates } from '../../utils/lunarCoordinates';
-import { Compass, Crosshair, ZoomIn, ZoomOut, RotateCcw, AlertTriangle, Loader2 } from 'lucide-react';
+import { fetchElevationPoint, getOverlayImageUrl } from '../../services/terrainApi';
+import { Compass, Crosshair, ZoomIn, ZoomOut, RotateCcw, AlertTriangle, Loader2, Mountain } from 'lucide-react';
+
+// Bounding box of Site01 Connecting Ridge in lunar degrees
+const SITE01_EXTENT = [-171.4692, -89.8351, -101.8887, -89.0903] as [number, number, number, number];
 
 export const LunarMap: React.FC = () => {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
+  const overlayLayerRef = useRef<ImageLayer<Static> | null>(null);
   const markerUpdaterRef = useRef<((lon: number, lat: number) => void) | null>(null);
 
   const [hoverCoords, setHoverCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -20,6 +27,11 @@ export const LunarMap: React.FC = () => {
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
   const selectedLocationSource = useLocationStore((state) => state.selectedLocationSource);
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
+  const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
+  const currentElevationData = useLocationStore((state) => state.currentElevationData);
+
+  const elevationLayerVisible = useLocationStore((state) => state.elevationLayerVisible);
+  const elevationLayerType = useLocationStore((state) => state.elevationLayerType);
 
   const mapLoading = useLocationStore((state) => state.mapLoading);
   const mapError = useLocationStore((state) => state.mapError);
@@ -42,6 +54,21 @@ export const LunarMap: React.FC = () => {
         (active) => setLiveCapabilitiesActive(active)
       );
 
+      // 2D Elevation Overlay Layer for Site01
+      const overlaySource = new Static({
+        url: getOverlayImageUrl(elevationLayerType),
+        imageExtent: SITE01_EXTENT,
+        projection: LUNAR_PROJECTION,
+      });
+
+      const overlayLayer = new ImageLayer({
+        source: overlaySource,
+        opacity: 0.85,
+        visible: elevationLayerVisible,
+        zIndex: 50,
+      });
+      overlayLayerRef.current = overlayLayer;
+
       const { layer: markerLayer, updatePosition } = createMarkerLayer(
         selectedLongitude,
         selectedLatitude
@@ -60,7 +87,7 @@ export const LunarMap: React.FC = () => {
 
       mapInstance = new Map({
         target: mapElementRef.current,
-        layers: [wmtsLayer, markerLayer],
+        layers: [wmtsLayer, overlayLayer, markerLayer],
         view,
         controls: defaultControls({
           zoom: false,
@@ -82,7 +109,7 @@ export const LunarMap: React.FC = () => {
       setTimeout(() => mapInstance?.updateSize(), 50);
       setTimeout(() => mapInstance?.updateSize(), 200);
 
-      // Click handler: select lunar coordinate
+      // Click handler: select lunar coordinate & fetch real elevation data
       mapInstance.on('singleclick', (evt) => {
         const rawCoords = evt.coordinate;
         if (!rawCoords || rawCoords.length < 2) return;
@@ -91,6 +118,11 @@ export const LunarMap: React.FC = () => {
         const lat = clampLatitude(rawCoords[1]);
 
         setSelectedCoordinates(lat, lon, 'map');
+
+        // Fetch elevation point from NASA LOLA DEM service
+        fetchElevationPoint(lat, lon).then((data) => {
+          if (data) setCurrentElevationData(data);
+        });
       });
 
       // Pointer move handler for coordinate readout
@@ -134,6 +166,21 @@ export const LunarMap: React.FC = () => {
     };
   }, []);
 
+  // Update overlay layer when elevationLayerVisible or elevationLayerType changes
+  useEffect(() => {
+    if (!overlayLayerRef.current) return;
+
+    overlayLayerRef.current.setVisible(elevationLayerVisible);
+    if (elevationLayerVisible) {
+      const newSource = new Static({
+        url: getOverlayImageUrl(elevationLayerType),
+        imageExtent: SITE01_EXTENT,
+        projection: LUNAR_PROJECTION,
+      });
+      overlayLayerRef.current.setSource(newSource);
+    }
+  }, [elevationLayerVisible, elevationLayerType]);
+
   // Sync marker position when store coordinates update
   useEffect(() => {
     if (markerUpdaterRef.current) {
@@ -150,7 +197,23 @@ export const LunarMap: React.FC = () => {
     }
   }, [selectedLatitude, selectedLongitude, selectedLocationSource]);
 
-  // Map control buttons
+  // Jump to Site 01 on the 2D Map
+  const handleZoomToSite01 = () => {
+    const lat = -89.4632;
+    const lon = -137.4896;
+    setSelectedCoordinates(lat, lon, 'preset');
+    fetchElevationPoint(lat, lon).then((data) => {
+      if (data) setCurrentElevationData(data);
+    });
+
+    if (!mapRef.current) return;
+    mapRef.current.getView().animate({
+      center: [lon, lat],
+      zoom: 6.5,
+      duration: 500,
+    });
+  };
+
   const handleZoomIn = () => {
     if (!mapRef.current) return;
     const view = mapRef.current.getView();
@@ -221,6 +284,14 @@ export const LunarMap: React.FC = () => {
       {/* Floating Map Zoom / Recenter Controls */}
       <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
         <button
+          onClick={handleZoomToSite01}
+          title="Zoom to Site 01 (Connecting Ridge LOLA 5m DEM Overlay)"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded transition-colors"
+        >
+          <Mountain className="w-3.5 h-3.5 text-emerald-400" />
+          <span>SITE 01</span>
+        </button>
+        <button
           onClick={handleZoomIn}
           title="Zoom In"
           className="p-2 text-slate-300 hover:text-emerald-400 hover:bg-slate-800/80 rounded transition-colors"
@@ -259,15 +330,26 @@ export const LunarMap: React.FC = () => {
           <span className="text-emerald-400 font-semibold">
             {formatCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude })}
           </span>
+
+          {currentElevationData && currentElevationData.in_bounds && typeof currentElevationData.elevation_m === 'number' && (
+            <span className="text-emerald-300 font-semibold pl-2 border-l border-slate-700 flex items-center gap-1.5">
+              <Mountain className="w-3 h-3 text-emerald-400" />
+              ELEV: {currentElevationData.elevation_m > 0 ? `+${currentElevationData.elevation_m.toFixed(1)}` : currentElevationData.elevation_m.toFixed(1)} m
+              {typeof currentElevationData.slope_deg === 'number' && (
+                <span className="text-amber-400 font-normal">({currentElevationData.slope_deg.toFixed(1)}° slope)</span>
+              )}
+            </span>
+          )}
+
           {hoverCoords && (
-            <span className="text-slate-400 pl-2 border-l border-slate-700">
+            <span className="text-slate-400 pl-2 border-l border-slate-700 hidden sm:inline">
               CURSOR: {formatCoordinates({ latitude: hoverCoords.lat, longitude: hoverCoords.lon })}
             </span>
           )}
         </div>
 
         <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[10px] text-slate-400 font-mono pointer-events-auto">
-          NASA / GSFC / ASU / JPL / Moon Trek
+          NASA / LOLA 5m DEM (Barker et al. 2021)
         </div>
       </div>
 

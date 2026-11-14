@@ -3,8 +3,10 @@ import * as THREE from 'three';
 import { ThreeEvent } from '@react-three/fiber';
 import { createMoonTrekCanvasTexture } from './MoonTexture';
 import { LocationMarker } from './LocationMarker';
+import { TerrainPatch } from './TerrainPatch';
 import { useLocationStore } from '../../stores/locationStore';
 import { spherePositionToLunar } from '../../utils/sphereCoordinates';
+import { fetchElevationPoint } from '../../services/terrainApi';
 
 interface MoonSphereProps {
   radius?: number;
@@ -16,6 +18,7 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
   const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
+  const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
   const setGlobeLoading = useLocationStore((state) => state.setGlobeLoading);
   const setGlobeError = useLocationStore((state) => state.setGlobeError);
 
@@ -49,6 +52,10 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
     // e.point is the 3D surface intersection in world coordinates
     const coords = spherePositionToLunar(e.point);
     setSelectedCoordinates(coords.latitude, coords.longitude, 'globe');
+
+    fetchElevationPoint(coords.latitude, coords.longitude).then((pt) => {
+      if (pt) setCurrentElevationData(pt);
+    });
   };
 
   return (
@@ -76,6 +83,9 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
           metalness={0.04}
         />
       </mesh>
+
+      {/* Real NASA LOLA 3D Terrain Patch for Site 01 (Connecting Ridge) */}
+      <TerrainPatch />
 
       {/* Synchronized 3D Target Pin Marker */}
       <LocationMarker

@@ -88,6 +88,14 @@ export function lunarHaversineDistance(
  */
 export const LUNAR_PRESETS: PresetLocation[] = [
   {
+    id: 'site-01-connecting-ridge',
+    name: 'Site 01 (Connecting Ridge - Artemis)',
+    latitude: -89.4632,
+    longitude: -137.4896,
+    description: 'NASA LOLA 5m DEM test site near Shackleton Crater, candidate Artemis landing region',
+    category: 'artemis',
+  },
+  {
     id: 'apollo-11',
     name: 'Apollo 11 (Statio Tranquillitatis)',
     latitude: 0.6741,
