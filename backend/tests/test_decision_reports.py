@@ -74,7 +74,7 @@ def test_create_and_read_decision_report(report_fixtures):
         "executive_summary_notes": "Preliminary analysis indicates high solar illumination along the ridge.",
     }
 
-    res = client.post("/api/reports/", json=req_data)
+    res = client.post("/api/decision-reports/", json=req_data)
     assert res.status_code == 201
     rep = res.json()["report"]
 
@@ -104,13 +104,13 @@ def test_create_and_read_decision_report(report_fixtures):
     # Check human decision checklist
     assert len(rep["human_decision_checklist"]) >= 4
 
-    # Check GET /api/reports/{id}
-    get_res = client.get(f"/api/reports/{rep['id']}")
+    # Check GET /api/decision-reports/{id}
+    get_res = client.get(f"/api/decision-reports/{rep['id']}")
     assert get_res.status_code == 200
     assert get_res.json()["report"]["id"] == rep["id"]
 
-    # Check GET /api/reports/ list
-    list_res = client.get("/api/reports/")
+    # Check GET /api/decision-reports/ list
+    list_res = client.get("/api/decision-reports/")
     assert list_res.status_code == 200
     reports_list = list_res.json()["reports"]
     assert any(r["id"] == rep["id"] for r in reports_list)
@@ -127,10 +127,10 @@ def test_export_pdf_report(report_fixtures):
         "profile_id": profile.id,
         "trade_off_study_id": study.id,
     }
-    create_res = client.post("/api/reports/", json=req_data)
+    create_res = client.post("/api/decision-reports/", json=req_data)
     rep_id = create_res.json()["report"]["id"]
 
-    pdf_res = client.get(f"/api/reports/{rep_id}/export/pdf")
+    pdf_res = client.get(f"/api/decision-reports/{rep_id}/export/pdf")
     assert pdf_res.status_code == 200
     assert pdf_res.headers["content-type"] == "application/pdf"
     assert f"{rep_id}.pdf" in pdf_res.headers["content-disposition"]
@@ -152,11 +152,11 @@ def test_export_json_and_csv_report(report_fixtures):
         "profile_id": profile.id,
         "trade_off_study_id": study.id,
     }
-    create_res = client.post("/api/reports/", json=req_data)
+    create_res = client.post("/api/decision-reports/", json=req_data)
     rep_id = create_res.json()["report"]["id"]
 
     # 1. JSON Export
-    json_res = client.get(f"/api/reports/{rep_id}/export/json")
+    json_res = client.get(f"/api/decision-reports/{rep_id}/export/json")
     assert json_res.status_code == 200
     assert "application/json" in json_res.headers["content-type"]
     exported_data = json_res.json()
@@ -165,7 +165,7 @@ def test_export_json_and_csv_report(report_fixtures):
     assert "scientific_disclaimers" in exported_data
 
     # 2. CSV Export
-    csv_res = client.get(f"/api/reports/{rep_id}/export/csv")
+    csv_res = client.get(f"/api/decision-reports/{rep_id}/export/csv")
     assert csv_res.status_code == 200
     assert "text/csv" in csv_res.headers["content-type"]
     csv_text = csv_res.text
@@ -189,7 +189,7 @@ def test_report_immutability_across_profile_updates(report_fixtures):
         "profile_id": profile.id,
         "trade_off_study_id": study.id,
     }
-    create_res = client.post("/api/reports/", json=req_data)
+    create_res = client.post("/api/decision-reports/", json=req_data)
     rep_id = create_res.json()["report"]["id"]
 
     # Mutate the original profile
@@ -201,7 +201,7 @@ def test_report_immutability_across_profile_updates(report_fixtures):
     mission_profile_service.update_profile(profile.id, update_req)
 
     # Re-fetch report and assert frozen profile snapshot is untouched
-    fetch_res = client.get(f"/api/reports/{rep_id}")
+    fetch_res = client.get(f"/api/decision-reports/{rep_id}")
     fetched_rep = fetch_res.json()["report"]
     assert fetched_rep["profile_snapshot"]["name"] == "Report Verification Profile"
     assert fetched_rep["profile_snapshot"]["name"] != "Mutated Profile Name That Must Not Leak"
@@ -218,12 +218,12 @@ def test_delete_report(report_fixtures):
         "profile_id": profile.id,
         "trade_off_study_id": study.id,
     }
-    create_res = client.post("/api/reports/", json=req_data)
+    create_res = client.post("/api/decision-reports/", json=req_data)
     rep_id = create_res.json()["report"]["id"]
 
-    del_res = client.delete(f"/api/reports/{rep_id}")
+    del_res = client.delete(f"/api/decision-reports/{rep_id}")
     assert del_res.status_code == 200
     assert del_res.json()["status"] == "deleted"
 
-    get_res = client.get(f"/api/reports/{rep_id}")
+    get_res = client.get(f"/api/decision-reports/{rep_id}")
     assert get_res.status_code == 404

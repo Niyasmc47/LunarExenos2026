@@ -665,8 +665,6 @@ class TerrainAssessmentService:
 
         return elev_m, slope_m, dq
 
-        return elev_m, slope_m, dq
-
     def _eval_slope_requirement(
         self,
         req: SingleRequirement,

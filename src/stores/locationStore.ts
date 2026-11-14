@@ -70,8 +70,29 @@ const DEFAULT_COORDINATES: LunarCoordinates = {
   longitude: 23.4730,
 };
 
+const getStoredAppScreen = (): AppScreen => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const stored = window.localStorage.getItem('lunavista_app_screen');
+    const validScreens: AppScreen[] = [
+      'lunar-explorer',
+      'terrain-explorer',
+      'mission-comparison',
+      'mission-requirements',
+      'candidate-screening',
+      'window-planner',
+      'terrain-assessment',
+      'trade-off-analysis',
+      'mission-reports',
+    ];
+    if (stored && validScreens.includes(stored as AppScreen)) {
+      return stored as AppScreen;
+    }
+  }
+  return 'lunar-explorer';
+};
+
 export const useLocationStore = create<LocationState>((set, get) => ({
-  appScreen: 'lunar-explorer',
+  appScreen: getStoredAppScreen(),
 
   selectedLatitude: DEFAULT_COORDINATES.latitude,
   selectedLongitude: DEFAULT_COORDINATES.longitude,
@@ -100,7 +121,12 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   profileData: null,
   isDrawingProfile: false,
 
-  setAppScreen: (screen: AppScreen) => set({ appScreen: screen }),
+  setAppScreen: (screen: AppScreen) => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('lunavista_app_screen', screen);
+    }
+    set({ appScreen: screen });
+  },
 
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => {
     const clampedLat = clampLatitude(lat);

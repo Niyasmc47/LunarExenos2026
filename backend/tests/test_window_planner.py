@@ -279,23 +279,37 @@ def test_snapshot_immutability(setup_window_fixtures):
     search_id = search_res.json()["search"]["id"]
 
     # Now mutate the original profile name and requirements
-    mission_profile_service.update_profile(
-        profile.id,
-        MissionProfileCreateRequest(
-            name="MUTATED PROFILE NAME",
-            description="Mutated description",
-            mission_type=MissionType.CREWED_SURFACE,
-            duration_days=5.0,
-            start_timestamp_iso="2026-10-04T00:00:00Z",
-            end_timestamp_iso="2026-10-09T00:00:00Z",
-            requirements=profile.requirements,
+    try:
+        mission_profile_service.update_profile(
+            profile.id,
+            MissionProfileCreateRequest(
+                name="MUTATED PROFILE NAME",
+                description="Mutated description",
+                mission_type=MissionType.CREWED_SURFACE,
+                duration_days=5.0,
+                start_timestamp_iso="2026-10-04T00:00:00Z",
+                end_timestamp_iso="2026-10-09T00:00:00Z",
+                requirements=profile.requirements,
+            )
         )
-    )
 
-    # Check search record snapshot retains original name and properties
-    frozen_search = client.get(f"/api/window-planner/searches/{search_id}").json()
-    assert frozen_search["profile_name"] == "Window Planner Test Profile"
-    assert frozen_search["profile_snapshot"]["name"] == "Window Planner Test Profile"
+        # Check search record snapshot retains original name and properties
+        frozen_search = client.get(f"/api/window-planner/searches/{search_id}").json()
+        assert frozen_search["profile_name"] == "Window Planner Test Profile"
+        assert frozen_search["profile_snapshot"]["name"] == "Window Planner Test Profile"
+    finally:
+        mission_profile_service.update_profile(
+            profile.id,
+            MissionProfileCreateRequest(
+                name=profile.name,
+                description=profile.description,
+                mission_type=profile.mission_type,
+                duration_days=profile.duration_days,
+                start_timestamp_iso=profile.start_timestamp_iso,
+                end_timestamp_iso=profile.end_timestamp_iso,
+                requirements=profile.requirements,
+            )
+        )
 
 
 def test_concurrent_window_searches(setup_window_fixtures):

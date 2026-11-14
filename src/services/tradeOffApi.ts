@@ -4,81 +4,67 @@ import {
   TradeOffStudyRecord,
   SensitivityAnalysisResponse,
 } from '../types/tradeOff';
+import { parseApiResponse } from './apiClient';
 
 const API_BASE = '/api/trade-off';
 
 export async function createTradeOffStudy(req: TradeOffStudyCreateRequest): Promise<TradeOffStudyRecord> {
-  const resp = await fetch(`${API_BASE}/studies`, {
+  const endpoint = `${API_BASE}/studies`;
+  const resp = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   });
-  if (!resp.ok) {
-    const errorBody = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(errorBody.detail || 'Failed to create trade-off study');
-  }
-  const data = await resp.json();
+  const data = await parseApiResponse<{ study: TradeOffStudyRecord }>(resp, endpoint);
   return data.study;
 }
 
 export async function fetchTradeOffStudies(): Promise<TradeOffStudyRecord[]> {
-  const resp = await fetch(`${API_BASE}/studies`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch trade-off studies: ${resp.statusText}`);
-  }
-  return resp.json();
+  const endpoint = `${API_BASE}/studies`;
+  const resp = await fetch(endpoint);
+  return parseApiResponse<TradeOffStudyRecord[]>(resp, endpoint);
 }
 
 export async function fetchTradeOffStudy(id: string): Promise<TradeOffStudyRecord> {
-  const resp = await fetch(`${API_BASE}/studies/${id}`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch trade-off study ${id}: ${resp.statusText}`);
-  }
-  return resp.json();
+  const endpoint = `${API_BASE}/studies/${id}`;
+  const resp = await fetch(endpoint);
+  return parseApiResponse<TradeOffStudyRecord>(resp, endpoint);
 }
 
 export async function updateTradeOffStudy(id: string, req: TradeOffStudyUpdateRequest): Promise<TradeOffStudyRecord> {
-  const resp = await fetch(`${API_BASE}/studies/${id}`, {
+  const endpoint = `${API_BASE}/studies/${id}`;
+  const resp = await fetch(endpoint, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   });
-  if (!resp.ok) {
-    const errorBody = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(errorBody.detail || 'Failed to update trade-off study');
-  }
-  return resp.json();
+  return parseApiResponse<TradeOffStudyRecord>(resp, endpoint);
 }
 
 export async function deleteTradeOffStudy(id: string): Promise<void> {
-  const resp = await fetch(`${API_BASE}/studies/${id}`, {
+  const endpoint = `${API_BASE}/studies/${id}`;
+  const resp = await fetch(endpoint, {
     method: 'DELETE',
   });
   if (!resp.ok && resp.status !== 404) {
-    throw new Error(`Failed to delete trade-off study ${id}: ${resp.statusText}`);
+    throw new Error(`Failed to delete trade-off study ${id}: HTTP ${resp.status} ${resp.statusText}`);
   }
 }
 
 export async function reanalyzeTradeOffStudy(id: string): Promise<TradeOffStudyRecord> {
-  const resp = await fetch(`${API_BASE}/studies/${id}/analyze`, {
+  const endpoint = `${API_BASE}/studies/${id}/analyze`;
+  const resp = await fetch(endpoint, {
     method: 'POST',
   });
-  if (!resp.ok) {
-    const errorBody = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(errorBody.detail || 'Failed to reanalyze trade-off study');
-  }
-  return resp.json();
+  return parseApiResponse<TradeOffStudyRecord>(resp, endpoint);
 }
 
 export async function runTradeOffSensitivity(id: string): Promise<SensitivityAnalysisResponse> {
-  const resp = await fetch(`${API_BASE}/studies/${id}/sensitivity`, {
+  const endpoint = `${API_BASE}/studies/${id}/sensitivity`;
+  const resp = await fetch(endpoint, {
     method: 'POST',
   });
-  if (!resp.ok) {
-    const errorBody = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(errorBody.detail || 'Failed to execute sensitivity analysis');
-  }
-  return resp.json();
+  return parseApiResponse<SensitivityAnalysisResponse>(resp, endpoint);
 }
 
 export function getTradeOffExportJsonUrl(id: string): string {

@@ -3,41 +3,36 @@ import {
   TerrainAssessmentResponse,
   TerrainAssessmentRecord,
 } from '../types/terrainAssessment';
+import { parseApiResponse } from './apiClient';
 
 const API_BASE = '/api/terrain-assessment';
 
 export async function runTerrainAssessment(req: TerrainAssessmentRequest): Promise<TerrainAssessmentRecord> {
-  const resp = await fetch(`${API_BASE}/assess`, {
+  const endpoint = `${API_BASE}/assess`;
+  const resp = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   });
-  if (!resp.ok) {
-    const errorBody = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(errorBody.detail || 'Failed to execute terrain assessment');
-  }
-  const data: TerrainAssessmentResponse = await resp.json();
+  const data = await parseApiResponse<TerrainAssessmentResponse>(resp, endpoint);
   return data.assessment;
 }
 
 export async function fetchTerrainAssessments(): Promise<TerrainAssessmentRecord[]> {
-  const resp = await fetch(`${API_BASE}/assessments`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch terrain assessments: ${resp.statusText}`);
-  }
-  return resp.json();
+  const endpoint = `${API_BASE}/assessments`;
+  const resp = await fetch(endpoint);
+  return parseApiResponse<TerrainAssessmentRecord[]>(resp, endpoint);
 }
 
 export async function fetchTerrainAssessment(id: string): Promise<TerrainAssessmentRecord> {
-  const resp = await fetch(`${API_BASE}/assessments/${id}`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch terrain assessment ${id}: ${resp.statusText}`);
-  }
-  return resp.json();
+  const endpoint = `${API_BASE}/assessments/${id}`;
+  const resp = await fetch(endpoint);
+  return parseApiResponse<TerrainAssessmentRecord>(resp, endpoint);
 }
 
 export async function deleteTerrainAssessment(id: string): Promise<void> {
-  const resp = await fetch(`${API_BASE}/assessments/${id}`, {
+  const endpoint = `${API_BASE}/assessments/${id}`;
+  const resp = await fetch(endpoint, {
     method: 'DELETE',
   });
   if (!resp.ok && resp.status !== 404) {

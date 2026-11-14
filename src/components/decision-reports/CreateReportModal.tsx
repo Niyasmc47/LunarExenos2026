@@ -216,7 +216,7 @@ export const CreateReportModal: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-slate-400 block mb-1 text-[11px]">Trade-off Study (MVP 7.5)</label>
+                <label className="text-slate-400 block mb-1 text-[11px]">Trade-off Study</label>
                 <select
                   value={selectedStudyId}
                   onChange={(e) => setSelectedStudyId(e.target.value)}
@@ -232,7 +232,7 @@ export const CreateReportModal: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1 text-[11px]">Candidate Screening (MVP 7.2)</label>
+                <label className="text-slate-400 block mb-1 text-[11px]">Candidate Screening</label>
                 <select
                   value={selectedScreeningId}
                   onChange={(e) => setSelectedScreeningId(e.target.value)}
@@ -248,7 +248,7 @@ export const CreateReportModal: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1 text-[11px]">Mission Window Search (MVP 7.3)</label>
+                <label className="text-slate-400 block mb-1 text-[11px]">Mission Window Search</label>
                 <select
                   value={selectedWindowId}
                   onChange={(e) => setSelectedWindowId(e.target.value)}
@@ -264,7 +264,7 @@ export const CreateReportModal: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1 text-[11px]">Terrain Assessment (MVP 7.4)</label>
+                <label className="text-slate-400 block mb-1 text-[11px]">Terrain Assessment</label>
                 <select
                   value={selectedTerrainId}
                   onChange={(e) => setSelectedTerrainId(e.target.value)}

@@ -24,7 +24,7 @@ export const SoftPreferencesSection: React.FC<SoftPreferencesSectionProps> = ({ 
       <div className="bg-slate-900/40 p-3 rounded-lg border border-slate-800/80 text-xs text-slate-400 font-sans leading-relaxed flex items-start gap-2">
         <Info className="w-4 h-4 shrink-0 text-slate-400 mt-0.5" />
         <span>
-          Soft preferences reflect desirable operational trade-offs. Measured values are presented transparently alongside configured thresholds. As established in the system architecture, multi-criteria ranking requires explicit user weighting in MVP 7.5.
+          Soft preferences reflect desirable operational trade-offs. Measured values are presented transparently alongside configured thresholds. Multi-criteria ranking requires explicit user weighting in the Trade-Off workspace.
         </span>
       </div>
 

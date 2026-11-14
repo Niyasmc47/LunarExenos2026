@@ -21,9 +21,6 @@ export const MissionRequirementsWorkspace: React.FC = () => {
           <span className="text-xs font-bold text-slate-100 font-mono tracking-wider">
             MISSION REQUIREMENTS BUILDER
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            MVP 7.1
-          </span>
         </div>
 
         <div className="flex items-center gap-3">

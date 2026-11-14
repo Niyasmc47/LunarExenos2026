@@ -305,7 +305,7 @@ export const CreateStudyModal: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-[10px] font-mono text-slate-400 block mb-1">
-                        Associate Window Search (MVP 7.3 Optional)
+                        Associate Window Search (Optional)
                       </label>
                       <select
                         value={alt.window_search_id || ''}
@@ -323,7 +323,7 @@ export const CreateStudyModal: React.FC = () => {
 
                     <div>
                       <label className="text-[10px] font-mono text-slate-400 block mb-1">
-                        Associate Terrain Assessment (MVP 7.4 Optional)
+                        Associate Terrain Assessment (Optional)
                       </label>
                       <select
                         value={alt.terrain_assessment_id || ''}
