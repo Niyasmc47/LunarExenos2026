@@ -16,6 +16,11 @@ export interface PresetLocation {
   longitude: number;
   description: string;
   category: 'apollo' | 'artemis' | 'robotic' | 'feature';
+  kind: 'Landing site' | 'Study region' | 'Landmark' | 'Reference point';
+  sourceUrl: string;
+  sourceLabel: string;
+  coordinateNote: string;
+  reviewedOn: string;
 }
 
 export interface WmtsLayerInfo {

@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test": "tsx --test tests/unit/*.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.8",
@@ -19,11 +21,11 @@
     "react-is": "^19.3.1",
     "recharts": "^3.10.1",
     "three": "^0.174.0",
-    "three-tile": "^0.12.2",
     "vite-plugin-cesium": "^1.2.23",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/vite": "^4.1.2",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
@@ -31,6 +33,7 @@
     "@types/three": "^0.174.0",
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.1.2",
+    "tsx": "^4.23.15",
     "typescript": "~5.7.3",
     "vite": "^6.2.1"
   }

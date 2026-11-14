@@ -66,8 +66,8 @@ interface LocationState {
 
 // Default to Apollo 11 landing site (Statio Tranquillitatis)
 const DEFAULT_COORDINATES: LunarCoordinates = {
-  latitude: 0.6741,
-  longitude: 23.4730,
+  latitude: 0.67416,
+  longitude: 23.47314,
 };
 
 export const useLocationStore = create<LocationState>((set, get) => ({
@@ -83,7 +83,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   mapError: null,
   globeLoading: true,
   globeError: null,
-  liveCapabilitiesActive: true,
+  liveCapabilitiesActive: false,
 
   // MVP 2 Terrain state defaults
   terrainEnabled: true,
@@ -103,6 +103,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   setAppScreen: (screen: AppScreen) => set({ appScreen: screen }),
 
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
     const clampedLat = clampLatitude(lat);
     const normalizedLon = normalizeLongitude(lon);
 
@@ -122,6 +123,7 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       selectedLatitude: clampedLat,
       selectedLongitude: normalizedLon,
       selectedLocationSource: source,
+      currentElevationData: null,
     });
   },
 
@@ -152,5 +154,6 @@ export const useLocationStore = create<LocationState>((set, get) => ({
       selectedLatitude: DEFAULT_COORDINATES.latitude,
       selectedLongitude: DEFAULT_COORDINATES.longitude,
       selectedLocationSource: 'preset',
+      currentElevationData: null,
     }),
 }));

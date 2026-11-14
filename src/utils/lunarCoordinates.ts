@@ -22,7 +22,7 @@ export function normalizeLongitude(lon: number): number {
  * Validates coordinate inputs
  */
 export function validateCoordinates(lat: number, lon: number): { valid: boolean; error?: string } {
-  if (isNaN(lat) || isNaN(lon)) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
     return { valid: false, error: 'Coordinates must be valid numbers' };
   }
   if (lat < -90 || lat > 90) {
@@ -78,7 +78,8 @@ export function lunarHaversineDistance(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const bounded = Math.max(0, Math.min(1, a));
+  const c = 2 * Math.atan2(Math.sqrt(bounded), Math.sqrt(1 - bounded));
 
   return MOON_RADIUS_KM * c;
 }
@@ -94,38 +95,63 @@ export const LUNAR_PRESETS: PresetLocation[] = [
     longitude: -137.4896,
     description: 'NASA LOLA 5m DEM test site near Shackleton Crater, candidate Artemis landing region',
     category: 'artemis',
+    kind: 'Study region',
+    sourceUrl: 'https://pgda.gsfc.nasa.gov/products/78',
+    sourceLabel: 'NASA PGDA · Site01 terrain product',
+    coordinateNote: 'Project navigation point at the local raster centre; not a selected landing site. MOON_ME / DE421.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'apollo-11',
     name: 'Apollo 11 (Statio Tranquillitatis)',
-    latitude: 0.6741,
-    longitude: 23.4730,
+    latitude: 0.67416,
+    longitude: 23.47314,
     description: 'First crewed lunar landing by Armstrong & Aldrin (July 20, 1969)',
     category: 'apollo',
+    kind: 'Landing site',
+    sourceUrl: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html',
+    sourceLabel: 'NASA NSSDCA · Lunar Module coordinates',
+    coordinateNote: 'Planetocentric Mean Earth / Polar Axis, DE421; LRO image-derived location.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'apollo-12',
     name: 'Apollo 12 (Oceanus Procellarum)',
-    latitude: -3.0124,
-    longitude: -23.4216,
+    latitude: -3.0128,
+    longitude: -23.4219,
     description: 'Precision landing near Surveyor 3 probe (Nov 1969)',
     category: 'apollo',
+    kind: 'Landing site',
+    sourceUrl: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html',
+    sourceLabel: 'NASA NSSDCA · Lunar Module coordinates',
+    coordinateNote: 'Planetocentric Mean Earth / Polar Axis, DE421; LRO image-derived location.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'apollo-17',
     name: 'Apollo 17 (Taurus-Littrow)',
-    latitude: 20.1908,
-    longitude: 30.7717,
+    latitude: 20.1911,
+    longitude: 30.7723,
     description: 'Final Apollo mission with geologist Harrison Schmitt (Dec 1972)',
     category: 'apollo',
+    kind: 'Landing site',
+    sourceUrl: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_sites.html',
+    sourceLabel: 'NASA NSSDCA · Lunar Module coordinates',
+    coordinateNote: 'Planetocentric Mean Earth / Polar Axis, DE421; LRO image-derived location.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'shackleton',
     name: 'Shackleton Crater (South Pole)',
     latitude: -89.67,
     longitude: 0.0,
-    description: 'Permanently shadowed region at South Pole, prime Artemis target for water ice',
+    description: 'Explore the south-pole crater region. This navigation point does not establish permanent shadow or landing suitability.',
     category: 'artemis',
+    kind: 'Landmark',
+    sourceUrl: 'https://trek.nasa.gov/moon/',
+    sourceLabel: 'NASA Moon Trek · geographic context',
+    coordinateNote: 'Approximate project navigation point, not a surveyed landing coordinate; frame precision not independently verified.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'change-4',
@@ -134,6 +160,11 @@ export const LUNAR_PRESETS: PresetLocation[] = [
     longitude: 177.589,
     description: 'First soft landing on the lunar Far Side (Jan 2019)',
     category: 'robotic',
+    kind: 'Landing site',
+    sourceUrl: 'https://www.lroc.im-ldi.com/images/1087',
+    sourceLabel: 'LROC · initial lander location',
+    coordinateNote: 'Published initial LROC estimate (±20 m). Not the later refined position; frame realization not specified here.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'copernicus',
@@ -142,6 +173,11 @@ export const LUNAR_PRESETS: PresetLocation[] = [
     longitude: -20.08,
     description: 'Prominent 93 km impact crater with central peaks and bright ray system',
     category: 'feature',
+    kind: 'Landmark',
+    sourceUrl: 'https://planetarynames.wr.usgs.gov/Feature/1296',
+    sourceLabel: 'USGS · planetary nomenclature',
+    coordinateNote: 'Approximate crater-centre navigation coordinates; not landing coordinates or a surveyed terrain point.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'tycho',
@@ -150,13 +186,23 @@ export const LUNAR_PRESETS: PresetLocation[] = [
     longitude: -11.36,
     description: 'Spectacular young impact crater with rays spanning over 1,500 km',
     category: 'feature',
+    kind: 'Landmark',
+    sourceUrl: 'https://planetarynames.wr.usgs.gov/Feature/6163',
+    sourceLabel: 'USGS · planetary nomenclature',
+    coordinateNote: 'Approximate project navigation coordinates; consult source for current crater centre and frame.',
+    reviewedOn: '2026-11-14',
   },
   {
     id: 'prime-meridian',
     name: 'Sinus Medii (0°N, 0°E)',
     latitude: 0.0,
     longitude: 0.0,
-    description: 'Center of lunar near side facing Earth directly',
+    description: 'Coordinate origin used for orientation. The actual sub-Earth point moves with libration.',
     category: 'feature',
+    kind: 'Reference point',
+    sourceUrl: 'https://trek.nasa.gov/moon/',
+    sourceLabel: 'NASA Moon Trek · coordinate reference',
+    coordinateNote: 'Defined 0° latitude / 0° longitude reference, not a measured landing location.',
+    reviewedOn: '2026-11-14',
   },
 ];

@@ -99,6 +99,8 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
   const { camera } = useThree();
   const groupRef = useRef<THREE.Group>(null);
   const activeTilesRef = useRef<Map<string, DynamicTile>>(new Map());
+  const pendingRef = useRef(new Set<string>());
+  const desiredRef = useRef(new Set<string>());
   const textureLoader = useMemo(() => new THREE.TextureLoader(), []);
 
   const lastCheckTime = useRef(0);
@@ -124,6 +126,7 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
     }
 
     if (targetZoom === 0) {
+      desiredRef.current.clear();
       activeTilesRef.current.forEach((tile) => {
         groupRef.current?.remove(tile.mesh);
         tile.mesh.geometry.dispose();
@@ -158,12 +161,14 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
         const key = `${targetZoom}_${r}_${c}`;
         neededKeys.add(key);
 
-        if (!activeTilesRef.current.has(key)) {
+        if (!activeTilesRef.current.has(key) && !pendingRef.current.has(key)) {
+          pendingRef.current.add(key);
           const tileUrl = getMoonTrekTileUrl(targetZoom, r, c);
 
           textureLoader.load(
             tileUrl,
             (loadedTex) => {
+              pendingRef.current.delete(key);
               loadedTex.colorSpace = THREE.SRGBColorSpace;
               loadedTex.minFilter = THREE.LinearMipmapLinearFilter;
               loadedTex.magFilter = THREE.LinearFilter;
@@ -182,7 +187,7 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
               const mesh = new THREE.Mesh(geom, mat);
               mesh.renderOrder = 10; // Guarantees rendering directly on top of base sphere
 
-              if (groupRef.current && neededKeys.has(key)) {
+              if (groupRef.current && desiredRef.current.has(key) && !activeTilesRef.current.has(key)) {
                 groupRef.current.add(mesh);
                 activeTilesRef.current.set(key, {
                   key,
@@ -199,12 +204,13 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
               }
             },
             undefined,
-            () => {}
+            () => { pendingRef.current.delete(key); }
           );
         }
       }
     }
 
+    desiredRef.current = neededKeys;
     // Clean up out-of-view tiles
     activeTilesRef.current.forEach((tile, key) => {
       if (!neededKeys.has(key)) {
@@ -231,6 +237,8 @@ export const DynamicTileOverlay: React.FC<DynamicTileOverlayProps> = ({ radius =
 
   useEffect(() => {
     return () => {
+      desiredRef.current.clear();
+      pendingRef.current.clear();
       activeTilesRef.current.forEach((tile) => {
         tile.mesh.geometry.dispose();
         if (tile.mesh.material instanceof THREE.Material) tile.mesh.material.dispose();

@@ -14,12 +14,13 @@ export const ViewSwitcher: React.FC = () => {
   ];
 
   return (
-    <div className="flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 shadow-md">
+    <div role="group" aria-label="Explorer view" className="view-switcher flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 shadow-md">
       {views.map((v) => {
         const isActive = activeView === v.id;
         return (
           <button
             key={v.id}
+            aria-pressed={isActive}
             onClick={() => setActiveView(v.id)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
               isActive

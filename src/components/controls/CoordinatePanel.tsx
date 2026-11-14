@@ -1,258 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
-import {
-  validateCoordinates,
-  formatCoordinates,
-  formatLatitude,
-  formatLongitude,
-  LUNAR_PRESETS,
-  lunarHaversineDistance,
-} from '../../utils/lunarCoordinates';
-import {
-  Crosshair,
-  MapPin,
-  RotateCcw,
-  Send,
-  AlertCircle,
-  CheckCircle2,
-  Bookmark,
-} from 'lucide-react';
+import { formatCoordinates, LUNAR_PRESETS, validateCoordinates } from '../../utils/lunarCoordinates';
+import { insideSite01 } from '../../utils/explorerCoverage';
 
-export const CoordinatePanel: React.FC = () => {
-  const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
-  const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
-  const selectedLocationSource = useLocationStore((state) => state.selectedLocationSource);
-  const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
-  const resetToDefault = useLocationStore((state) => state.resetToDefault);
-  const currentElevationData = useLocationStore((state) => state.currentElevationData);
-
-  // Local form state
-  const [latInput, setLatInput] = useState<string>(selectedLatitude.toFixed(4));
-  const [lonInput, setLonInput] = useState<string>(selectedLongitude.toFixed(4));
-  const [validationError, setValidationError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  // Sync inputs when external selection happens (map click, globe click, preset)
-  useEffect(() => {
-    setLatInput(selectedLatitude.toFixed(4));
-    setLonInput(selectedLongitude.toFixed(4));
-    setValidationError(null);
-  }, [selectedLatitude, selectedLongitude]);
-
-  const handleApply = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-
-    const lat = parseFloat(latInput.trim());
-    const lon = parseFloat(lonInput.trim());
-
-    const validation = validateCoordinates(lat, lon);
-    if (!validation.valid) {
-      setValidationError(validation.error || 'Invalid coordinates');
-      setSuccessMessage(null);
-      return;
-    }
-
-    setValidationError(null);
-    setSelectedCoordinates(lat, lon, 'manual');
-    setSuccessMessage('Coordinates applied successfully');
-    setTimeout(() => setSuccessMessage(null), 2500);
-  };
-
-  const handleSelectPreset = (presetId: string) => {
-    const preset = LUNAR_PRESETS.find((p) => p.id === presetId);
-    if (!preset) return;
-
-    setSelectedCoordinates(preset.latitude, preset.longitude, 'preset');
-    setLatInput(preset.latitude.toFixed(4));
-    setLonInput(preset.longitude.toFixed(4));
-    setValidationError(null);
-  };
-
-  // Distance from Sub-Earth point (0, 0)
-  const distFromCenter = lunarHaversineDistance(
-    { latitude: 0, longitude: 0 },
-    { latitude: selectedLatitude, longitude: selectedLongitude }
-  );
-
-  return (
-    <div className="flex flex-col gap-4 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-xl">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2">
-          <Crosshair className="w-4 h-4 text-emerald-400" />
-          <h2 className="text-xs font-bold tracking-wider uppercase text-slate-200 font-mono">
-            COORDINATE CONTROLS
-          </h2>
-        </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400">
-          <span>SOURCE:</span>
-          <span className="text-emerald-400 uppercase font-semibold">
-            {selectedLocationSource}
-          </span>
-        </div>
+export function CoordinatePanel() {
+  const { selectedLatitude: latitude, selectedLongitude: longitude, setSelectedCoordinates, resetToDefault, setAppScreen } = useLocationStore();
+  const [lat, setLat] = useState(String(latitude));
+  const [lon, setLon] = useState(String(longitude));
+  const [error, setError] = useState('');
+  const [query, setQuery] = useState('');
+  const [kind, setKind] = useState('All places');
+  const [notice, setNotice] = useState('');
+  useEffect(() => { setLat(String(latitude)); setLon(String(longitude)); setError(''); setNotice(''); }, [latitude, longitude]);
+  const selected = LUNAR_PRESETS.find(p => Math.abs(p.latitude - latitude) < 1e-6 && Math.abs(p.longitude - longitude) < 1e-6);
+  const places = LUNAR_PRESETS.filter(p => (kind === 'All places' || p.kind === kind) && (p.name + ' ' + p.description + ' ' + p.category).toLowerCase().includes(query.trim().toLowerCase()));
+  const covered = insideSite01(latitude, longitude);
+  return <section className="explorer-panel" aria-labelledby="location-heading">
+    <div><p className="eyebrow">YOUR STARTING POINT</p><h2 id="location-heading">Choose a lunar location</h2><p className="help-text">Pick a place, enter coordinates, or click the map or globe. Both views share one selection.</p></div>
+    <form noValidate onSubmit={e => {
+      e.preventDefault();
+      const result = validateCoordinates(lat.trim() === '' ? NaN : Number(lat), lon.trim() === '' ? NaN : Number(lon));
+      if (!result.valid) { setError(result.error!); return; }
+      setSelectedCoordinates(Number(lat), Number(lon), 'manual'); setError('');
+    }}>
+      <div className="coordinate-fields">
+        <label htmlFor="latitude">Latitude <span>−90 to +90°</span><input id="latitude" type="number" step="any" inputMode="decimal" value={lat} aria-describedby="coordinate-help coordinate-error" aria-invalid={!!error} onChange={e => { setLat(e.target.value); setError(''); }} /></label>
+        <label htmlFor="longitude">Longitude <span>−180 to +180°</span><input id="longitude" type="number" step="any" inputMode="decimal" value={lon} aria-describedby="coordinate-help coordinate-error" aria-invalid={!!error} onChange={e => { setLon(e.target.value); setError(''); }} /></label>
       </div>
-
-      {/* Manual Input Form */}
-      <form onSubmit={handleApply} className="flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-[11px] font-mono text-slate-400 mb-1 flex items-center justify-between">
-              <span>LATITUDE (°N/S)</span>
-              <span className="text-[10px] text-slate-500">[-90, +90]</span>
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={latInput}
-              onChange={(e) => {
-                setLatInput(e.target.value);
-                setValidationError(null);
-              }}
-              className="w-full bg-[#070b12] border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 placeholder-slate-600 outline-none transition-colors"
-              placeholder="e.g. 0.6741"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[11px] font-mono text-slate-400 mb-1 flex items-center justify-between">
-              <span>LONGITUDE (°E/W)</span>
-              <span className="text-[10px] text-slate-500">[-180, +180]</span>
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={lonInput}
-              onChange={(e) => {
-                setLonInput(e.target.value);
-                setValidationError(null);
-              }}
-              className="w-full bg-[#070b12] border border-slate-700 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 placeholder-slate-600 outline-none transition-colors"
-              placeholder="e.g. 23.4730"
-            />
-          </div>
-        </div>
-
-        {/* Validation Error Message */}
-        {validationError && (
-          <div className="flex items-center gap-1.5 text-xs text-red-400 font-mono bg-red-950/40 border border-red-800/60 p-2 rounded-lg">
-            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-            <span>{validationError}</span>
-          </div>
-        )}
-
-        {/* Success Feedback */}
-        {successMessage && (
-          <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono bg-emerald-950/40 border border-emerald-800/60 p-2 rounded-lg">
-            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-            <span>{successMessage}</span>
-          </div>
-        )}
-
-        {/* Form Action Buttons */}
-        <div className="flex items-center gap-2 pt-1">
-          <button
-            type="submit"
-            className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-semibold px-3 py-2 rounded-lg text-xs font-mono transition-all shadow-md hover:shadow-emerald-900/40"
-          >
-            <Send className="w-3.5 h-3.5" />
-            <span>APPLY COORDINATES</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={resetToDefault}
-            title="Reset to Apollo 11 default coordinates"
-            className="flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-xs font-mono transition-colors border border-slate-700"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>RESET</span>
-          </button>
-        </div>
-      </form>
-
-      {/* Quick Presets / Landing Sites */}
-      <div className="pt-2 border-t border-slate-800">
-        <label className="block text-[11px] font-mono text-slate-400 mb-2 flex items-center gap-1.5">
-          <Bookmark className="w-3.5 h-3.5 text-emerald-400" />
-          <span>LUNAR TARGET PRESETS</span>
-        </label>
-        <div className="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-1">
-          {LUNAR_PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => handleSelectPreset(preset.id)}
-              className="flex flex-col text-left p-2 rounded-lg bg-[#070b12] hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 transition-colors group"
-            >
-              <span className="text-[11px] font-semibold text-slate-300 group-hover:text-emerald-400 truncate">
-                {preset.name}
-              </span>
-              <span className="text-[10px] font-mono text-slate-500">
-                {formatLatitude(preset.latitude, 2)}, {formatLongitude(preset.longitude, 2)}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Target Telemetry Summary Card */}
-      <div className="bg-[#070b12] border border-slate-800 rounded-lg p-3 text-xs font-mono">
-        <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800/80">
-          <span className="flex items-center gap-1.5 text-[11px]">
-            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-            TARGET TELEMETRY
-          </span>
-          <span className="text-[10px] text-slate-500">MOON MEAN R = 1,737.4 KM</span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 pt-2.5">
-          <div>
-            <div className="text-[10px] text-slate-500">FORMATTED</div>
-            <div className="text-emerald-400 font-semibold text-[11px] truncate">
-              {formatCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude }, 4)}
-            </div>
-          </div>
-          <div>
-            <div className="text-[10px] text-slate-500">DECIMAL (LAT, LON)</div>
-            <div className="text-slate-300 text-[11px] truncate">
-              {selectedLatitude.toFixed(5)}, {selectedLongitude.toFixed(5)}
-            </div>
-          </div>
-          <div>
-            <div className="text-[10px] text-slate-500">DISTANCE TO SUB-EARTH</div>
-            <div className="text-slate-300 text-[11px]">
-              {distFromCenter.toFixed(1)} km
-            </div>
-          </div>
-          <div>
-            <div className="text-[10px] text-slate-500">HEMISPHERE</div>
-            <div className="text-slate-300 text-[11px]">
-              {selectedLongitude >= -90 && selectedLongitude <= 90 ? 'Near Side' : 'Far Side'} /{' '}
-              {selectedLatitude >= 0 ? 'North' : 'South'}
-            </div>
-          </div>
-          {currentElevationData?.in_bounds && (
-            <>
-              <div>
-                <div className="text-[10px] text-slate-500">LOLA ELEVATION</div>
-                <div className="text-emerald-400 font-bold text-[11px]">
-                  {currentElevationData.elevation_m !== null && currentElevationData.elevation_m !== undefined
-                    ? `${currentElevationData.elevation_m > 0 ? '+' : ''}${currentElevationData.elevation_m.toFixed(1)} m`
-                    : 'N/A'}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] text-slate-500">LOCAL SLOPE</div>
-                <div className="text-slate-200 font-bold text-[11px]">
-                  {currentElevationData.slope_deg !== null && currentElevationData.slope_deg !== undefined
-                    ? `${currentElevationData.slope_deg.toFixed(1)}°`
-                    : 'N/A'}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      <p id="coordinate-help" className="help-text">Decimal degrees: north/east positive; south/west negative. Latitude is planetocentric.</p>
+      <p id="coordinate-error" role="alert" className="error-text">{error}</p>
+      <div className="action-row"><button className="primary-button" type="submit">Apply coordinates</button><button className="secondary-button" type="button" onClick={() => { resetToDefault(); setLat(String(LUNAR_PRESETS[1].latitude)); setLon(String(LUNAR_PRESETS[1].longitude)); setError(''); }}>Reset</button></div>
+    </form>
+    <div className="selection-card" aria-live="polite" aria-atomic="true">
+      <p className="eyebrow">SELECTED LOCATION</p><h3>{selected?.name ?? 'Custom location'}</h3>
+      <p className="selected-coordinates" data-testid="selected-coordinates">{formatCoordinates({ latitude, longitude }, 5)}</p>
+      <p className="help-text">{selected?.description ?? 'Custom coordinates use the explorer’s lunar reference sphere. Confirm the source frame before precise terrain analysis.'}</p>
+      {selected && <details><summary>Coordinate source and accuracy</summary><p className="help-text">{selected.kind} · {selected.coordinateNote}</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">{selected.sourceLabel} ↗</a><p className="help-text">Catalogue reviewed {selected.reviewedOn}. Review date does not imply a new survey.</p></details>}
+      <button type="button" className="text-button" onClick={async () => {
+        try { await navigator.clipboard.writeText(latitude + ', ' + longitude); setNotice('Coordinates copied.'); }
+        catch { setNotice('Copy unavailable. Select the coordinates above to copy manually.'); }
+      }}>Copy decimal coordinates</button><p role="status" className="help-text">{notice}</p>
     </div>
-  );
-};
+    <div className="coverage-card" data-testid="coverage">
+      <h3>{covered ? 'Inside Site01 terrain footprint' : 'Imagery exploration only here'}</h3>
+      <p className="help-text">{covered ? 'The local LOLA dataset covers this footprint. Pixel validity, backend availability and complete skyline coverage must be checked in Terrain Explorer.' : 'Global imagery is available; this location is outside the local Site01 terrain footprint. No elevation or terrain visibility is inferred.'}</p>
+      <p className="help-text">Map/globe imagery is not elevation. The globe is a reference sphere; its lighting is illustrative.</p>
+      {covered && <button type="button" className="secondary-button" onClick={() => setAppScreen('terrain-explorer')}>Inspect terrain data</button>}
+    </div>
+    <section aria-labelledby="catalogue-heading"><h3 id="catalogue-heading">Explore the catalogue</h3>
+      <label htmlFor="site-search" className="field-label">Search places</label><input id="site-search" type="search" placeholder="Try Apollo or south pole" value={query} onChange={e => setQuery(e.target.value)} />
+      <label htmlFor="site-kind" className="field-label">Place type</label><select id="site-kind" value={kind} onChange={e => setKind(e.target.value)}>{['All places', 'Landing site', 'Study region', 'Landmark', 'Reference point'].map(k => <option key={k}>{k}</option>)}</select>
+      <p role="status" className="help-text">{places.length} {places.length === 1 ? 'place' : 'places'} found</p>
+      <div className="site-list">{places.map(place => <button type="button" key={place.id} aria-pressed={selected?.id === place.id} onClick={() => setSelectedCoordinates(place.latitude, place.longitude, 'preset')}><span>{place.name}</span><small>{place.kind} · {formatCoordinates(place, 2)}</small></button>)}</div>
+      {!places.length && <button type="button" className="text-button" onClick={() => { setQuery(''); setKind('All places'); }}>Clear search and filters</button>}
+    </section>
+    <details className="learning-card"><summary>New to lunar exploration?</summary><ol><li>Start with a named site or enter latitude and longitude.</li><li>Use 2D Map for geography, 3D Globe for orientation, or Split View for both.</li><li>Try Connecting Ridge to locate the available terrain footprint.</li></ol>
+      <p>Azimuth is direction around the horizon: north 0°, east 90°. Elevation is the angle above the local horizontal plane.</p>
+      <p>Polar ridges can block a low Sun or Earth. The real skyline requires terrain data. Seeing the Sun or Earth does not by itself guarantee electrical power or a radio link.</p>
+      <p>Use Tab to reach controls and Enter to select. Location selection is available through the form and catalogue without a mouse or 3D controls.</p>
+    </details>
+  </section>;
+}

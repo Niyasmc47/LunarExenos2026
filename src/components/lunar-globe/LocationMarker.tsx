@@ -33,6 +33,7 @@ export const LocationMarker: React.FC<LocationMarkerProps> = ({
 
   // Subtle pulsing animation
   useFrame(({ clock }) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const t = clock.getElapsedTime();
     if (ringRef.current) {
       const s = 1.0 + 0.15 * Math.sin(t * 3);

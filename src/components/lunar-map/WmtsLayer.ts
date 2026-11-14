@@ -44,7 +44,7 @@ addEquivalentProjections([
  */
 export function createMoonTrekLayer(
   onLoadingChange: (loading: boolean) => void,
-  _onError: (error: string | null) => void,
+  onError: (error: string | null) => void,
   onCapabilitiesActive: (active: boolean) => void
 ): TileLayer<WMTS> {
   const initialOptions = createDirectWMTSOptions();
@@ -60,6 +60,7 @@ export function createMoonTrekLayer(
     // Safety fallback: clear loading state after 6s in case network drops a tile
     loadingTimeout = setTimeout(() => {
       onLoadingChange(false);
+      onError('Imagery is taking longer than expected. Check your connection or retry.');
     }, 6000);
   });
 
@@ -72,6 +73,7 @@ export function createMoonTrekLayer(
   });
 
   source.on('tileloaderror', () => {
+    onError('Some NASA imagery tiles could not load. Location controls remain available.');
     pendingTiles = Math.max(0, pendingTiles - 1);
     if (pendingTiles === 0) {
       if (loadingTimeout) clearTimeout(loadingTimeout);

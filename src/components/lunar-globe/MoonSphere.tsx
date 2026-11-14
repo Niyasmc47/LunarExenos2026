@@ -3,11 +3,9 @@ import * as THREE from 'three';
 import { ThreeEvent } from '@react-three/fiber';
 import { createMoonTrekCanvasTexture } from './MoonTexture';
 import { LocationMarker } from './LocationMarker';
-import { TerrainPatch } from './TerrainPatch';
 import { DynamicTileOverlay } from './DynamicTileOverlay';
 import { useLocationStore } from '../../stores/locationStore';
 import { spherePositionToLunar } from '../../utils/sphereCoordinates';
-import { fetchElevationPoint } from '../../services/terrainApi';
 
 interface MoonSphereProps {
   radius?: number;
@@ -19,7 +17,6 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
   const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
-  const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
   const setGlobeLoading = useLocationStore((state) => state.setGlobeLoading);
   const setGlobeError = useLocationStore((state) => state.setGlobeError);
 
@@ -28,7 +25,7 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
     setGlobeError(null);
 
     const { texture: canvasTexture, dispose } = createMoonTrekCanvasTexture((progress) => {
-      if (progress.loaded >= 8) {
+      if (progress.stage === 1 && progress.isComplete) {
         // Stage 1 (8 tiles) is sufficient for initial interaction
         setGlobeLoading(false);
       }
@@ -47,6 +44,7 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     // Stop propagation so only the moon sphere responds
     e.stopPropagation();
+    if (e.delta > 5) return;
 
     if (!e.point) return;
 
@@ -54,9 +52,6 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
     const coords = spherePositionToLunar(e.point);
     setSelectedCoordinates(coords.latitude, coords.longitude, 'globe');
 
-    fetchElevationPoint(coords.latitude, coords.longitude).then((pt) => {
-      if (pt) setCurrentElevationData(pt);
-    });
   };
 
   return (
@@ -84,9 +79,6 @@ export const MoonSphere: React.FC<MoonSphereProps> = ({ radius = 2.0 }) => {
           metalness={0.04}
         />
       </mesh>
-
-      {/* Real NASA LOLA 3D Terrain Patch for Site 01 (Connecting Ridge) */}
-      <TerrainPatch />
 
       {/* Dynamic WMTS Tile Streaming Overlay - loads higher zoom levels as camera gets closer */}
       <DynamicTileOverlay radius={radius} />
