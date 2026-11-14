@@ -42,19 +42,23 @@ export const SensitivityAnalysisView: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
-                Leading Alternative (Current)
+                Leading Eligible Alternative
               </span>
               <span className="text-base font-mono font-bold text-white block">
-                {alternatives.find((a) => a.id === sens.current_leader_id)?.name || sens.current_leader_id}
+                {sens.has_eligible_leader && sens.current_leader_id
+                  ? alternatives.find((a) => a.id === sens.current_leader_id)?.name || sens.current_leader_id
+                  : 'None (No Complete Eligible Candidate)'}
               </span>
               <span className="text-[11px] font-mono text-purple-400 block">
-                Stability: {sens.leader_stability[sens.current_leader_id] || 0}% across priority suites
+                {sens.has_eligible_leader && sens.current_leader_id
+                  ? `Stability: ${sens.leader_stability[sens.current_leader_id] || 0}% across priority suites`
+                  : 'Requires 100% hard constraint pass & complete score'}
               </span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
-                Robust Alternatives (Top-2 in ≥ 60%)
+                Robust Eligible Alternatives (Top-2 in ≥ 60%)
               </span>
               <span className="text-base font-mono font-bold text-emerald-400 block">
                 {sens.robust_alternatives.length > 0
@@ -73,10 +77,10 @@ export const SensitivityAnalysisView: React.FC = () => {
                 Tested Scenarios
               </span>
               <span className="text-base font-mono font-bold text-slate-200 block">
-                {sens.tested_scenarios.length} Priority Suites
+                {sens.tested_scenarios.filter((s) => s.is_available).length} of {sens.tested_scenarios.length} Available
               </span>
               <span className="text-[10px] font-mono text-slate-500 block">
-                Deterministic multi-criteria test matrix
+                70% priority / 30% remainder allocation
               </span>
             </div>
           </div>
@@ -100,19 +104,37 @@ export const SensitivityAnalysisView: React.FC = () => {
                 {sens.tested_scenarios.map((scen) => (
                   <tr key={scen.scenario_id} className="hover:bg-slate-800/30">
                     <td className="py-2.5 px-3 font-semibold text-white">
-                      {scen.scenario_name}
+                      <div>{scen.scenario_name}</div>
+                      {!scen.is_available && (
+                        <span className="text-[10px] text-amber-400 font-normal">
+                          (Unavailable: {scen.warning})
+                        </span>
+                      )}
                     </td>
                     <td className="py-2.5 px-3 text-slate-400 text-[11px]">
                       {scen.scenario_description}
                     </td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="inline-block px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/40 text-purple-300 font-bold text-[10px]">
-                        {scen.leading_alternative_name}
+                      <span className={`inline-block px-2 py-0.5 rounded font-bold text-[10px] ${
+                        scen.leading_alternative_id
+                          ? 'bg-purple-500/15 border border-purple-500/40 text-purple-300'
+                          : 'bg-slate-800 border border-slate-700 text-slate-400'
+                      }`}>
+                        {scen.leading_alternative_name || 'No eligible leader'}
                       </span>
                     </td>
                     {alternatives.map((alt) => {
+                      if (!scen.is_available) {
+                        return (
+                          <td key={alt.id} className="py-2.5 px-3 text-right text-slate-600">
+                            N/A
+                          </td>
+                        );
+                      }
+
                       const score = scen.scores[alt.id] ?? 0;
-                      const rank = scen.rankings[alt.id] ?? '-';
+                      const eligibleRank = scen.eligible_rankings?.[alt.id];
+                      const ineligReason = scen.ineligibility_reasons?.[alt.id];
                       const isLeader = scen.leading_alternative_id === alt.id;
 
                       return (
@@ -120,9 +142,18 @@ export const SensitivityAnalysisView: React.FC = () => {
                           <span className={isLeader ? 'text-emerald-400 font-bold' : 'text-slate-300'}>
                             {score.toFixed(1)}
                           </span>
-                          <span className="text-[10px] text-slate-500 ml-1">
-                            (#{rank})
-                          </span>
+                          {eligibleRank !== undefined && eligibleRank !== null ? (
+                            <span className="text-[10px] text-emerald-400 ml-1 font-semibold">
+                              (#{eligibleRank})
+                            </span>
+                          ) : (
+                            <span
+                              className="text-[9px] text-rose-400 ml-1 cursor-help"
+                              title={ineligReason || 'Ineligible for ranking'}
+                            >
+                              (Ineligible)
+                            </span>
+                          )}
                         </td>
                       );
                     })}

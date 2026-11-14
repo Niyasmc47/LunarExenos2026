@@ -134,6 +134,12 @@ class AlternativeScoreBreakdown(BaseModel):
     composite_score: float = Field(0.0, description="Normalized score on 0 to 100 scale")
     score_status: str = Field("COMPLETE", description="'COMPLETE' (all enabled valid) or 'INCOMPLETE' (missing measurements)")
     available_weight_fraction: float = Field(1.0, description="Fraction of configured weight evaluated (1.0 = 100%)")
+    ranking_eligibility: str = Field(
+        "ELIGIBLE",
+        description="'ELIGIBLE', 'INELIGIBLE_NON_COMPLIANT', 'INELIGIBLE_INDETERMINATE', or 'INELIGIBLE_INCOMPLETE_SCORE'",
+    )
+    eligible_rank: Optional[int] = Field(None, description="Rank among compliant, complete alternatives (1 = highest)")
+    ineligibility_reason: Optional[str] = Field(None, description="Explanation why alternative is excluded from ranking")
     normalized_metrics: List[AlternativeNormalizedMetric] = Field(default_factory=list)
     explanation: str
     limitations: List[str] = Field(default_factory=list)
@@ -144,6 +150,11 @@ class AlternativeParetoResult(BaseModel):
     status: ParetoDominanceStatus
     dominated_by: List[str] = Field(default_factory=list, description="IDs of alternatives that dominate this alternative")
     dominates: List[str] = Field(default_factory=list, description="IDs of alternatives dominated by this alternative")
+    dominating_criteria_by_alternative: Dict[str, List[str]] = Field(
+        default_factory=dict,
+        description="Explains which criteria established dominance for each dominating alternative",
+    )
+    is_fully_comparable: bool = Field(True, description="Whether alternative has all active criteria measured")
     explanation: str
 
 
@@ -151,16 +162,24 @@ class SensitivityScenarioResult(BaseModel):
     scenario_id: str
     scenario_name: str
     scenario_description: str
+    is_available: bool = Field(True, description="Whether scenario had required criteria enabled")
+    warning: Optional[str] = None
     weights: Dict[str, float]
     scores: Dict[str, float]               # alternative_id -> composite score
-    rankings: Dict[str, int]              # alternative_id -> rank (1 = highest score)
-    leading_alternative_id: str
-    leading_alternative_name: str
+    rankings: Dict[str, int]              # raw score order for reference
+    eligible_rankings: Dict[str, Optional[int]] = Field(
+        default_factory=dict,
+        description="Official rank among eligible (compliant + complete) alternatives only",
+    )
+    ineligibility_reasons: Dict[str, str] = Field(default_factory=dict)
+    leading_alternative_id: Optional[str] = Field(None, description="Leading eligible alternative ID (None if no eligible candidates)")
+    leading_alternative_name: Optional[str] = Field(None, description="Leading eligible alternative name")
 
 
 class SensitivityAnalysisResponse(BaseModel):
     study_id: str
-    current_leader_id: str
+    current_leader_id: Optional[str] = None
+    has_eligible_leader: bool = Field(False, description="True if an eligible compliant complete leader exists")
     tested_scenarios: List[SensitivityScenarioResult]
     leader_stability: Dict[str, float] = Field(default_factory=dict, description="Percentage of scenarios where alternative ranked #1")
     robust_alternatives: List[str] = Field(default_factory=list, description="Alternatives that remain ranked top-2 in >= 60% of scenarios")

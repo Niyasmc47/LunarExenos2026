@@ -5,7 +5,7 @@ export interface LunarCoordinates {
 
 export type LocationSource = 'map' | 'globe' | 'manual' | 'preset' | 'initial' | 'terrain';
 
-export type AppScreen = 'lunar-explorer' | 'terrain-explorer' | 'mission-comparison' | 'mission-requirements' | 'candidate-screening' | 'window-planner' | 'terrain-assessment' | 'trade-off-analysis';
+export type AppScreen = 'lunar-explorer' | 'terrain-explorer' | 'mission-comparison' | 'mission-requirements' | 'candidate-screening' | 'window-planner' | 'terrain-assessment' | 'trade-off-analysis' | 'mission-reports';
 
 export type ActiveView = 'split' | '3d' | '2d';
 

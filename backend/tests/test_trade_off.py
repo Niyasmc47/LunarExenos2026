@@ -154,9 +154,9 @@ def test_normalization_methods_and_edge_cases():
     val_in_target, _, _ = svc.normalize_single_metric(-2500.0, crit_target)
     assert val_in_target == 1.0
 
+    # Binary out-of-range returns 0.0
     val_below_target, _, _ = svc.normalize_single_metric(-3500.0, crit_target)
-    # falloff: 1 - (-3000 - -3500) / (-3000 - -4000) = 1 - 500/1000 = 0.5
-    assert val_below_target == 0.5
+    assert val_below_target == 0.0
 
     # 4. Constant Range (R_max == R_min)
     crit_const = PreferenceCriterionConfig(
@@ -173,7 +173,7 @@ def test_normalization_methods_and_edge_cases():
     val_c_mismatch, _, _ = svc.normalize_single_metric(40.0, crit_const)
     assert val_c_mismatch == 0.0
 
-    # 5. Invalid Range (R_max < R_min)
+    # 5. Invalid Range (R_max < R_min) raises ValueError
     crit_invalid = PreferenceCriterionConfig(
         id="crit-inv",
         name="Invalid Bound",
@@ -182,8 +182,8 @@ def test_normalization_methods_and_edge_cases():
         reference_min=100.0,
         reference_max=50.0,
     )
-    val_inv, _, _ = svc.normalize_single_metric(75.0, crit_invalid)
-    assert val_inv is None
+    with pytest.raises(ValueError, match="reference_max"):
+        svc.normalize_single_metric(75.0, crit_invalid)
 
 
 def test_weight_validation_and_normalization():
@@ -484,3 +484,289 @@ def test_concurrent_trade_off_execution(trade_off_fixtures):
     for status_code, data in results:
         assert status_code == 201
         assert "study" in data
+
+
+def test_pareto_pairwise_dominance_audit_cases(trade_off_fixtures):
+    """
+    Comprehensive audit tests for Pareto dominance calculations:
+    1. Complete alternatives with strict dominance.
+    2. Equal alternatives (tied on all metrics, neither dominates).
+    3. One missing criterion (incomparable, prevents dominance).
+    4. Missing criteria that prevent dominance in both directions.
+    5. Dominance explanation itemizes specific dominating criteria.
+    6. Mixed compliant and non-compliant alternatives (Pareto status remains separate).
+    """
+    svc = trade_off_service
+    profile = trade_off_fixtures["profile"]
+    from app.schemas.trade_off import MissionAlternativeRecord
+
+    model = PreferenceModelConfig(
+        criteria=[
+            PreferenceCriterionConfig(
+                id="c-sun", name="Sun", metric_key="m_sun", unit="h",
+                direction=PreferenceDirection.HIGHER_IS_BETTER, weight=1.0,
+                reference_min=0.0, reference_max=100.0,
+            ),
+            PreferenceCriterionConfig(
+                id="c-slope", name="Slope", metric_key="m_slope", unit="deg",
+                direction=PreferenceDirection.LOWER_IS_BETTER, weight=1.0,
+                reference_min=0.0, reference_max=20.0,
+            ),
+        ]
+    )
+
+    def make_alt(aid: str, m_sun, m_slope, hc_status=OverallCandidateStatus.COMPLIANT):
+        return MissionAlternativeRecord(
+            id=aid, name=f"Alt {aid}", candidate_id="scen-1", candidate_name="Site 1", site_id="s1",
+            latitude=-89.5, longitude=0.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+            duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+            hard_constraint_status=hc_status,
+            extracted_metrics={"m_sun": m_sun, "m_slope": m_slope},
+        )
+
+    # Case 1: Strict Dominance
+    # Alt 1: Sun 80h (0.8), Slope 5° (0.75)
+    # Alt 2: Sun 60h (0.6), Slope 10° (0.50) -> Alt 1 strictly dominates Alt 2
+    alt1 = make_alt("alt-1", 80.0, 5.0)
+    alt2 = make_alt("alt-2", 60.0, 10.0)
+
+    scores1, pareto1 = svc._execute_analysis([alt1, alt2], model)
+    assert pareto1["alt-1"].status == ParetoDominanceStatus.PARETO_OPTIMAL
+    assert "alt-2" in pareto1["alt-1"].dominates
+    assert pareto1["alt-2"].status == ParetoDominanceStatus.DOMINATED
+    assert "alt-1" in pareto1["alt-2"].dominated_by
+    # Explanation includes dominating criteria
+    assert "alt-1" in pareto1["alt-2"].dominating_criteria_by_alternative
+    assert len(pareto1["alt-2"].dominating_criteria_by_alternative["alt-1"]) == 2
+
+    # Case 2: Equal Alternatives (Tied on all criteria)
+    # Alt 3 and Alt 4 have identical values: neither must dominate the other
+    alt3 = make_alt("alt-3", 75.0, 8.0)
+    alt4 = make_alt("alt-4", 75.0, 8.0)
+    scores2, pareto2 = svc._execute_analysis([alt3, alt4], model)
+    assert pareto2["alt-3"].status == ParetoDominanceStatus.PARETO_OPTIMAL
+    assert pareto2["alt-4"].status == ParetoDominanceStatus.PARETO_OPTIMAL
+    assert len(pareto2["alt-3"].dominated_by) == 0
+    assert len(pareto2["alt-4"].dominated_by) == 0
+    assert "Tied on all enabled criteria" in pareto2["alt-3"].explanation
+    assert "Tied on all enabled criteria" in pareto2["alt-4"].explanation
+
+    # Case 3: Missing Criterion (Incomparable)
+    # Alt 5 has missing slope -> must be classified INCOMPARABLE_INCOMPLETE
+    alt5 = make_alt("alt-5", 90.0, None)
+    scores3, pareto3 = svc._execute_analysis([alt1, alt5], model)
+    assert pareto3["alt-5"].status == ParetoDominanceStatus.INCOMPARABLE_INCOMPLETE
+    assert not pareto3["alt-5"].is_fully_comparable
+    # Alt 1 cannot dominate Alt 5 because Alt 5's slope is unmeasured
+    assert "alt-5" not in pareto3["alt-1"].dominates
+
+    # Case 4: Mixed Compliant and Non-Compliant
+    # Alt 6 has superior criteria values but failed hard constraints (NON_COMPLIANT)
+    alt6 = make_alt("alt-6", 95.0, 2.0, hc_status=OverallCandidateStatus.NON_COMPLIANT)
+    scores4, pareto4 = svc._execute_analysis([alt1, alt6], model)
+    # Pareto status is evaluated strictly in the preference criteria space
+    assert pareto4["alt-6"].status == ParetoDominanceStatus.PARETO_OPTIMAL
+    # But ranking eligibility must exclude alt-6
+    assert scores4["alt-6"].ranking_eligibility == "INELIGIBLE_NON_COMPLIANT"
+    assert scores4["alt-6"].eligible_rank is None
+    # While alt-1 is eligible
+    assert scores4["alt-1"].ranking_eligibility == "ELIGIBLE"
+    assert scores4["alt-1"].eligible_rank == 1
+
+
+def test_ranking_eligibility_and_non_compliant_exclusion(trade_off_fixtures):
+    """
+    Verifies that:
+    - NON_COMPLIANT alternatives are strictly excluded from ranking.
+    - INDETERMINATE alternatives are strictly excluded from ranking.
+    - INCOMPLETE scores are strictly excluded from ranking against complete scores.
+    - If no eligible candidate exists, system reports no eligible rankings.
+    """
+    svc = trade_off_service
+    profile = trade_off_fixtures["profile"]
+    from app.schemas.trade_off import MissionAlternativeRecord
+
+    model = PreferenceModelConfig(
+        criteria=[
+            PreferenceCriterionConfig(
+                id="c-sun", name="Sun", metric_key="m_sun", unit="h",
+                direction=PreferenceDirection.HIGHER_IS_BETTER, weight=1.0,
+                reference_min=0.0, reference_max=100.0,
+            ),
+        ]
+    )
+
+    # 1. Non-compliant alternative
+    alt_non_comp = MissionAlternativeRecord(
+        id="alt-nc", name="Non-Compliant Alt", candidate_id="s1", candidate_name="Site 1", site_id="s1",
+        latitude=-89.5, longitude=0.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+        duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+        hard_constraint_status=OverallCandidateStatus.NON_COMPLIANT,
+        hard_constraints_failed=1,
+        extracted_metrics={"m_sun": 99.0},  # Extremely high score!
+    )
+
+    # 2. Indeterminate alternative
+    alt_indet = MissionAlternativeRecord(
+        id="alt-indet", name="Indeterminate Alt", candidate_id="s2", candidate_name="Site 2", site_id="s1",
+        latitude=-89.5, longitude=10.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+        duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+        hard_constraint_status=OverallCandidateStatus.INDETERMINATE,
+        extracted_metrics={"m_sun": 80.0},
+    )
+
+    # 3. Complete compliant alternative
+    alt_comp = MissionAlternativeRecord(
+        id="alt-comp", name="Compliant Alt", candidate_id="s3", candidate_name="Site 3", site_id="s1",
+        latitude=-89.5, longitude=20.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+        duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+        hard_constraint_status=OverallCandidateStatus.COMPLIANT,
+        extracted_metrics={"m_sun": 60.0},  # Lower score, but COMPLIANT
+    )
+
+    scores, _ = svc._execute_analysis([alt_non_comp, alt_indet, alt_comp], model)
+
+    assert scores["alt-nc"].ranking_eligibility == "INELIGIBLE_NON_COMPLIANT"
+    assert scores["alt-nc"].eligible_rank is None
+
+    assert scores["alt-indet"].ranking_eligibility == "INELIGIBLE_INDETERMINATE"
+    assert scores["alt-indet"].eligible_rank is None
+
+    # Only alt-comp is eligible and gets Rank #1
+    assert scores["alt-comp"].ranking_eligibility == "ELIGIBLE"
+    assert scores["alt-comp"].eligible_rank == 1
+
+    # When only ineligibles exist:
+    scores_only_inelig, _ = svc._execute_analysis([alt_non_comp, alt_indet], model)
+    assert all(s.eligible_rank is None for s in scores_only_inelig.values())
+
+
+def test_normalization_validation_rules_and_target_range():
+    """
+    Verifies normalization validation rules:
+    - Min-max: reject R_max < R_min with ValueError
+    - Min-max: reject non-finite bounds (NaN, Inf)
+    - Min-max: handle R_max == R_min constant range safely
+    - Target-range: validate T_min <= T_max, reject T_max < T_min
+    - Target-range: exact boundaries return 1.0, outside returns 0.0
+    """
+    svc = trade_off_service
+
+    # Inverted R_max < R_min
+    crit_inverted = PreferenceCriterionConfig(
+        id="c-inv", name="Inv", metric_key="k", unit="m",
+        reference_min=50.0, reference_max=10.0,
+    )
+    with pytest.raises(ValueError, match="reference_max"):
+        svc.normalize_single_metric(25.0, crit_inverted)
+
+    with pytest.raises(ValueError, match="reference_max"):
+        svc._validate_preference_model(PreferenceModelConfig(criteria=[crit_inverted]))
+
+    # Target range validation
+    crit_target_valid = PreferenceCriterionConfig(
+        id="c-tgt", name="Target", metric_key="k", unit="m",
+        direction=PreferenceDirection.TARGET_RANGE,
+        normalization_method=NormalizationMethod.TARGET_RANGE,
+        target_min=10.0, target_max=20.0,
+    )
+    # Inside
+    val_in, _, _ = svc.normalize_single_metric(15.0, crit_target_valid)
+    assert val_in == 1.0
+    # Exact boundary T_min
+    val_bmin, _, _ = svc.normalize_single_metric(10.0, crit_target_valid)
+    assert val_bmin == 1.0
+    # Exact boundary T_max
+    val_bmax, _, _ = svc.normalize_single_metric(20.0, crit_target_valid)
+    assert val_bmax == 1.0
+    # Immediately outside (< T_min)
+    val_below, _, _ = svc.normalize_single_metric(9.99, crit_target_valid)
+    assert val_below == 0.0
+    # Immediately outside (> T_max)
+    val_above, _, _ = svc.normalize_single_metric(20.01, crit_target_valid)
+    assert val_above == 0.0
+
+    # Inverted target range
+    crit_target_inv = PreferenceCriterionConfig(
+        id="c-tgt-inv", name="Target Inv", metric_key="k", unit="m",
+        direction=PreferenceDirection.TARGET_RANGE,
+        normalization_method=NormalizationMethod.TARGET_RANGE,
+        target_min=30.0, target_max=10.0,
+    )
+    with pytest.raises(ValueError, match="target_max"):
+        svc.normalize_single_metric(15.0, crit_target_inv)
+
+    with pytest.raises(ValueError, match="target_max"):
+        svc._validate_preference_model(PreferenceModelConfig(criteria=[crit_target_inv]))
+
+
+def test_sensitivity_weight_allocation_and_disabled_priority_groups(trade_off_fixtures):
+    """
+    Verifies sensitivity weight allocation formulas:
+    - 70% priority / 30% remainder allocation.
+    - Disabling criteria in a priority group marks the scheme unavailable with warning.
+    - Sensitivity does NOT select non-compliant or incomplete alternatives as leaders.
+    """
+    svc = trade_off_service
+    profile = trade_off_fixtures["profile"]
+    from app.schemas.trade_off import MissionAlternativeRecord
+
+    # Preference model with solar and terrain enabled, but earth disabled
+    model = PreferenceModelConfig(
+        criteria=[
+            PreferenceCriterionConfig(
+                id="pref-total-sunlight", name="Total Sunlight", metric_key="total_sunlight_hours",
+                unit="h", category="solar", enabled=True, weight=1.0, reference_min=0.0, reference_max=72.0,
+            ),
+            PreferenceCriterionConfig(
+                id="pref-full-sunlight", name="Full Sunlight", metric_key="full_sunlight_hours",
+                unit="h", category="solar", enabled=True, weight=1.0, reference_min=0.0, reference_max=72.0,
+            ),
+            PreferenceCriterionConfig(
+                id="pref-local-slope", name="Slope", metric_key="local_slope_deg",
+                unit="deg", category="terrain", enabled=True, weight=1.0, reference_min=0.0, reference_max=20.0,
+                direction=PreferenceDirection.LOWER_IS_BETTER,
+            ),
+            PreferenceCriterionConfig(
+                id="pref-earth-visibility", name="Earth Comm", metric_key="total_earth_visible_hours",
+                unit="h", category="earth", enabled=False, weight=1.0, reference_min=0.0, reference_max=72.0,
+            ),
+        ]
+    )
+
+    alt1 = MissionAlternativeRecord(
+        id="alt-1", name="Alt 1", candidate_id="s1", candidate_name="Site 1", site_id="s1",
+        latitude=-89.5, longitude=0.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+        duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+        hard_constraint_status=OverallCandidateStatus.COMPLIANT,
+        extracted_metrics={"total_sunlight_hours": 50.0, "full_sunlight_hours": 40.0, "local_slope_deg": 8.0, "total_earth_visible_hours": None},
+    )
+
+    alt2 = MissionAlternativeRecord(
+        id="alt-2", name="Alt 2", candidate_id="s2", candidate_name="Site 2", site_id="s1",
+        latitude=-89.5, longitude=10.0, start_timestamp_iso="2026-10-04T12:00:00Z", end_timestamp_iso="2026-10-07T12:00:00Z",
+        duration_days=3.0, duration_hours=72.0, profile_id=profile.id, profile_version=profile.version, profile_snapshot=profile,
+        hard_constraint_status=OverallCandidateStatus.COMPLIANT,
+        extracted_metrics={"total_sunlight_hours": 60.0, "full_sunlight_hours": 50.0, "local_slope_deg": 12.0, "total_earth_visible_hours": None},
+    )
+
+    sens = svc._execute_sensitivity("study-sens-test", [alt1, alt2], model)
+
+    # Check scenario availability
+    scen_map = {s.scenario_id: s for s in sens.tested_scenarios}
+
+    # Solar Priority: 70% split between 2 solar criteria (35% each), 30% to terrain
+    solar_scen = scen_map["scen-solar"]
+    assert solar_scen.is_available
+    assert abs(solar_scen.weights["pref-total-sunlight"] - 0.35) < 0.01
+    assert abs(solar_scen.weights["pref-full-sunlight"] - 0.35) < 0.01
+    assert abs(solar_scen.weights["pref-local-slope"] - 0.30) < 0.01
+
+    # Earth Communications: Earth criteria disabled -> must be unavailable with warning
+    earth_scen = scen_map["scen-earth"]
+    assert not earth_scen.is_available
+    assert "No enabled criteria found" in earth_scen.warning
+
+    # Check leader selection: Alt 2 has more sunlight, so in solar priority Alt 2 leads
+    assert solar_scen.leading_alternative_id == "alt-2"
+

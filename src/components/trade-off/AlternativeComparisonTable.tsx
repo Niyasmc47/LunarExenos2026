@@ -106,14 +106,26 @@ export const AlternativeComparisonTable: React.FC = () => {
                           {score.composite_score.toFixed(1)}
                           <span className="text-[10px] text-slate-500 font-normal ml-0.5">/ 100</span>
                         </div>
-                        <div className="mt-0.5 flex items-center justify-center gap-1">
+                        <div className="mt-0.5 flex flex-col items-center justify-center gap-0.5">
+                          {score.ranking_eligibility === 'ELIGIBLE' ? (
+                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/40 text-emerald-300 font-bold">
+                              Rank #{score.eligible_rank}
+                            </span>
+                          ) : (
+                            <span
+                              className="text-[9px] px-1.5 py-0.2 rounded bg-rose-950/80 border border-rose-800/40 text-rose-300 cursor-help"
+                              title={score.ineligibility_reason || 'Ineligible for ranking'}
+                            >
+                              Unranked (Ineligible)
+                            </span>
+                          )}
                           {score.score_status === 'COMPLETE' ? (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/80 border border-emerald-800/40 text-emerald-300">
+                            <span className="text-[9px] text-slate-400">
                               Complete (100%)
                             </span>
                           ) : (
                             <span
-                              className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-800/40 text-amber-300 cursor-help"
+                              className="text-[9px] text-amber-400 cursor-help"
                               title={score.limitations[0] || 'Incomplete measurements'}
                             >
                               Incomplete ({(score.available_weight_fraction * 100).toFixed(0)}% Wt)

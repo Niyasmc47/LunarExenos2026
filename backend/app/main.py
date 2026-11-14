@@ -13,6 +13,7 @@ from app.api.screening import screening_router
 from app.api.window_planner import window_planner_router
 from app.api.terrain_assessment import terrain_assessment_router
 from app.api.trade_off import trade_off_router
+from app.api.decision_reports import decision_reports_router
 
 app = FastAPI(
     title="LUNAVISTA Dynamic Lunar Terrain Analysis API",
@@ -42,6 +43,7 @@ app.include_router(screening_router)
 app.include_router(window_planner_router)
 app.include_router(terrain_assessment_router)
 app.include_router(trade_off_router)
+app.include_router(decision_reports_router)
 
 @app.get("/health")
 def health_check():

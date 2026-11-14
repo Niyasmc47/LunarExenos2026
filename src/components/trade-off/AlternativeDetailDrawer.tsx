@@ -79,7 +79,23 @@ export const AlternativeDetailDrawer: React.FC = () => {
                 {score ? `${score.composite_score.toFixed(1)} / 100` : 'N/A'}
               </span>
               <span className="text-[10px] text-slate-400">
-                {score?.score_status === 'COMPLETE' ? '100% Weight Evaluated' : `${(score?.available_weight_fraction || 0) * 100}% Weight Evaluated`}
+                {score?.score_status === 'COMPLETE' ? '100% Weight Evaluated' : `${((score?.available_weight_fraction || 0) * 100).toFixed(0)}% Weight Evaluated`}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Ranking Eligibility</span>
+              {score?.ranking_eligibility === 'ELIGIBLE' ? (
+                <span className="text-sm font-bold text-emerald-400 mt-1 block">
+                  Eligible (Rank #{score.eligible_rank})
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-rose-400 mt-1 block" title={score?.ineligibility_reason || ''}>
+                  Ineligible for Ranking
+                </span>
+              )}
+              <span className="text-[10px] text-slate-400 block truncate" title={score?.ineligibility_reason || 'Compliant & Complete'}>
+                {score?.ineligibility_reason || 'Meets all hard constraints'}
               </span>
             </div>
 
@@ -89,7 +105,7 @@ export const AlternativeDetailDrawer: React.FC = () => {
                 {pareto?.status || 'N/A'}
               </span>
               <span className="text-[10px] text-slate-400">
-                Dominates {pareto?.dominates.length || 0} alternatives
+                Dominates {pareto?.dominates.length || 0} • Dominated by {pareto?.dominated_by.length || 0}
               </span>
             </div>
 
@@ -100,16 +116,6 @@ export const AlternativeDetailDrawer: React.FC = () => {
               </span>
               <span className="text-[10px] text-slate-400">
                 {alt.hard_constraints_failed} Failed • {alt.hard_constraints_indeterminate} Indet
-              </span>
-            </div>
-
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Mission Duration</span>
-              <span className="text-sm font-bold text-slate-200 mt-1 block">
-                {alt.duration_days.toFixed(1)} Earth Days
-              </span>
-              <span className="text-[10px] text-slate-400">
-                {alt.duration_hours.toFixed(0)} Analysis Hours
               </span>
             </div>
           </div>

@@ -622,7 +622,11 @@ class TradeOffService:
     # Preference Validation & Normalization Engine
     # -------------------------------------------------------------------------
     def _validate_preference_model(self, model: PreferenceModelConfig):
-        """Ensures non-negative weights and at least one positive weight among enabled criteria."""
+        """
+        Validates preference weights and reference/target normalization bounds.
+        Rejects non-finite bounds, inverted bounds (R_max < R_min or T_max < T_min),
+        negative weights, and zero total weight.
+        """
         enabled_criteria = [c for c in model.criteria if c.enabled]
         if not enabled_criteria:
             raise ValueError("Preference configuration must have at least one enabled criterion.")
@@ -630,6 +634,36 @@ class TradeOffService:
         for c in model.criteria:
             if c.weight < 0.0:
                 raise ValueError(f"Criterion '{c.name}' has invalid negative weight ({c.weight}).")
+
+            # Check finite reference bounds
+            if c.reference_min is not None:
+                if not math.isfinite(c.reference_min):
+                    raise ValueError(f"Criterion '{c.name}' has non-finite reference_min: {c.reference_min}")
+            if c.reference_max is not None:
+                if not math.isfinite(c.reference_max):
+                    raise ValueError(f"Criterion '{c.name}' has non-finite reference_max: {c.reference_max}")
+
+            if c.reference_min is not None and c.reference_max is not None:
+                if c.reference_max < c.reference_min:
+                    raise ValueError(
+                        f"Criterion '{c.name}' has invalid reference bounds: "
+                        f"reference_max ({c.reference_max}) < reference_min ({c.reference_min})."
+                    )
+
+            # Check target range bounds
+            if c.target_min is not None:
+                if not math.isfinite(c.target_min):
+                    raise ValueError(f"Criterion '{c.name}' has non-finite target_min: {c.target_min}")
+            if c.target_max is not None:
+                if not math.isfinite(c.target_max):
+                    raise ValueError(f"Criterion '{c.name}' has non-finite target_max: {c.target_max}")
+
+            if c.target_min is not None and c.target_max is not None:
+                if c.target_max < c.target_min:
+                    raise ValueError(
+                        f"Criterion '{c.name}' has invalid target bounds: "
+                        f"target_max ({c.target_max}) < target_min ({c.target_min})."
+                    )
 
         total_enabled_weight = sum(c.weight for c in enabled_criteria)
         if total_enabled_weight <= 0.0:
@@ -643,27 +677,55 @@ class TradeOffService:
         """
         Normalizes a raw physical measurement onto [0.0, 1.0].
         Returns (normalized_value, formula_string, note).
+        Rejects inverted bounds (R_max < R_min or T_max < T_min) with explicit ValueError.
+        Handles R_max == R_min as a documented constant-range case.
         """
         if raw_val is None or math.isnan(raw_val):
             return None, "UNAVAILABLE: No measured value", "Measurement unavailable"
 
+        # 1. Target-range Metric
+        if crit.direction == PreferenceDirection.TARGET_RANGE:
+            t_min = crit.target_min if crit.target_min is not None else crit.reference_min
+            t_max = crit.target_max if crit.target_max is not None else crit.reference_max
+
+            if t_min is None or t_max is None:
+                return None, "UNAVAILABLE: Missing target range bounds", "Target bounds not configured"
+
+            if t_max < t_min:
+                raise ValueError(
+                    f"Invalid target range for '{crit.name}': target_max ({t_max}) < target_min ({t_min})."
+                )
+
+            # Binary in-range / out-of-range behavior with documented limitation
+            if t_min <= raw_val <= t_max:
+                formula = f"Within target range [{t_min:.2f}, {t_max:.2f}] {crit.unit} -> 1.0"
+                note = "Target interval satisfied (binary in-range = 1.0)"
+                return 1.0, formula, note
+            else:
+                formula = f"Outside target range [{t_min:.2f}, {t_max:.2f}] {crit.unit} ({raw_val:.2f}) -> 0.0"
+                note = "Outside target interval (binary out-of-range = 0.0)"
+                return 0.0, formula, note
+
+        # 2. Min-Max Metrics (HIGHER_IS_BETTER, LOWER_IS_BETTER)
         r_min = crit.reference_min
         r_max = crit.reference_max
 
         if r_min is None or r_max is None:
             return None, "UNAVAILABLE: Missing reference range bounds", "Reference bounds not configured"
 
-        # Safely handle constant range
-        if r_max == r_min:
-            val = 1.0 if raw_val == r_min else 0.0
-            formula = f"Constant reference bound ({r_min} {crit.unit}): 1.0 if match, else 0.0"
-            return val, formula, "Constant reference bound"
-
-        # Safely handle inverted range
+        # Explicitly reject inverted range
         if r_max < r_min:
-            return None, f"INVALID_RANGE: R_max ({r_max}) < R_min ({r_min})", "Invalid reference range definition"
+            raise ValueError(
+                f"Invalid reference range for '{crit.name}': reference_max ({r_max}) < reference_min ({r_min})."
+            )
 
-        # Normalization
+        # Safely handle documented constant range
+        if r_max == r_min:
+            if abs(raw_val - r_min) < 1e-9:
+                return 1.0, f"Constant reference bound ({r_min:.2f} {crit.unit}): matched exact value", "Constant reference value matched"
+            else:
+                return 0.0, f"Constant reference bound ({r_min:.2f} {crit.unit}): does not match ({raw_val:.2f} != {r_min:.2f})", "Constant reference value not matched"
+
         if crit.direction == PreferenceDirection.HIGHER_IS_BETTER:
             # Benefit Metric
             norm_raw = (raw_val - r_min) / (r_max - r_min)
@@ -679,24 +741,6 @@ class TradeOffService:
             formula = f"min(1.0, max(0.0, ({r_max:.2f} - {raw_val:.2f}) / ({r_max:.2f} - {r_min:.2f})))"
             note = "Clamped to bounds" if (norm_raw < 0.0 or norm_raw > 1.0) else "Linear cost scaling"
             return round(clamped, 4), formula, note
-
-        elif crit.direction == PreferenceDirection.TARGET_RANGE:
-            # Target-range Metric with falloff
-            t_min = crit.target_min if crit.target_min is not None else r_min
-            t_max = crit.target_max if crit.target_max is not None else r_max
-
-            if t_min <= raw_val <= t_max:
-                return 1.0, f"Within target interval [{t_min:.1f}, {t_max:.1f}] {crit.unit}", "Target satisfied"
-            elif raw_val < t_min and t_min > r_min:
-                falloff = max(0.0, 1.0 - (t_min - raw_val) / (t_min - r_min))
-                formula = f"1.0 - ({t_min:.1f} - {raw_val:.1f}) / ({t_min:.1f} - {r_min:.1f})"
-                return round(falloff, 4), formula, "Below target range"
-            elif raw_val > t_max and r_max > t_max:
-                falloff = max(0.0, 1.0 - (raw_val - t_max) / (r_max - t_max))
-                formula = f"1.0 - ({raw_val:.1f} - {t_max:.1f}) / ({r_max:.1f} - {t_max:.1f})"
-                return round(falloff, 4), formula, "Above target range"
-            else:
-                return 0.0, f"Outside tolerance bounds [{r_min:.1f}, {r_max:.1f}]", "Outside reference range"
 
         return None, "UNSUPPORTED: Unknown preference direction", "Unsupported direction"
 
@@ -792,12 +836,51 @@ class TradeOffService:
                 composite_score=composite_score,
                 score_status=score_status,
                 available_weight_fraction=round(available_weight, 4),
+                ranking_eligibility="ELIGIBLE",
+                eligible_rank=None,
+                ineligibility_reason=None,
                 normalized_metrics=norm_metrics,
                 explanation=explanation,
                 limitations=limitations,
             )
 
-        # 3. Pareto Dominance Analysis
+        # 3. Determine Ranking Eligibility and Assign Eligible Ranks
+        for alt in alternatives:
+            s_break = scores[alt.id]
+            is_complete = (s_break.score_status == "COMPLETE")
+
+            if alt.hard_constraint_status == OverallCandidateStatus.NON_COMPLIANT:
+                s_break.ranking_eligibility = "INELIGIBLE_NON_COMPLIANT"
+                s_break.ineligibility_reason = (
+                    f"Violates {alt.hard_constraints_failed} hard constraint(s). "
+                    "Non-compliant alternatives must never be ranked or recommended."
+                )
+            elif alt.hard_constraint_status == OverallCandidateStatus.INDETERMINATE:
+                s_break.ranking_eligibility = "INELIGIBLE_INDETERMINATE"
+                s_break.ineligibility_reason = (
+                    "Hard constraints are indeterminate or unverified. "
+                    "Cannot be certified as compliant."
+                )
+            elif not is_complete:
+                s_break.ranking_eligibility = "INELIGIBLE_INCOMPLETE_SCORE"
+                s_break.ineligibility_reason = (
+                    f"Incomplete preference score ({s_break.available_weight_fraction * 100.0:.1f}% evaluated). "
+                    "Incomplete scores must never be ranked directly against complete scores."
+                )
+            else:
+                s_break.ranking_eligibility = "ELIGIBLE"
+                s_break.ineligibility_reason = None
+
+        # Sort and rank ONLY eligible alternatives
+        eligible_alts = [
+            alt for alt in alternatives
+            if scores[alt.id].ranking_eligibility == "ELIGIBLE"
+        ]
+        eligible_alts.sort(key=lambda a: scores[a.id].composite_score, reverse=True)
+        for rank_idx, alt in enumerate(eligible_alts):
+            scores[alt.id].eligible_rank = rank_idx + 1
+
+        # 4. Pareto Dominance Analysis
         pareto_results = self._compute_pareto_dominance(alternatives, scores, enabled_criteria)
 
         return scores, pareto_results
@@ -809,11 +892,17 @@ class TradeOffService:
         enabled_criteria: List[PreferenceCriterionConfig],
     ) -> Dict[str, AlternativeParetoResult]:
         """
-        Computes strict Pareto dominance across enabled criteria.
+        Computes strict pairwise Pareto dominance across enabled preference criteria.
         Alternative A dominates B (A > B) iff:
         - For all enabled dimensions: A is at least as good as B (n_A >= n_B - eps)
         - For at least one dimension: A is strictly better than B (n_A > n_B + eps)
-        If either alternative has missing data on an enabled dimension, dominance is INCOMPARABLE_INCOMPLETE.
+
+        Rules:
+        - Only compare alternatives where all active criteria are measured.
+        - If missing data prevents establishing dominance or non-dominance, assign INCOMPARABLE_INCOMPLETE.
+        - Never substitute missing measurements with zero or arbitrary values.
+        - Explain which criteria established dominance for each dominating alternative.
+        - Equal alternatives tie without dominating each other.
         """
         eps = 1e-4
         pareto: Dict[str, AlternativeParetoResult] = {}
@@ -841,71 +930,95 @@ class TradeOffService:
         # Pairwise dominance checks
         dominated_by_map: Dict[str, List[str]] = {alt.id: [] for alt in alternatives}
         dominates_map: Dict[str, List[str]] = {alt.id: [] for alt in alternatives}
-        incomparable_set = set()
+        dominating_criteria_by_alt: Dict[str, Dict[str, List[str]]] = {alt.id: {} for alt in alternatives}
 
         for a in alternatives:
+            # An alternative with incomplete data cannot participate in definitive pairwise dominance proofs
             if has_incomplete[a.id]:
-                incomparable_set.add(a.id)
+                continue
 
             for b in alternatives:
                 if a.id == b.id:
                     continue
 
+                if has_incomplete[b.id]:
+                    continue
+
                 vec_a = vectors[a.id]
                 vec_b = vectors[b.id]
 
-                # Check if all dimensions are comparable
-                pairwise_incomparable = False
-                for c in enabled_criteria:
-                    val_a = vec_a.get(c.id)
-                    val_b = vec_b.get(c.id)
-                    if val_a is None or val_b is None:
-                        pairwise_incomparable = True
-                        break
-
-                if pairwise_incomparable:
-                    continue
-
-                # Test if A dominates B
+                # Test if A dominates B across all enabled criteria
                 all_ge = True
                 strictly_better = False
+                dom_crits: List[str] = []
 
                 for c in enabled_criteria:
                     val_a = vec_a[c.id]
                     val_b = vec_b[c.id]
+
+                    if val_a is None or val_b is None:
+                        all_ge = False
+                        break
 
                     if val_a < val_b - eps:
                         all_ge = False
                         break
                     if val_a > val_b + eps:
                         strictly_better = True
+                        dom_crits.append(
+                            f"{c.name}: normalized {val_a:.2f} vs {val_b:.2f} (+{(val_a - val_b):.2f})"
+                        )
 
                 if all_ge and strictly_better:
                     dominates_map[a.id].append(b.id)
                     dominated_by_map[b.id].append(a.id)
+                    dominating_criteria_by_alt[b.id][a.id] = dom_crits
 
         # Assemble Pareto results
         for alt in alternatives:
             dom_by = dominated_by_map[alt.id]
             doms = dominates_map[alt.id]
+            dom_crits_map = dominating_criteria_by_alt[alt.id]
 
-            if alt.id in incomparable_set and len(dom_by) == 0:
+            if has_incomplete[alt.id]:
                 status = ParetoDominanceStatus.INCOMPARABLE_INCOMPLETE
                 explanation = (
                     "Incomplete measurements prevent definitive Pareto dominance classification. "
-                    "Cannot confirm dominance without unmeasured dimensions."
+                    "Cannot establish dominance or non-dominance without full measurement coverage."
                 )
+                is_fully_comparable = False
             elif len(dom_by) == 0:
                 status = ParetoDominanceStatus.PARETO_OPTIMAL
-                explanation = (
-                    f"Non-dominated alternative on the Pareto frontier. No other evaluated alternative "
-                    f"is strictly superior across all enabled criteria. (Dominates {len(doms)} alternative(s))."
-                )
+                is_fully_comparable = True
+
+                # Check for ties on all dimensions
+                vec_alt = vectors[alt.id]
+                tied_with = [
+                    b.id for b in alternatives
+                    if b.id != alt.id and not has_incomplete[b.id] and all(
+                        abs(vec_alt[c.id] - vectors[b.id][c.id]) <= eps for c in enabled_criteria
+                    )
+                ]
+
+                if tied_with:
+                    explanation = (
+                        f"Non-dominated alternative on the Pareto frontier. Tied on all enabled criteria with "
+                        f"{', '.join(tied_with)} (neither dominates the other). Dominates {len(doms)} alternative(s)."
+                    )
+                else:
+                    explanation = (
+                        f"Non-dominated alternative on the Pareto frontier. No other evaluated alternative "
+                        f"is strictly superior across all enabled criteria. (Dominates {len(doms)} alternative(s))."
+                    )
             else:
                 status = ParetoDominanceStatus.DOMINATED
+                is_fully_comparable = True
+                dom_details = []
+                for dom_id, crits in dom_crits_map.items():
+                    dom_details.append(f"{dom_id} via [{'; '.join(crits)}]")
                 explanation = (
                     f"Strictly dominated by {len(dom_by)} alternative(s): {', '.join(dom_by)}. "
-                    f"At least one other alternative performs equal or better in all dimensions and strictly better in one."
+                    f"Superior dimensions: {' | '.join(dom_details)}."
                 )
 
             pareto[alt.id] = AlternativeParetoResult(
@@ -913,6 +1026,8 @@ class TradeOffService:
                 status=status,
                 dominated_by=dom_by,
                 dominates=doms,
+                dominating_criteria_by_alternative=dom_crits_map,
+                is_fully_comparable=is_fully_comparable,
                 explanation=explanation,
             )
 
@@ -929,45 +1044,76 @@ class TradeOffService:
     ) -> SensitivityAnalysisResponse:
         """
         Executes a deterministic sensitivity analysis across predefined operational priority scenarios.
+        Uses exact 70% / 30% weight allocation rules.
+        Ranks ONLY compliant and complete alternatives; non-compliant or incomplete alternatives
+        are never presented as winners or ranked against complete alternatives.
         """
         enabled = [c for c in base_model.criteria if c.enabled]
         if not enabled or not alternatives:
             return SensitivityAnalysisResponse(
                 study_id=study_id,
-                current_leader_id="",
+                current_leader_id=None,
+                has_eligible_leader=False,
                 tested_scenarios=[],
                 leader_stability={},
                 robust_alternatives=[],
                 summary_notes=["No enabled criteria or alternatives available for sensitivity analysis."],
             )
 
-        # Predefined Sensitivity Scenarios
+        # 1. Build Predefined Sensitivity Scenarios with exact distribution rules
+        solar_w, solar_warn = self._build_category_priority_weights(enabled, "solar", 0.70)
+        earth_w, earth_warn = self._build_category_priority_weights(enabled, "earth", 0.70)
+        terrain_w, terrain_warn = self._build_category_priority_weights(enabled, "terrain", 0.70)
+        darkness_w, darkness_warn = self._build_criterion_priority_weights(enabled, "pref-longest-darkness", 0.70)
+
         scenarios_defs = [
-            ("scen-current", "Current User Configuration", "User-selected preference weights.", {c.id: c.weight for c in enabled}),
-            ("scen-equal", "Equal Weights Baseline", "All enabled criteria receive identical weight (1.0).", {c.id: 1.0 for c in enabled}),
+            (
+                "scen-current",
+                "Current User Configuration",
+                "User-selected preference weights.",
+                {c.id: c.weight for c in enabled},
+                True,
+                None,
+            ),
+            (
+                "scen-equal",
+                "Equal Weights Baseline",
+                f"Balanced 1/K ({1.0 / len(enabled):.4f}) weight across all {len(enabled)} enabled criteria.",
+                {c.id: 1.0 for c in enabled},
+                True,
+                None,
+            ),
             (
                 "scen-solar",
                 "Solar Illumination Priority",
-                "60% weight allocated to solar duration metrics; remaining 40% split among others.",
-                self._build_category_priority_weights(enabled, "solar", 0.60),
+                "70% weight distributed equally among enabled solar illumination criteria; 30% among remaining criteria.",
+                solar_w,
+                solar_w is not None,
+                solar_warn,
             ),
             (
                 "scen-earth",
                 "Earth Communications Priority",
-                "60% weight allocated to Earth visibility metrics; remaining 40% split among others.",
-                self._build_category_priority_weights(enabled, "earth", 0.60),
+                "70% weight distributed equally among enabled Earth visibility criteria; 30% among remaining criteria.",
+                earth_w,
+                earth_w is not None,
+                earth_warn,
             ),
             (
                 "scen-terrain",
                 "Terrain Safety Priority",
-                "60% weight allocated to slope and terrain metrics; remaining 40% split among others.",
-                self._build_category_priority_weights(enabled, "terrain", 0.60),
+                "70% weight distributed equally among enabled terrain criteria; 30% among remaining criteria.",
+                terrain_w,
+                terrain_w is not None,
+                terrain_warn,
             ),
             (
                 "scen-darkness",
                 "Darkness Minimization Priority",
-                "60% weight allocated to minimizing continuous darkness; remaining 40% split among others.",
-                self._build_criterion_priority_weights(enabled, "pref-longest-darkness", 0.60),
+                "70% weight allocated to longest continuous darkness; 30% distributed among remaining criteria.",
+                darkness_w,
+                darkness_w is not None,
+                darkness_warn,
             ),
         ]
 
@@ -975,15 +1121,40 @@ class TradeOffService:
         leader_counts: Dict[str, int] = {alt.id: 0 for alt in alternatives}
         top2_counts: Dict[str, int] = {alt.id: 0 for alt in alternatives}
 
-        current_leader_id = ""
+        current_leader_id: Optional[str] = None
+        has_eligible_leader = False
+        available_scenario_count = 0
 
-        for s_idx, (scen_id, scen_name, scen_desc, raw_w_dict) in enumerate(scenarios_defs):
+        for s_idx, (scen_id, scen_name, scen_desc, raw_w_dict, is_avail, warn_msg) in enumerate(scenarios_defs):
+            if not is_avail or not raw_w_dict:
+                tested_results.append(
+                    SensitivityScenarioResult(
+                        scenario_id=scen_id,
+                        scenario_name=scen_name,
+                        scenario_description=scen_desc,
+                        is_available=False,
+                        warning=warn_msg or "Priority criteria not enabled in preference model.",
+                        weights={},
+                        scores={},
+                        rankings={},
+                        eligible_rankings={},
+                        ineligibility_reasons={
+                            alt.id: "Scenario unavailable" for alt in alternatives
+                        },
+                        leading_alternative_id=None,
+                        leading_alternative_name="Unavailable (priority criteria disabled)",
+                    )
+                )
+                continue
+
+            available_scenario_count += 1
+
             # Create synthetic preference model for this scenario
             scen_criteria = []
             for c in base_model.criteria:
                 copy_c = c.model_copy()
                 if c.enabled and c.id in raw_w_dict:
-                    copy_c.weight = max(0.01, raw_w_dict[c.id])
+                    copy_c.weight = max(0.0001, raw_w_dict[c.id])
                 scen_criteria.append(copy_c)
             scen_model = PreferenceModelConfig(criteria=scen_criteria, version=base_model.version)
 
@@ -992,46 +1163,99 @@ class TradeOffService:
 
             scores_map = {alt.id: scen_scores[alt.id].composite_score for alt in alternatives}
 
-            # Rank alternatives
-            ranked_alts = sorted(alternatives, key=lambda a: scores_map[a.id], reverse=True)
-            rankings = {a.id: rank + 1 for rank, a in enumerate(ranked_alts)}
+            # Raw score order for reference
+            raw_sorted = sorted(alternatives, key=lambda a: scores_map[a.id], reverse=True)
+            raw_rankings = {a.id: rank + 1 for rank, a in enumerate(raw_sorted)}
 
-            leader = ranked_alts[0]
-            leader_counts[leader.id] += 1
+            # Official Ranking: Rank ONLY ELIGIBLE ALTERNATIVES (Compliant + Complete)
+            eligible_alts = [
+                a for a in alternatives
+                if a.hard_constraint_status == OverallCandidateStatus.COMPLIANT
+                and scen_scores[a.id].score_status == "COMPLETE"
+            ]
+            eligible_alts.sort(key=lambda a: scores_map[a.id], reverse=True)
 
-            for rank, a in enumerate(ranked_alts[:2]):
-                top2_counts[a.id] += 1
+            eligible_rankings: Dict[str, Optional[int]] = {}
+            ineligibility_reasons: Dict[str, str] = {}
+
+            for a in alternatives:
+                s_stat = scen_scores[a.id].score_status
+                if a.hard_constraint_status == OverallCandidateStatus.NON_COMPLIANT:
+                    eligible_rankings[a.id] = None
+                    ineligibility_reasons[a.id] = f"NON_COMPLIANT ({a.hard_constraints_failed} hard constraint failed)"
+                elif a.hard_constraint_status == OverallCandidateStatus.INDETERMINATE:
+                    eligible_rankings[a.id] = None
+                    ineligibility_reasons[a.id] = "INDETERMINATE (unverified constraint coverage)"
+                elif s_stat != "COMPLETE":
+                    eligible_rankings[a.id] = None
+                    ineligibility_reasons[a.id] = f"INCOMPLETE_SCORE (evaluates only {scen_scores[a.id].available_weight_fraction * 100:.0f}% of weight)"
+                else:
+                    eligible_rankings[a.id] = eligible_alts.index(a) + 1
+
+            if eligible_alts:
+                leader = eligible_alts[0]
+                leading_id = leader.id
+                leading_name = leader.name
+                leader_counts[leader.id] += 1
+
+                for a in eligible_alts[:2]:
+                    top2_counts[a.id] += 1
+            else:
+                leading_id = None
+                leading_name = "No eligible complete alternative"
 
             if s_idx == 0:
-                current_leader_id = leader.id
+                current_leader_id = leading_id
+                has_eligible_leader = (leading_id is not None)
 
             tested_results.append(
                 SensitivityScenarioResult(
                     scenario_id=scen_id,
                     scenario_name=scen_name,
                     scenario_description=scen_desc,
+                    is_available=True,
+                    warning=None,
                     weights=raw_w_dict,
                     scores=scores_map,
-                    rankings=rankings,
-                    leading_alternative_id=leader.id,
-                    leading_alternative_name=leader.name,
+                    rankings=raw_rankings,
+                    eligible_rankings=eligible_rankings,
+                    ineligibility_reasons=ineligibility_reasons,
+                    leading_alternative_id=leading_id,
+                    leading_alternative_name=leading_name,
                 )
             )
 
-        total_scenarios = len(tested_results)
-        stability = {alt_id: round((count / total_scenarios) * 100.0, 1) for alt_id, count in leader_counts.items()}
-        robust = [alt_id for alt_id, count in top2_counts.items() if (count / total_scenarios) >= 0.60]
+        denom = max(1, available_scenario_count)
+        stability = {alt_id: round((count / denom) * 100.0, 1) for alt_id, count in leader_counts.items() if count > 0}
+        robust = [alt_id for alt_id, count in top2_counts.items() if (count / denom) >= 0.60]
 
         summary_notes = [
-            f"Evaluated {total_scenarios} deterministic sensitivity scenarios across solar, comm, terrain, and equal weighting.",
-            f"Leading alternative under current configuration is '{current_leader_id}' (Stability: {stability.get(current_leader_id, 0.0)}% across scenarios).",
-            f"Robust alternatives (ranked top-2 in >= 60% of test scenarios): {', '.join(robust) if robust else 'None'}.",
-            "Sensitivity analysis tests discrete operational priorities; it does not replace mission risk analysis.",
+            f"Evaluated {available_scenario_count} available deterministic sensitivity scenarios (70% priority / 30% remainder).",
         ]
+        if has_eligible_leader and current_leader_id:
+            summary_notes.append(
+                f"Leading eligible alternative under current configuration: '{current_leader_id}' "
+                f"(Stability: {stability.get(current_leader_id, 0.0)}% across available priority scenarios)."
+            )
+        else:
+            summary_notes.append(
+                "Notice: No candidate alternative satisfies both 100% hard-constraint compliance and 100% "
+                "preference score completeness. No eligible complete ranking can be produced."
+            )
+
+        if robust:
+            summary_notes.append(f"Robust eligible alternatives (ranked top-2 in >= 60% of scenarios): {', '.join(robust)}.")
+        else:
+            summary_notes.append("No alternative maintained top-2 ranking in >= 60% of sensitivity scenarios.")
+
+        summary_notes.append(
+            "Sensitivity analysis tests discrete priority models; it does not replace operational risk evaluation."
+        )
 
         return SensitivityAnalysisResponse(
             study_id=study_id,
             current_leader_id=current_leader_id,
+            has_eligible_leader=has_eligible_leader,
             tested_scenarios=tested_results,
             leader_stability=stability,
             robust_alternatives=robust,
@@ -1043,14 +1267,30 @@ class TradeOffService:
         enabled_criteria: List[PreferenceCriterionConfig],
         target_category: str,
         priority_fraction: float,
-    ) -> Dict[str, float]:
-        target_crits = [c for c in enabled_criteria if c.category == target_category]
-        other_crits = [c for c in enabled_criteria if c.category != target_category]
+    ) -> Tuple[Optional[Dict[str, float]], Optional[str]]:
+        """
+        Allocates priority_fraction equally among enabled criteria matching target_category,
+        and (1.0 - priority_fraction) equally among other enabled criteria.
+        Returns (weights_dict, warning). If target_category has no enabled criteria, returns (None, warning).
+        """
+        # For solar category, exclude longest-darkness which has its own dedicated priority scheme
+        if target_category == "solar":
+            target_crits = [c for c in enabled_criteria if c.category == "solar" and c.id != "pref-longest-darkness"]
+        else:
+            target_crits = [c for c in enabled_criteria if c.category == target_category]
+
+        other_crits = [c for c in enabled_criteria if c not in target_crits]
+
+        if not target_crits:
+            return None, f"No enabled criteria found for priority category '{target_category}'."
 
         weights: Dict[str, float] = {}
-        if not target_crits or not other_crits:
-            # Fallback to equal
-            return {c.id: 1.0 for c in enabled_criteria}
+
+        if not other_crits:
+            w_each = 1.0 / len(target_crits)
+            for c in target_crits:
+                weights[c.id] = round(w_each, 4)
+            return weights, None
 
         w_target_each = priority_fraction / len(target_crits)
         w_other_each = (1.0 - priority_fraction) / len(other_crits)
@@ -1060,26 +1300,36 @@ class TradeOffService:
         for c in other_crits:
             weights[c.id] = round(w_other_each, 4)
 
-        return weights
+        return weights, None
 
     def _build_criterion_priority_weights(
         self,
         enabled_criteria: List[PreferenceCriterionConfig],
         target_criterion_id: str,
         priority_fraction: float,
-    ) -> Dict[str, float]:
-        weights: Dict[str, float] = {}
+    ) -> Tuple[Optional[Dict[str, float]], Optional[str]]:
+        """
+        Allocates priority_fraction to a specific criterion, and (1.0 - priority_fraction)
+        equally among other enabled criteria.
+        Returns (weights_dict, warning). If criterion is not enabled, returns (None, warning).
+        """
+        matching = [c for c in enabled_criteria if c.id == target_criterion_id]
+        if not matching:
+            return None, f"Priority criterion '{target_criterion_id}' is not enabled in preference configuration."
+
         other_crits = [c for c in enabled_criteria if c.id != target_criterion_id]
+        weights: Dict[str, float] = {}
 
         if not other_crits:
-            return {c.id: 1.0 for c in enabled_criteria}
+            weights[target_criterion_id] = 1.0
+            return weights, None
 
-        weights[target_criterion_id] = priority_fraction
+        weights[target_criterion_id] = round(priority_fraction, 4)
         w_other_each = (1.0 - priority_fraction) / len(other_crits)
         for c in other_crits:
             weights[c.id] = round(w_other_each, 4)
 
-        return weights
+        return weights, None
 
     # -------------------------------------------------------------------------
     # CSV / JSON Export Engine
@@ -1114,10 +1364,15 @@ class TradeOffService:
                 "End Epoch (UTC)",
                 "Hard Constraint Status",
                 "Passed / Total HC",
+                "Ranking Eligibility",
+                "Eligible Rank",
                 "Data Completeness (%)",
                 "Composite Score (0-100)",
                 "Score Status",
+                "Evaluated Weight (%)",
                 "Pareto Status",
+                "Dominating Alternatives",
+                "Dominating Dimensions",
                 "Total Sunlight (h)",
                 "Full Sunlight (h)",
                 "Longest Darkness (h)",
@@ -1132,6 +1387,13 @@ class TradeOffService:
                 sc = study.scores.get(alt.id)
                 par = study.pareto_results.get(alt.id)
 
+                dom_alts = ", ".join(par.dominated_by) if par and par.dominated_by else "None"
+                dom_details = []
+                if par and par.dominating_criteria_by_alternative:
+                    for d_id, crits in par.dominating_criteria_by_alternative.items():
+                        dom_details.append(f"{d_id}: [{'; '.join(crits)}]")
+                dom_dims_str = " | ".join(dom_details) if dom_details else "None"
+
                 row = [
                     alt.id,
                     alt.name,
@@ -1142,10 +1404,15 @@ class TradeOffService:
                     alt.end_timestamp_iso,
                     alt.hard_constraint_status.value,
                     f"{alt.hard_constraints_passed} / {alt.total_hard_constraints}",
+                    sc.ranking_eligibility if sc else "N/A",
+                    sc.eligible_rank if (sc and sc.eligible_rank is not None) else "Unranked (Ineligible)",
                     alt.data_completeness_pct,
                     sc.composite_score if sc else "N/A",
                     sc.score_status if sc else "N/A",
+                    f"{sc.available_weight_fraction * 100:.1f}%" if sc else "N/A",
                     par.status.value if par else "N/A",
+                    dom_alts,
+                    dom_dims_str,
                     alt.extracted_metrics.get("total_sunlight_hours", "N/A"),
                     alt.extracted_metrics.get("full_sunlight_hours", "N/A"),
                     alt.extracted_metrics.get("longest_darkness_hours", "N/A"),

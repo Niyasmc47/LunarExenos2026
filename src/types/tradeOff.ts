@@ -97,6 +97,9 @@ export interface AlternativeScoreBreakdown {
   composite_score: number;
   score_status: 'COMPLETE' | 'INCOMPLETE';
   available_weight_fraction: number;
+  ranking_eligibility: 'ELIGIBLE' | 'INELIGIBLE_NON_COMPLIANT' | 'INELIGIBLE_INDETERMINATE' | 'INELIGIBLE_INCOMPLETE_SCORE';
+  eligible_rank?: number | null;
+  ineligibility_reason?: string | null;
   normalized_metrics: AlternativeNormalizedMetric[];
   explanation: string;
   limitations: string[];
@@ -107,6 +110,8 @@ export interface AlternativeParetoResult {
   status: ParetoDominanceStatus;
   dominated_by: string[];
   dominates: string[];
+  dominating_criteria_by_alternative?: Record<string, string[]>;
+  is_fully_comparable?: boolean;
   explanation: string;
 }
 
@@ -114,16 +119,21 @@ export interface SensitivityScenarioResult {
   scenario_id: string;
   scenario_name: string;
   scenario_description: string;
+  is_available: boolean;
+  warning?: string | null;
   weights: Record<string, number>;
   scores: Record<string, number>;
   rankings: Record<string, number>;
-  leading_alternative_id: string;
-  leading_alternative_name: string;
+  eligible_rankings?: Record<string, number | null>;
+  ineligibility_reasons?: Record<string, string>;
+  leading_alternative_id?: string | null;
+  leading_alternative_name?: string | null;
 }
 
 export interface SensitivityAnalysisResponse {
   study_id: string;
-  current_leader_id: string;
+  current_leader_id?: string | null;
+  has_eligible_leader?: boolean;
   tested_scenarios: SensitivityScenarioResult[];
   leader_stability: Record<string, number>;
   robust_alternatives: string[];
