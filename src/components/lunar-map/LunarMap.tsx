@@ -32,100 +32,101 @@ export const LunarMap: React.FC = () => {
   useEffect(() => {
     if (!mapElementRef.current) return;
 
-    let isMounted = true;
     let mapInstance: Map | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
-    async function initMap() {
-      try {
-        const wmtsLayer = await createMoonTrekLayer(
-          (loading) => {
-            if (isMounted) setMapLoading(loading);
-          },
-          (err) => {
-            if (isMounted) setMapError(err);
-          },
-          (active) => {
-            if (isMounted) setLiveCapabilitiesActive(active);
-          }
-        );
+    try {
+      const wmtsLayer = createMoonTrekLayer(
+        (loading) => setMapLoading(loading),
+        (err) => setMapError(err),
+        (active) => setLiveCapabilitiesActive(active)
+      );
 
-        const { layer: markerLayer, updatePosition } = createMarkerLayer(
-          selectedLongitude,
-          selectedLatitude
-        );
-        markerUpdaterRef.current = updatePosition;
+      const { layer: markerLayer, updatePosition } = createMarkerLayer(
+        selectedLongitude,
+        selectedLatitude
+      );
+      markerUpdaterRef.current = updatePosition;
 
-        const view = new View({
-          projection: LUNAR_PROJECTION,
-          center: [selectedLongitude, selectedLatitude],
-          zoom: 1.5,
-          minZoom: 0.5,
-          maxZoom: 8,
-          extent: [-180, -90, 180, 90],
-          constrainResolution: false,
-        });
+      const view = new View({
+        projection: LUNAR_PROJECTION,
+        center: [selectedLongitude, selectedLatitude],
+        zoom: 1.5,
+        minZoom: 0.5,
+        maxZoom: 8,
+        extent: [-180, -90, 180, 90],
+        constrainResolution: false,
+      });
 
-        mapInstance = new Map({
-          target: mapElementRef.current!,
-          layers: [wmtsLayer, markerLayer],
-          view,
-          controls: defaultControls({
-            zoom: false,
-            rotate: false,
-            attribution: false,
-          }),
-        });
+      mapInstance = new Map({
+        target: mapElementRef.current,
+        layers: [wmtsLayer, markerLayer],
+        view,
+        controls: defaultControls({
+          zoom: false,
+          rotate: false,
+          attribution: false,
+        }),
+      });
 
-        // Click handler: select lunar coordinate
-        mapInstance.on('singleclick', (evt) => {
-          const rawCoords = evt.coordinate;
-          if (!rawCoords || rawCoords.length < 2) return;
+      // ResizeObserver ensures OpenLayers always updates when container size is computed
+      resizeObserver = new ResizeObserver(() => {
+        if (mapInstance) {
+          mapInstance.updateSize();
+        }
+      });
+      resizeObserver.observe(mapElementRef.current);
 
+      // Force immediate resize updates on mount and after layout settles
+      requestAnimationFrame(() => mapInstance?.updateSize());
+      setTimeout(() => mapInstance?.updateSize(), 50);
+      setTimeout(() => mapInstance?.updateSize(), 200);
+
+      // Click handler: select lunar coordinate
+      mapInstance.on('singleclick', (evt) => {
+        const rawCoords = evt.coordinate;
+        if (!rawCoords || rawCoords.length < 2) return;
+
+        const lon = normalizeLongitude(rawCoords[0]);
+        const lat = clampLatitude(rawCoords[1]);
+
+        setSelectedCoordinates(lat, lon, 'map');
+      });
+
+      // Pointer move handler for coordinate readout
+      mapInstance.on('pointermove', (evt) => {
+        if (evt.dragging) {
+          setHoverCoords(null);
+          return;
+        }
+        const rawCoords = evt.coordinate;
+        if (rawCoords && rawCoords.length >= 2) {
           const lon = normalizeLongitude(rawCoords[0]);
           const lat = clampLatitude(rawCoords[1]);
-
-          setSelectedCoordinates(lat, lon, 'map');
-        });
-
-        // Pointer move handler for coordinate readout
-        mapInstance.on('pointermove', (evt) => {
-          if (evt.dragging) {
-            setHoverCoords(null);
-            return;
-          }
-          const rawCoords = evt.coordinate;
-          if (rawCoords && rawCoords.length >= 2) {
-            const lon = normalizeLongitude(rawCoords[0]);
-            const lat = clampLatitude(rawCoords[1]);
-            setHoverCoords({ lat, lon });
-          } else {
-            setHoverCoords(null);
-          }
-        });
-
-        mapInstance.getView().on('change:resolution', () => {
-          const z = mapInstance?.getView().getZoom();
-          if (z !== undefined) {
-            setZoomLevel(Math.round(z * 10) / 10);
-          }
-        });
-
-        if (isMounted) {
-          mapRef.current = mapInstance;
+          setHoverCoords({ lat, lon });
+        } else {
+          setHoverCoords(null);
         }
-      } catch (err: unknown) {
-        if (isMounted) {
-          const msg = err instanceof Error ? err.message : 'Failed to initialize OpenLayers map';
-          setMapError(msg);
-          setMapLoading(false);
+      });
+
+      mapInstance.getView().on('change:resolution', () => {
+        const z = mapInstance?.getView().getZoom();
+        if (z !== undefined) {
+          setZoomLevel(Math.round(z * 10) / 10);
         }
-      }
+      });
+
+      mapRef.current = mapInstance;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to initialize OpenLayers map';
+      setMapError(msg);
+      setMapLoading(false);
     }
 
-    initMap();
-
     return () => {
-      isMounted = false;
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       if (mapInstance) {
         mapInstance.setTarget(undefined);
       }
@@ -184,7 +185,7 @@ export const LunarMap: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col bg-[#070b11] border border-slate-800/80 rounded-xl overflow-hidden shadow-2xl shadow-black/60 group">
+    <div className="relative w-full h-full min-h-[300px] flex flex-col bg-[#070b11] border border-slate-800/80 rounded-xl overflow-hidden shadow-2xl shadow-black/60 group">
       {/* Top HUD Bar */}
       <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 shadow-lg pointer-events-auto">
@@ -192,10 +193,16 @@ export const LunarMap: React.FC = () => {
           <span className="text-xs font-semibold tracking-wider text-slate-200 uppercase font-mono">
             2D LUNAR MAP (LRO WAC 100M)
           </span>
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
+          {mapLoading && (
+            <div className="flex items-center gap-1.5 bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[11px] font-mono text-emerald-400 animate-pulse">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>FETCHING TILES...</span>
+            </div>
+          )}
           <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 text-[11px] font-mono text-slate-300">
             TREK: <span className={liveCapabilitiesActive ? "text-emerald-400" : "text-amber-400"}>{liveCapabilitiesActive ? "LIVE XML" : "DIRECT"}</span>
           </div>
@@ -209,7 +216,7 @@ export const LunarMap: React.FC = () => {
       </div>
 
       {/* OpenLayers Map Canvas Container */}
-      <div ref={mapElementRef} className="w-full h-full cursor-crosshair" />
+      <div ref={mapElementRef} className="w-full h-full min-h-[300px] cursor-crosshair" />
 
       {/* Floating Map Zoom / Recenter Controls */}
       <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
@@ -263,16 +270,6 @@ export const LunarMap: React.FC = () => {
           NASA / GSFC / ASU / JPL / Moon Trek
         </div>
       </div>
-
-      {/* Loading Overlay */}
-      {mapLoading && (
-        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-          <div className="flex items-center gap-2.5 bg-[#0c121e]/90 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-200 text-xs font-mono shadow-xl">
-            <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
-            <span>STREAMING NASA LRO WMTS TILES...</span>
-          </div>
-        </div>
-      )}
 
       {/* Error Alert */}
       {mapError && (

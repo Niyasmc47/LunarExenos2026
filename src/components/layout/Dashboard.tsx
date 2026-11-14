@@ -19,31 +19,31 @@ export const Dashboard: React.FC = () => {
 
       {/* Main Visualization Viewport Container */}
       <div className="flex-1 relative flex flex-col md:flex-row gap-2 md:gap-3 overflow-hidden min-h-0">
-        {/* 3D Moon Globe View */}
-        {(activeView === 'split' || activeView === '3d') && (
-          <div
-            className={`transition-all duration-300 relative ${
-              activeView === 'split'
-                ? 'w-full md:w-1/2 h-1/2 md:h-full'
-                : 'w-full h-full'
-            }`}
-          >
-            <LunarGlobe />
-          </div>
-        )}
+        {/* 3D Moon Globe View (Preserved in DOM to prevent WebGL/React unmount teardown) */}
+        <div
+          className={`relative transition-all duration-300 ${
+            activeView === 'split'
+              ? 'w-full md:w-1/2 h-1/2 md:h-full flex flex-col'
+              : activeView === '3d'
+              ? 'w-full h-full flex flex-col'
+              : 'hidden'
+          }`}
+        >
+          <LunarGlobe />
+        </div>
 
-        {/* 2D Lunar Map View */}
-        {(activeView === 'split' || activeView === '2d') && (
-          <div
-            className={`transition-all duration-300 relative ${
-              activeView === 'split'
-                ? 'w-full md:w-1/2 h-1/2 md:h-full'
-                : 'w-full h-full'
-            }`}
-          >
-            <LunarMap />
-          </div>
-        )}
+        {/* 2D Lunar Map View (Preserved in DOM to retain tile cache and map state) */}
+        <div
+          className={`relative transition-all duration-300 ${
+            activeView === 'split'
+              ? 'w-full md:w-1/2 h-1/2 md:h-full flex flex-col'
+              : activeView === '2d'
+              ? 'w-full h-full flex flex-col'
+              : 'hidden'
+          }`}
+        >
+          <LunarMap />
+        </div>
       </div>
 
       {/* Control Panel Sidebar (Collapsible on Desktop, Scrollable) */}

@@ -1,9 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
 import { lunarToSpherePosition, getSurfaceNormal } from '../../utils/sphereCoordinates';
-import { formatCoordinates } from '../../utils/lunarCoordinates';
 
 interface LocationMarkerProps {
   latitude: number;
@@ -75,29 +73,17 @@ export const LocationMarker: React.FC<LocationMarkerProps> = ({
         <meshBasicMaterial color="#34d399" transparent opacity={0.8} />
       </mesh>
 
-      {/* Floating apex diamond / beacon head */}
+      {/* Floating apex beacon head */}
       <mesh ref={tipRef} position={[0, 0.25, 0]}>
-        <octahedronGeometry args={[0.025, 0]} />
+        <octahedronGeometry args={[0.028, 0]} />
         <meshStandardMaterial
           color="#10b981"
           emissive="#34d399"
-          emissiveIntensity={1.5}
+          emissiveIntensity={2.0}
           roughness={0.2}
           metalness={0.8}
         />
       </mesh>
-
-      {/* Clean 3D coordinate tooltip badge */}
-      <Html
-        position={[0, 0.32, 0]}
-        center
-        distanceFactor={6}
-        style={{ pointerEvents: 'none' }}
-      >
-        <div className="bg-[#0c121e]/90 text-emerald-400 border border-emerald-500/50 px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap shadow-lg backdrop-blur-sm select-none">
-          {formatCoordinates({ latitude, longitude }, 2)}
-        </div>
-      </Html>
     </group>
   );
 };
