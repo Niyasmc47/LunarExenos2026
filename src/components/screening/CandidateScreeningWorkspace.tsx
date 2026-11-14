@@ -1,0 +1,199 @@
+import React, { useEffect, useState } from 'react';
+import { useScreeningStore } from '../../stores/screeningStore';
+import { ScreeningControls } from './ScreeningControls';
+import { CandidateSummaryCard } from './CandidateSummaryCard';
+import { HardConstraintsMatrix } from './HardConstraintsMatrix';
+import { SoftPreferencesSection } from './SoftPreferencesSection';
+import { InformationalMetricsPanel } from './InformationalMetricsPanel';
+import { DataCompletenessProvenance } from './DataCompletenessProvenance';
+import { ExportModal } from './ExportModal';
+import {
+  Download,
+  Trash2,
+  Clock,
+  Sparkles,
+  Inbox,
+} from 'lucide-react';
+
+export const CandidateScreeningWorkspace: React.FC = () => {
+  const runs = useScreeningStore((state) => state.runs);
+  const activeRun = useScreeningStore((state) => state.activeRun);
+  const selectedCandidateId = useScreeningStore((state) => state.selectedCandidateId);
+  const selectRun = useScreeningStore((state) => state.selectRun);
+  const deleteRun = useScreeningStore((state) => state.deleteRun);
+  const selectCandidate = useScreeningStore((state) => state.selectCandidate);
+  const init = useScreeningStore((state) => state.init);
+  const loading = useScreeningStore((state) => state.loading);
+
+  const [isExportOpen, setIsExportOpen] = useState(false);
+
+  useEffect(() => {
+    init();
+  }, [init]);
+
+  const selectedCandidate = activeRun?.candidates.find(
+    (c) => c.candidate_id === selectedCandidateId
+  ) || activeRun?.candidates[0] || null;
+
+  return (
+    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+      {/* Top Configuration & Execution Controls */}
+      <ScreeningControls />
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Screening Run Header / History Selector */}
+        {runs.length > 0 && activeRun && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-bold text-slate-100">
+                    Active Run:
+                  </span>
+                  <select
+                    value={activeRun.id}
+                    onChange={(e) => selectRun(e.target.value)}
+                    className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-2.5 py-1 rounded focus:outline-none focus:border-emerald-500"
+                  >
+                    {runs.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} ({new Date(r.created_at_iso).toLocaleTimeString()})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-[11px] text-slate-400 font-mono mt-1 flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-slate-400" />
+                    {activeRun.start_timestamp_iso} to {activeRun.end_timestamp_iso} ({activeRun.duration_days.toFixed(1)}d)
+                  </span>
+                  <span>•</span>
+                  <span>Mast: {activeRun.observer_height_m}m</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Run Actions: Export & Delete */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsExportOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/30 text-xs font-mono font-semibold transition-all"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Run</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`Delete screening run "${activeRun.name}"?`)) {
+                    deleteRun(activeRun.id);
+                  }
+                }}
+                className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 transition-all"
+                title="Delete run"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Screening Results Body */}
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center py-20 text-slate-400 font-mono text-sm">
+            Loading candidate screening engine...
+          </div>
+        ) : !activeRun ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3 bg-[#0b101c] border border-slate-800 rounded-2xl p-8">
+            <div className="p-3 bg-slate-900 rounded-full text-slate-400">
+              <Inbox className="w-8 h-8" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-200 font-mono">
+              No Screening Runs Executed Yet
+            </h3>
+            <p className="text-xs text-slate-400 font-sans max-w-md leading-relaxed">
+              Select a mission profile and one or more candidate scenarios above, then click{' '}
+              <strong className="text-emerald-400">Run Candidate Screening</strong> to perform deterministic, evidence-backed requirement evaluations.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Overall Screening Results Matrix */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
+                    CANDIDATE SCREENING SUMMARIES ({activeRun.candidates.length} CANDIDATES)
+                  </h2>
+                </div>
+                <div className="text-xs font-mono text-slate-300 flex items-center gap-2">
+                  <span className="text-emerald-400 font-semibold">
+                    {activeRun.overall_summary.compliant_candidates} Compliant
+                  </span>
+                  <span>•</span>
+                  <span className="text-rose-400 font-semibold">
+                    {activeRun.overall_summary.non_compliant_candidates} Non-Compliant
+                  </span>
+                  <span>•</span>
+                  <span className="text-amber-400 font-semibold">
+                    {activeRun.overall_summary.indeterminate_candidates} Indeterminate
+                  </span>
+                </div>
+              </div>
+
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {activeRun.candidates.map((cand) => (
+                  <CandidateSummaryCard
+                    key={cand.candidate_id}
+                    candidate={cand}
+                    isSelected={selectedCandidate?.candidate_id === cand.candidate_id}
+                    onSelect={() => selectCandidate(cand.candidate_id)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Detailed Inspection for Selected Candidate */}
+            {selectedCandidate && (
+              <div className="space-y-6 pt-4 border-t border-slate-800">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-bold text-slate-100 font-mono tracking-wide">
+                    DETAILED REQUIREMENT AUDIT: {selectedCandidate.candidate_name}
+                  </h2>
+                  <span className="text-xs font-mono text-slate-400">
+                    Profile: {activeRun.profile_name} (v{activeRun.profile_version})
+                  </span>
+                </div>
+
+                {/* 1. Hard Constraints Matrix */}
+                <HardConstraintsMatrix results={selectedCandidate.hard_constraint_results} />
+
+                {/* 2. Soft Preferences Section */}
+                <SoftPreferencesSection preferences={selectedCandidate.soft_preference_results} />
+
+                {/* 3. Informational Metrics */}
+                <InformationalMetricsPanel metrics={selectedCandidate.informational_metrics} />
+
+                {/* 4. Data Completeness & Scientific Provenance */}
+                <DataCompletenessProvenance candidate={selectedCandidate} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Export Modal */}
+      {activeRun && (
+        <ExportModal
+          isOpen={isExportOpen}
+          onClose={() => setIsExportOpen(false)}
+          run={activeRun}
+        />
+      )}
+    </div>
+  );
+};

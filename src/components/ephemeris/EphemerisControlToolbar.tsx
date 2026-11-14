@@ -66,10 +66,14 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
     }, 50);
   };
 
-  // Auto-play animation loop stepping 1 hour forward
+  // Auto-play animation loop stepping 1 simulation hour forward per tick
   useEffect(() => {
     if (isPlaying) {
       playTimerRef.current = window.setInterval(() => {
+        // Prevent overlapping requests if a calculation is already executing
+        if (useEphemerisStore.getState().isLoading) {
+          return;
+        }
         const cur = new Date(useEphemerisStore.getState().selectedTimestamp);
         const next = new Date(cur.getTime() + 3600 * 1000);
         const nextIso = next.toISOString().slice(0, 19) + 'Z';
@@ -172,25 +176,39 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
             </button>
           </div>
 
-          {/* Quick Presets */}
-          <div className="flex items-center gap-1">
+          {/* Scientific Epoch Presets */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] text-slate-500 font-semibold uppercase">PRESETS:</span>
             <button
               onClick={() => {
                 setSelectedTimestamp('2026-10-04T12:00:00Z');
                 setTimeout(handleComputeAll, 50);
               }}
-              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
+              title="NASA Artemis III Planned Mission Window (Target epoch October 2026)"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-amber-300/90 hover:text-amber-200 border border-amber-500/30 flex items-center gap-1"
             >
-              Artemis III (Oct 2026)
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+              Planned: Artemis III Window (Late 2026)
             </button>
             <button
               onClick={() => {
                 setSelectedTimestamp('2026-12-21T12:00:00Z');
                 setTimeout(handleComputeAll, 50);
               }}
-              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-amber-300/80 hover:text-amber-300 border border-slate-800"
+              title="Illustrative: Lunar South Pole Summer Solstice (Maximum Solar Elevation)"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
             >
-              Summer Sun (Dec)
+              Illustrative: Summer Solstice (Dec 2026)
+            </button>
+            <button
+              onClick={() => {
+                setSelectedTimestamp('2026-06-21T12:00:00Z');
+                setTimeout(handleComputeAll, 50);
+              }}
+              title="Illustrative: Lunar South Pole Winter Solstice (Minimum Solar Elevation)"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
+            >
+              Illustrative: Winter Solstice (Jun 2026)
             </button>
             <button
               onClick={() => {
@@ -198,9 +216,10 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setSelectedTimestamp(now);
                 setTimeout(handleComputeAll, 50);
               }}
-              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-sky-300/80 hover:text-sky-300 border border-slate-800"
+              title="Illustrative: Real-Time Current Epoch (Now UTC)"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-sky-300/80 hover:text-sky-300 border border-slate-800"
             >
-              Now
+              Simulation: Current UTC
             </button>
           </div>
         </div>

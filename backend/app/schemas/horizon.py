@@ -17,6 +17,9 @@ class HorizonPoint(BaseModel):
     horizon_surface_elevation_m: float = Field(..., description="Absolute DEM surface elevation of the horizon feature in meters")
     horizon_lat: float = Field(..., description="Latitude of the horizon obstacle point")
     horizon_lon: float = Field(..., description="Longitude of the horizon obstacle point")
+    ray_coverage_complete: bool = Field(True, description="Whether ray reached full search distance without exiting DEM")
+    exit_distance_m: float = Field(0.0, description="Radial distance reached in meters before DEM boundary or limit")
+    external_elevation_bound_deg: float = Field(0.0, description="Geometric upper bound on possible external terrain obstruction angle")
 
 class HorizonSummary(BaseModel):
     max_horizon_elevation_deg: float

@@ -36,6 +36,9 @@ interface EphemerisState {
   loadStatus: () => Promise<void>;
 }
 
+let activePositionRequestId = 0;
+let activeTimeSeriesRequestId = 0;
+
 export const useEphemerisStore = create<EphemerisState>((set, get) => ({
   selectedTimestamp: '2026-10-04T12:00:00Z',
   observerHeight: 2.0,
@@ -59,6 +62,7 @@ export const useEphemerisStore = create<EphemerisState>((set, get) => ({
 
   computePosition: async (lat: number, lon: number) => {
     const { selectedTimestamp, observerHeight, aberrationCorrection } = get();
+    const requestId = ++activePositionRequestId;
     set({ isLoading: true, error: null });
 
     try {
@@ -71,6 +75,11 @@ export const useEphemerisStore = create<EphemerisState>((set, get) => ({
         aberration_correction: aberrationCorrection,
       });
 
+      // Ignore stale response if a newer request was dispatched
+      if (requestId !== activePositionRequestId) {
+        return;
+      }
+
       if (!resp) {
         set({ isLoading: false, error: 'Failed to calculate topocentric ephemeris position.' });
         return;
@@ -78,12 +87,15 @@ export const useEphemerisStore = create<EphemerisState>((set, get) => ({
 
       set({ positionData: resp, isLoading: false, error: null });
     } catch (err: any) {
-      set({ isLoading: false, error: err?.message || 'Ephemeris computation failed' });
+      if (requestId === activePositionRequestId) {
+        set({ isLoading: false, error: err?.message || 'Ephemeris computation failed' });
+      }
     }
   },
 
   computeTimeSeries: async (lat: number, lon: number) => {
     const { selectedTimestamp, observerHeight, aberrationCorrection, timeSeriesDurationDays, timeSeriesStepHours } = get();
+    const requestId = ++activeTimeSeriesRequestId;
     set({ isTimeSeriesLoading: true });
 
     try {
@@ -103,13 +115,20 @@ export const useEphemerisStore = create<EphemerisState>((set, get) => ({
         aberration_correction: aberrationCorrection,
       });
 
+      // Ignore stale response if a newer request was dispatched
+      if (requestId !== activeTimeSeriesRequestId) {
+        return;
+      }
+
       if (resp) {
         set({ timeSeriesData: resp, isTimeSeriesLoading: false });
       } else {
         set({ isTimeSeriesLoading: false });
       }
     } catch (err) {
-      set({ isTimeSeriesLoading: false });
+      if (requestId === activeTimeSeriesRequestId) {
+        set({ isTimeSeriesLoading: false });
+      }
     }
   },
 
