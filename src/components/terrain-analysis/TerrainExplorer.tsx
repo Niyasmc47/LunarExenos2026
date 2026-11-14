@@ -14,13 +14,31 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ChevronLeft,
-  LineChart
+  LineChart,
+  Compass,
+  Sun,
 } from 'lucide-react';
+import { HorizonExplorerView } from '../horizon/HorizonExplorerView';
+import { HorizonTelemetryCard } from '../horizon/HorizonTelemetryCard';
+import { EphemerisExplorerView } from '../ephemeris/EphemerisExplorerView';
+import { EphemerisProvenancePanel } from '../ephemeris/EphemerisProvenancePanel';
+import { useHorizonStore } from '../../stores/horizonStore';
+import { useLocationStore } from '../../stores/locationStore';
 
 export const TerrainExplorer: React.FC = () => {
   const workspaceMode = useDynamicAnalysisStore((state) => state.workspaceMode);
   const setWorkspaceMode = useDynamicAnalysisStore((state) => state.setWorkspaceMode);
   const activeLayerMode = useDynamicAnalysisStore((state) => state.activeLayerMode);
+  const currentPointTelemetry = useDynamicAnalysisStore((state) => state.currentPointTelemetry);
+
+  const selectedLat = useLocationStore((state) => state.selectedLatitude);
+  const selectedLon = useLocationStore((state) => state.selectedLongitude);
+
+  const horizonData = useHorizonStore((state) => state.horizonData);
+  const isHorizonLoading = useHorizonStore((state) => state.isLoading);
+
+  const observerLat = currentPointTelemetry?.latitude ?? selectedLat;
+  const observerLon = currentPointTelemetry?.longitude ?? selectedLon;
 
   const [panelOpen, setPanelOpen] = useState(true);
   const [showTransect, setShowTransect] = useState(false);
@@ -67,6 +85,32 @@ export const TerrainExplorer: React.FC = () => {
               <Map className="w-3.5 h-3.5" />
               <span>2D MAP VIEW</span>
             </button>
+
+            <button
+              onClick={() => setWorkspaceMode('horizon')}
+              title="Lunar terrain skyline elevation angles across 360° azimuth"
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
+                workspaceMode === 'horizon'
+                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>HORIZON ENGINE</span>
+            </button>
+
+            <button
+              onClick={() => setWorkspaceMode('ephemeris')}
+              title="Topocentric Sun & Earth positions, trajectory time-series, and SPICE ephemerides"
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
+                workspaceMode === 'ephemeris'
+                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <span>EPHEMERIS ENGINE</span>
+            </button>
           </div>
         </div>
 
@@ -76,38 +120,45 @@ export const TerrainExplorer: React.FC = () => {
         {/* Hillshade Controls if active in 2D mode */}
         {workspaceMode === '2d-map' && activeLayerMode === 'hillshade' && <HillshadeControls />}
 
-        {/* Primary Viewport: 3D Terrain Mesh OR 2D Regional Map */}
+        {/* Primary Viewport: 3D Terrain Mesh OR 2D Regional Map OR Horizon Engine OR Ephemeris */}
         <div className="flex-1 min-h-[300px] overflow-hidden">
           {workspaceMode === '3d-terrain' ? (
             <TerrainViewer3D />
-          ) : (
+          ) : workspaceMode === '2d-map' ? (
             <RegionalMapCanvas />
+          ) : workspaceMode === 'horizon' ? (
+            <HorizonExplorerView />
+          ) : (
+            <EphemerisExplorerView />
           )}
         </div>
 
-        {/* Bottom Elevation Profile Transect (Collapsible) */}
-        {showTransect && (
-          <div className="h-44 shrink-0 min-h-[150px] transition-all">
-            <DynamicElevationProfile />
-          </div>
+        {/* Bottom Elevation Profile Transect & Exports (Only in 2D Map mode) */}
+        {workspaceMode === '2d-map' && (
+          <>
+            {showTransect && (
+              <div className="h-44 shrink-0 min-h-[150px] transition-all">
+                <DynamicElevationProfile />
+              </div>
+            )}
+
+            <div className="shrink-0 flex items-center justify-between flex-wrap gap-2">
+              <button
+                onClick={() => setShowTransect(!showTransect)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                  showTransect
+                    ? 'bg-emerald-500 text-black shadow-md'
+                    : 'bg-[#0c121e] hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800'
+                }`}
+              >
+                <LineChart className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
+              </button>
+
+              <ExportToolbar />
+            </div>
+          </>
         )}
-
-        {/* Action Controls & Data Exports Strip */}
-        <div className="shrink-0 flex items-center justify-between flex-wrap gap-2">
-          <button
-            onClick={() => setShowTransect(!showTransect)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-              showTransect
-                ? 'bg-emerald-500 text-black shadow-md'
-                : 'bg-[#0c121e] hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800'
-            }`}
-          >
-            <LineChart className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
-          </button>
-
-          <ExportToolbar />
-        </div>
       </div>
 
       {/* Right Collapsible Inspection & Statistics Sidebar */}
@@ -126,7 +177,18 @@ export const TerrainExplorer: React.FC = () => {
 
         {panelOpen && (
           <div className="w-full h-full overflow-y-auto pr-0.5 space-y-3">
-            <RegionalStatisticsPanel />
+            {workspaceMode === 'horizon' ? (
+              <HorizonTelemetryCard
+                data={horizonData}
+                isLoading={isHorizonLoading}
+                currentLat={observerLat}
+                currentLon={observerLon}
+              />
+            ) : workspaceMode === 'ephemeris' ? (
+              <EphemerisProvenancePanel />
+            ) : (
+              <RegionalStatisticsPanel />
+            )}
           </div>
         )}
       </div>
