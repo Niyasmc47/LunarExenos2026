@@ -25,6 +25,41 @@ def create_scenario(req: ScenarioCreateRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# Static POST routes MUST come before /{scenario_id} routes to avoid path conflicts
+@scenarios_router.post("/compare", response_model=MultiScenarioComparisonResponse)
+def compare_scenarios(req: MultiScenarioComparisonRequest):
+    """
+    Executes a multi-scenario comparison across 2 to 4 candidate scenarios,
+    evaluating solar illumination, Earth line-of-sight, terrain characteristics,
+    and user-defined mission constraints.
+    """
+    try:
+        return scenario_service.compare_scenarios(req)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Scenario comparison failed: {str(e)}")
+
+@scenarios_router.post("/export")
+def export_comparison(req: ScenarioExportRequest):
+    """
+    Exports a completed multi-scenario comparison report in CSV or JSON format.
+    """
+    exported_content = scenario_service.export_comparison(req.comparison_response, req.format)
+    if req.format == "csv":
+        return Response(
+            content=exported_content,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=lunavista_comparison_{req.comparison_response.comparison_id}.csv"},
+        )
+    return Response(
+        content=exported_content,
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename=lunavista_comparison_{req.comparison_response.comparison_id}.json"},
+    )
+
 @scenarios_router.get("/{scenario_id}", response_model=ScenarioRecord)
 def get_scenario(scenario_id: str):
     """Retrieves a single mission scenario by ID."""
@@ -59,36 +94,3 @@ def duplicate_scenario(scenario_id: str):
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Scenario '{scenario_id}' not found.")
 
-@scenarios_router.post("/compare", response_model=MultiScenarioComparisonResponse)
-def compare_scenarios(req: MultiScenarioComparisonRequest):
-    """
-    Executes a multi-scenario comparison across 2 to 4 candidate scenarios,
-    evaluating solar illumination, Earth line-of-sight, terrain characteristics,
-    and user-defined mission constraints.
-    """
-    try:
-        return scenario_service.compare_scenarios(req)
-    except KeyError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Scenario comparison failed: {str(e)}")
-
-@scenarios_router.post("/export")
-def export_comparison(req: ScenarioExportRequest):
-    """
-    Exports a completed multi-scenario comparison report in CSV or JSON format.
-    """
-    exported_content = scenario_service.export_comparison(req.comparison_response, req.format)
-    if req.format == "csv":
-        return Response(
-            content=exported_content,
-            media_type="text/csv",
-            headers={"Content-Disposition": f"attachment; filename=lunavista_comparison_{req.comparison_response.comparison_id}.csv"},
-        )
-    return Response(
-        content=exported_content,
-        media_type="application/json",
-        headers={"Content-Disposition": f"attachment; filename=lunavista_comparison_{req.comparison_response.comparison_id}.json"},
-    )

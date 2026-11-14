@@ -9,7 +9,7 @@ from app.schemas.decision_report import (
 )
 from app.services.decision_report_service import decision_report_service
 
-decision_reports_router = APIRouter(prefix="/api/reports", tags=["Decision Reports"])
+decision_reports_router = APIRouter(prefix="/api/decision-reports", tags=["Decision Reports"])
 
 
 @decision_reports_router.post("/", response_model=DecisionReportResponse, status_code=201)

@@ -287,20 +287,36 @@ def test_terrain_assessment_persistence_and_snapshots(setup_terrain_fixtures):
     assert cand_res.json()["candidate_id"] == scenarios[0].id
 
     # 3. Snapshot immutability: modify original scenario name
-    scenario_service.update_scenario(
-        scenarios[0].id,
-        ScenarioCreateRequest(
-            name="MUTATED SCENARIO NAME",
-            site_id=scenarios[0].site_id,
-            latitude=scenarios[0].latitude,
-            longitude=scenarios[0].longitude,
-            start_timestamp_iso=scenarios[0].start_timestamp_iso,
-            end_timestamp_iso=scenarios[0].end_timestamp_iso,
+    orig_name = scenarios[0].name
+    orig_desc = scenarios[0].description
+    try:
+        scenario_service.update_scenario(
+            scenarios[0].id,
+            ScenarioCreateRequest(
+                name="MUTATED SCENARIO NAME",
+                site_id=scenarios[0].site_id,
+                latitude=scenarios[0].latitude,
+                longitude=scenarios[0].longitude,
+                start_timestamp_iso=scenarios[0].start_timestamp_iso,
+                end_timestamp_iso=scenarios[0].end_timestamp_iso,
+            )
         )
-    )
 
-    frozen = client.get(f"/api/terrain-assessment/assessments/{assessment_id}").json()
-    assert frozen["scenario_snapshots"][0]["name"] == scenarios[0].name
+        frozen = client.get(f"/api/terrain-assessment/assessments/{assessment_id}").json()
+        assert frozen["scenario_snapshots"][0]["name"] == orig_name
+    finally:
+        scenario_service.update_scenario(
+            scenarios[0].id,
+            ScenarioCreateRequest(
+                name=orig_name,
+                description=orig_desc,
+                site_id=scenarios[0].site_id,
+                latitude=scenarios[0].latitude,
+                longitude=scenarios[0].longitude,
+                start_timestamp_iso=scenarios[0].start_timestamp_iso,
+                end_timestamp_iso=scenarios[0].end_timestamp_iso,
+            )
+        )
 
 
 def test_terrain_assessment_exports(setup_terrain_fixtures):

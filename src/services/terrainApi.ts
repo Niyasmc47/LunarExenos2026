@@ -1,6 +1,8 @@
 import { ElevationPoint, ElevationProfileData, TerrainMeshData, TerrainMetadata } from '../types/terrain';
 
-const BACKEND_BASE = 'http://127.0.0.1:8000';
+import { API_BASE_URL } from './apiClient';
+
+const BACKEND_BASE = API_BASE_URL;
 
 export async function fetchTerrainMetadata(datasetId: string = 'site01'): Promise<TerrainMetadata | null> {
   try {

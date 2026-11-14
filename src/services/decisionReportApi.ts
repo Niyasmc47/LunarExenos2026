@@ -3,49 +3,44 @@ import {
   DecisionReportSummary,
   DecisionReportCreateRequest,
 } from '../types/decisionReport';
+import { parseApiResponse } from './apiClient';
 
-const API_BASE = '/api/reports';
+const API_BASE = '/api/decision-reports';
 
 export async function fetchDecisionReports(): Promise<DecisionReportSummary[]> {
-  const resp = await fetch(`${API_BASE}/`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch decision reports: ${resp.statusText}`);
-  }
-  const data = await resp.json();
+  const endpoint = `${API_BASE}/`;
+  const resp = await fetch(endpoint);
+  const data = await parseApiResponse<{ reports: DecisionReportSummary[] }>(resp, endpoint);
   return data.reports || [];
 }
 
 export async function fetchDecisionReport(reportId: string): Promise<DecisionReportRecord> {
-  const resp = await fetch(`${API_BASE}/${reportId}`);
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch decision report '${reportId}': ${resp.statusText}`);
-  }
-  const data = await resp.json();
+  const endpoint = `${API_BASE}/${reportId}`;
+  const resp = await fetch(endpoint);
+  const data = await parseApiResponse<{ report: DecisionReportRecord }>(resp, endpoint);
   return data.report;
 }
 
 export async function createDecisionReport(
   req: DecisionReportCreateRequest
 ): Promise<DecisionReportRecord> {
-  const resp = await fetch(`${API_BASE}/`, {
+  const endpoint = `${API_BASE}/`;
+  const resp = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({ detail: resp.statusText }));
-    throw new Error(err.detail || 'Failed to create decision report');
-  }
-  const data = await resp.json();
+  const data = await parseApiResponse<{ report: DecisionReportRecord }>(resp, endpoint);
   return data.report;
 }
 
 export async function deleteDecisionReport(reportId: string): Promise<void> {
-  const resp = await fetch(`${API_BASE}/${reportId}`, {
+  const endpoint = `${API_BASE}/${reportId}`;
+  const resp = await fetch(endpoint, {
     method: 'DELETE',
   });
-  if (!resp.ok) {
-    throw new Error(`Failed to delete decision report '${reportId}': ${resp.statusText}`);
+  if (!resp.ok && resp.status !== 404) {
+    throw new Error(`Failed to delete decision report '${reportId}': HTTP ${resp.status} ${resp.statusText}`);
   }
 }
 

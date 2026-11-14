@@ -20,6 +20,15 @@ def list_profiles():
 def list_templates():
     return TEMPLATE_PROFILES
 
+# Static POST routes MUST come before /{profile_id} to avoid path conflicts
+@router.post("/validate", response_model=MissionProfileValidationResponse, summary="Validate profile requirements and time bounds")
+def validate_profile(req: MissionProfileValidationRequest):
+    return mission_profile_service.validate_profile_request(req)
+
+@router.post("/reset-templates", response_model=List[MissionProfile], summary="Restore missing built-in illustrative templates")
+def reset_templates():
+    return mission_profile_service.reset_to_templates()
+
 @router.get("/{profile_id}", response_model=MissionProfile, summary="Get single mission profile by ID")
 def get_profile(profile_id: str):
     profile = mission_profile_service.get_profile(profile_id)
@@ -60,10 +69,3 @@ def delete_profile(profile_id: str):
     except KeyError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
-@router.post("/validate", response_model=MissionProfileValidationResponse, summary="Validate profile requirements and time bounds")
-def validate_profile(req: MissionProfileValidationRequest):
-    return mission_profile_service.validate_profile_request(req)
-
-@router.post("/reset-templates", response_model=List[MissionProfile], summary="Restore missing built-in illustrative templates")
-def reset_templates():
-    return mission_profile_service.reset_to_templates()

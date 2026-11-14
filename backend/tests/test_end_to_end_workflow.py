@@ -146,7 +146,7 @@ def test_full_mission_lifecycle_end_to_end():
         "terrain_assessment_id": terrain_id,
         "executive_summary_notes": "All technical clearances verified against NASA LOLA 5m DEM and DE421 ephemeris.",
     }
-    rep_res = client.post("/api/reports/", json=report_payload)
+    rep_res = client.post("/api/decision-reports/", json=report_payload)
     assert rep_res.status_code == 201
     report = rep_res.json()["report"]
     report_id = report["id"]
@@ -157,19 +157,19 @@ def test_full_mission_lifecycle_end_to_end():
 
     # Step 8: Verify Exports
     # PDF
-    pdf_res = client.get(f"/api/reports/{report_id}/export/pdf")
+    pdf_res = client.get(f"/api/decision-reports/{report_id}/export/pdf")
     assert pdf_res.status_code == 200
     assert pdf_res.headers["content-type"] == "application/pdf"
     assert pdf_res.content.startswith(b"%PDF-1.4")
 
     # JSON
-    json_res = client.get(f"/api/reports/{report_id}/export/json")
+    json_res = client.get(f"/api/decision-reports/{report_id}/export/json")
     assert json_res.status_code == 200
     assert json_res.headers["content-type"] == "application/json"
     assert json_res.json()["id"] == report_id
 
     # CSV
-    csv_res = client.get(f"/api/reports/{report_id}/export/csv")
+    csv_res = client.get(f"/api/decision-reports/{report_id}/export/csv")
     assert csv_res.status_code == 200
     assert "text/csv" in csv_res.headers["content-type"]
     assert "Candidate ID" in csv_res.text

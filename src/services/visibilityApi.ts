@@ -5,7 +5,9 @@ import {
   VisibilityAnalysisResponse,
 } from '../types/visibility';
 
-const BACKEND_BASE = 'http://127.0.0.1:8000';
+import { API_BASE_URL } from './apiClient';
+
+const BACKEND_BASE = API_BASE_URL;
 
 export async function fetchInstantVisibility(
   req: VisibilityInstantRequest

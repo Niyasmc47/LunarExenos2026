@@ -38,4 +38,5 @@ backend/data/lunar/**/*.tiff
 *.tiff
 test-results/
 playwright-report/
+*.bak
 

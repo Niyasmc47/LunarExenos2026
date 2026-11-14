@@ -34,9 +34,6 @@ export const Header: React.FC = () => {
             <h1 className="text-base font-bold tracking-wider text-slate-100 font-mono">
               LUNAVISTA
             </h1>
-            <span className="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded tracking-widest font-semibold">
-              {appScreen === 'lunar-explorer' ? 'MVP 1' : appScreen === 'terrain-explorer' ? 'MVP 2–5' : appScreen === 'mission-comparison' ? 'MVP 6' : appScreen === 'candidate-screening' ? 'MVP 7.2' : appScreen === 'window-planner' ? 'MVP 7.3' : appScreen === 'terrain-assessment' ? 'MVP 7.4' : appScreen === 'trade-off-analysis' ? 'MVP 7.5' : appScreen === 'mission-reports' ? 'MVP 7.6' : 'MVP 7.1'}
-            </span>
           </div>
           <span className="text-[10px] font-mono text-slate-400 hidden xl:block">
             Lunar Landing-Site Evaluation • NASA Space Apps 2026
@@ -107,9 +104,6 @@ export const Header: React.FC = () => {
         >
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>SCREENING</span>
-          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-600/40 hidden sm:inline">
-            MVP 7.2
-          </span>
         </button>
 
         <button
@@ -122,9 +116,6 @@ export const Header: React.FC = () => {
         >
           <CalendarClock className="w-3.5 h-3.5" />
           <span>WINDOW PLANNER</span>
-          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-600/40 hidden sm:inline">
-            MVP 7.3
-          </span>
         </button>
 
         <button
@@ -137,9 +128,6 @@ export const Header: React.FC = () => {
         >
           <Compass className="w-3.5 h-3.5" />
           <span>TERRAIN ASSESSMENT</span>
-          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40 hidden sm:inline">
-            MVP 7.4
-          </span>
         </button>
 
         <button
@@ -152,9 +140,6 @@ export const Header: React.FC = () => {
         >
           <Scale className="w-3.5 h-3.5" />
           <span>TRADE-OFF</span>
-          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-600/40 hidden sm:inline">
-            MVP 7.5
-          </span>
         </button>
 
         <button
@@ -167,9 +152,6 @@ export const Header: React.FC = () => {
         >
           <FileText className="w-3.5 h-3.5" />
           <span>REPORTS</span>
-          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-pink-950 text-pink-300 border border-pink-600/40 hidden sm:inline">
-            MVP 7.6
-          </span>
         </button>
       </div>
 
