@@ -40,6 +40,8 @@ export interface RoughnessAssessmentMetrics {
 
 export interface FootprintDataQuality {
   coverage_status: DataCoverageStatus;
+  coverage_certainty?: string;
+  assessment_mode?: string;
   requested_radius_m: number;
   nominal_grid_spacing_m: number;
   effective_resolution_note: string;

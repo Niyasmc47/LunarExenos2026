@@ -40,7 +40,7 @@ export const TerrainDetailDrawer: React.FC = () => {
                 </span>
               </div>
               <span className="text-[11px] font-mono text-slate-400">
-                Lat: {c.latitude.toFixed(4)}° • Lon: {c.longitude.toFixed(4)}° • Radius: {c.data_quality.requested_radius_m} m
+                Lat: {c.latitude.toFixed(4)}° • Lon: {c.longitude.toFixed(4)}° • {c.data_quality.requested_radius_m === 0 ? 'Point Assessment (Single Pixel)' : `Radius: ${c.data_quality.requested_radius_m} m`}
               </span>
             </div>
 
@@ -99,10 +99,15 @@ export const TerrainDetailDrawer: React.FC = () => {
             </div>
             <div>
               <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-                Footprint Coverage
+                {c.data_quality.requested_radius_m === 0 ? 'Data Quality' : 'Footprint Coverage'}
               </span>
               <span className="text-emerald-400 font-semibold mt-1 block">
                 {c.data_quality.coverage_status} ({c.data_quality.valid_data_percentage}%)
+                {c.data_quality.coverage_certainty && (
+                  <span className="ml-1 text-[10px] text-slate-400 font-normal">
+                    [{c.data_quality.coverage_certainty === 'COMPLETE_100PCT' ? '100% Certified' : c.data_quality.coverage_certainty === 'COMPLETE_GE95_UNMEASURED_RESIDUAL' ? '≥95% Residual Unmeasured' : c.data_quality.coverage_certainty}]
+                  </span>
+                )}
               </span>
               <span className="text-[10px] text-slate-500 block">
                 {c.data_quality.valid_pixels_in_footprint} valid 5m pixels
@@ -220,7 +225,7 @@ export const TerrainDetailDrawer: React.FC = () => {
                 A digital elevation model does not establish subsurface mechanical properties or bearing strength.
               </li>
               <li>
-                A 5 m nominal grid spacing does not guarantee 5 m effective measurement resolution (~90% interpolated).
+                A 5 m nominal grid spacing does not guarantee 5 m effective measurement resolution (raster values between LOLA ground tracks are interpolated).
               </li>
               <li>
                 A point measurement does not certify the suitability of an entire landing footprint.

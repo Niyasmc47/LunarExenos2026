@@ -111,11 +111,15 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
 
           <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-slate-950/60 p-2 rounded-lg border border-slate-800/40">
             <div>
-              <span className="text-[9px] text-slate-500 uppercase block">Footprint Min</span>
+              <span className="text-[9px] text-slate-500 uppercase block">
+                {dq.requested_radius_m === 0 ? 'Point Elev' : 'Footprint Min'}
+              </span>
               <span>{elev.min_elevation_m != null ? `${elev.min_elevation_m.toFixed(1)} m` : 'N/A'}</span>
             </div>
             <div>
-              <span className="text-[9px] text-slate-500 uppercase block">Footprint Max</span>
+              <span className="text-[9px] text-slate-500 uppercase block">
+                {dq.requested_radius_m === 0 ? 'Point Elev' : 'Footprint Max'}
+              </span>
               <span>{elev.max_elevation_m != null ? `${elev.max_elevation_m.toFixed(1)} m` : 'N/A'}</span>
             </div>
             <div>
@@ -143,11 +147,15 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
 
           <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-slate-950/60 p-2 rounded-lg border border-slate-800/40">
             <div>
-              <span className="text-[9px] text-slate-500 uppercase block">Footprint Min</span>
+              <span className="text-[9px] text-slate-500 uppercase block">
+                {dq.requested_radius_m === 0 ? 'Point Slope' : 'Footprint Min'}
+              </span>
               <span>{slope.min_slope_deg != null ? `${slope.min_slope_deg.toFixed(1)}°` : 'N/A'}</span>
             </div>
             <div>
-              <span className="text-[9px] text-slate-500 uppercase block">Footprint Max</span>
+              <span className="text-[9px] text-slate-500 uppercase block">
+                {dq.requested_radius_m === 0 ? 'Point Slope' : 'Footprint Max'}
+              </span>
               <span>{slope.max_slope_deg != null ? `${slope.max_slope_deg.toFixed(1)}°` : 'N/A'}</span>
             </div>
             <div>
@@ -216,13 +224,21 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         {/* Spatial Coverage */}
         <div className="p-2.5 bg-slate-900/40 rounded-lg border border-slate-800 text-[10px] font-mono space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span>Footprint Radius: <strong className="text-white">{dq.requested_radius_m} m</strong></span>
+            <span>
+              {dq.requested_radius_m === 0 ? (
+                <strong className="text-sky-300">Point Assessment (Single Pixel)</strong>
+              ) : (
+                <>Footprint Radius: <strong className="text-white">{dq.requested_radius_m} m</strong></>
+              )}
+            </span>
             <span className={dq.coverage_status === 'COMPLETE' ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>
               {dq.coverage_status} ({dq.valid_data_percentage}%)
             </span>
           </div>
           <p className="text-slate-500">
-            Evaluated area: {dq.evaluated_area_m2} m² ({dq.valid_pixels_in_footprint} / {dq.total_pixels_in_footprint} valid 5m pixels)
+            {dq.requested_radius_m === 0
+              ? `Center pixel: ${dq.valid_pixels_in_footprint === 1 ? 'Valid data (5 m × 5 m)' : 'NoData'}`
+              : `Evaluated area: ${dq.evaluated_area_m2} m² (${dq.valid_pixels_in_footprint} / ${dq.total_pixels_in_footprint} valid 5m pixels)`}
           </p>
         </div>
       </div>

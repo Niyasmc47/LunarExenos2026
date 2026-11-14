@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
 import { formatCoordinates } from '../../utils/lunarCoordinates';
 import { ViewSwitcher } from '../controls/ViewSwitcher';
-import { Orbit, Copy, Check, Radio, Globe2, Mountain, GitCompare, SlidersHorizontal, ShieldCheck, CalendarClock, Compass } from 'lucide-react';
+import { Orbit, Copy, Check, Radio, Globe2, Mountain, GitCompare, SlidersHorizontal, ShieldCheck, CalendarClock, Compass, Scale } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const appScreen = useLocationStore((state) => state.appScreen);
@@ -35,7 +35,7 @@ export const Header: React.FC = () => {
               LUNAVISTA
             </h1>
             <span className="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded tracking-widest font-semibold">
-              {appScreen === 'lunar-explorer' ? 'MVP 1' : appScreen === 'terrain-explorer' ? 'MVP 2–5' : appScreen === 'mission-comparison' ? 'MVP 6' : appScreen === 'candidate-screening' ? 'MVP 7.2' : appScreen === 'window-planner' ? 'MVP 7.3' : appScreen === 'terrain-assessment' ? 'MVP 7.4' : 'MVP 7.1'}
+              {appScreen === 'lunar-explorer' ? 'MVP 1' : appScreen === 'terrain-explorer' ? 'MVP 2–5' : appScreen === 'mission-comparison' ? 'MVP 6' : appScreen === 'candidate-screening' ? 'MVP 7.2' : appScreen === 'window-planner' ? 'MVP 7.3' : appScreen === 'terrain-assessment' ? 'MVP 7.4' : appScreen === 'trade-off-analysis' ? 'MVP 7.5' : 'MVP 7.1'}
             </span>
           </div>
           <span className="text-[10px] font-mono text-slate-400 hidden xl:block">
@@ -139,6 +139,21 @@ export const Header: React.FC = () => {
           <span>TERRAIN ASSESSMENT</span>
           <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40 hidden sm:inline">
             MVP 7.4
+          </span>
+        </button>
+
+        <button
+          onClick={() => setAppScreen('trade-off-analysis')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+            appScreen === 'trade-off-analysis'
+              ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <Scale className="w-3.5 h-3.5" />
+          <span>TRADE-OFF</span>
+          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-purple-950 text-purple-300 border border-purple-600/40 hidden sm:inline">
+            MVP 7.5
           </span>
         </button>
       </div>

@@ -8,6 +8,7 @@ import { MissionRequirementsWorkspace } from './components/mission-requirements/
 import { CandidateScreeningWorkspace } from './components/screening/CandidateScreeningWorkspace';
 import { MissionWindowPlannerWorkspace } from './components/window-planner/MissionWindowPlannerWorkspace';
 import { TerrainAssessmentWorkspace } from './components/terrain-assessment/TerrainAssessmentWorkspace';
+import { TradeOffWorkspace } from './components/trade-off/TradeOffWorkspace';
 
 export const App: React.FC = () => {
   const appScreen = useLocationStore((state) => state.appScreen);
@@ -27,6 +28,8 @@ export const App: React.FC = () => {
         <MissionWindowPlannerWorkspace />
       ) : appScreen === 'terrain-assessment' ? (
         <TerrainAssessmentWorkspace />
+      ) : appScreen === 'trade-off-analysis' ? (
+        <TradeOffWorkspace />
       ) : (
         <MissionRequirementsWorkspace />
       )}

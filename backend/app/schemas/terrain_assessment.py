@@ -59,11 +59,13 @@ class RoughnessAssessmentMetrics(BaseModel):
 
 class FootprintDataQuality(BaseModel):
     coverage_status: DataCoverageStatus = Field(DataCoverageStatus.COMPLETE)
+    coverage_certainty: str = Field("COMPLETE_100PCT", description="'COMPLETE_100PCT', 'PARTIAL_INDETERMINATE', or 'UNAVAILABLE'")
+    assessment_mode: str = Field("CIRCULAR_FOOTPRINT", description="'POINT' for radius 0.0 or 'CIRCULAR_FOOTPRINT' for radius > 0.0")
     requested_radius_m: float = Field(..., description="Requested assessment radius in meters (0.0 = point assessment)")
     nominal_grid_spacing_m: float = Field(5.0, description="Nominal raster grid spacing in meters")
     effective_resolution_note: str = Field(
-        "Nominal 5 m/pixel grid spacing. ~90% of LOLA polar pixels are interpolated between ground tracks. "
-        "Grid spacing does not guarantee effective measurement resolution."
+        "Nominal 5 m/pixel grid spacing. Effective spatial resolution varies with LOLA orbital track density; "
+        "pixels between laser ground tracks are interpolated. Nominal grid spacing does not guarantee 5 m effective measurement resolution."
     )
     total_pixels_in_footprint: int = Field(0)
     valid_pixels_in_footprint: int = Field(0)

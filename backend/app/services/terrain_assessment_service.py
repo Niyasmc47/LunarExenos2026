@@ -49,7 +49,7 @@ MANDATORY_SCIENTIFIC_DISCLAIMERS: List[str] = [
     "Surface slope alone does not guarantee lunar landing safety, regolith trafficability, or rover navigability.",
     "Terrain roughness is not a substitute for boulder detection. Small-scale meter-level boulder hazards are below LOLA 5 m/pixel raster resolution.",
     "A digital elevation model does not establish subsurface bearing capacity, soil cohesion, or geotechnical mechanical properties.",
-    "A 5 m nominal grid spacing does not guarantee 5 m effective measurement resolution (~90% of polar pixels are interpolated between ground tracks).",
+    "A 5 m nominal grid spacing does not guarantee 5 m effective measurement resolution (raster values between LOLA ground tracks are interpolated).",
     "A point measurement does not certify the suitability of an entire landing footprint.",
     "Partial DEM coverage cannot certify the missing terrain.",
 ]
@@ -277,7 +277,7 @@ class TerrainAssessmentService:
                 point_slope=slope_metrics.point_slope_deg,
                 max_footprint_slope=slope_metrics.max_slope_deg,
                 exceedance_pct=slope_metrics.exceedance_percentage,
-                coverage=data_quality.coverage_status,
+                dq=data_quality,
             )
             self._classify_req_result(item, hard_results, soft_results, info_results)
 
@@ -287,7 +287,7 @@ class TerrainAssessmentService:
                 req=trn_cfg.min_elevation_m,
                 point_elev=elev_metrics.point_elevation_m,
                 min_footprint_elev=elev_metrics.min_elevation_m,
-                coverage=data_quality.coverage_status,
+                dq=data_quality,
             )
             self._classify_req_result(item, hard_results, soft_results, info_results)
 
@@ -297,7 +297,7 @@ class TerrainAssessmentService:
                 req=trn_cfg.max_elevation_m,
                 point_elev=elev_metrics.point_elevation_m,
                 max_footprint_elev=elev_metrics.max_elevation_m,
-                coverage=data_quality.coverage_status,
+                dq=data_quality,
             )
             self._classify_req_result(item, hard_results, soft_results, info_results)
 
@@ -386,6 +386,8 @@ class TerrainAssessmentService:
             # Out of bounds completely
             dq = FootprintDataQuality(
                 coverage_status=DataCoverageStatus.UNAVAILABLE,
+                coverage_certainty="UNAVAILABLE",
+                assessment_mode="POINT" if radius_m <= 0.0 else "CIRCULAR_FOOTPRINT",
                 requested_radius_m=radius_m,
                 nominal_grid_spacing_m=spacing_m,
                 total_pixels_in_footprint=0,
@@ -404,7 +406,8 @@ class TerrainAssessmentService:
             valid_elev = point_elev is not None
             valid_slope = point_slope is not None
             is_valid = valid_elev and valid_slope
-            cov_status = DataCoverageStatus.COMPLETE if is_valid else DataCoverageStatus.PARTIAL
+            cov_status = DataCoverageStatus.COMPLETE if is_valid else (DataCoverageStatus.UNAVAILABLE if (point_elev is None and point_slope is None) else DataCoverageStatus.PARTIAL)
+            cov_cert = "COMPLETE_100PCT" if is_valid else ("UNAVAILABLE" if (point_elev is None and point_slope is None) else "PARTIAL_COVERAGE")
 
             slope_dist: Dict[str, float] = {}
             exceedance = 0.0
@@ -416,6 +419,8 @@ class TerrainAssessmentService:
 
             dq = FootprintDataQuality(
                 coverage_status=cov_status,
+                coverage_certainty=cov_cert,
+                assessment_mode="POINT",
                 requested_radius_m=0.0,
                 nominal_grid_spacing_m=spacing_m,
                 total_pixels_in_footprint=1,
@@ -453,6 +458,8 @@ class TerrainAssessmentService:
         if surf_src is None:
             dq = FootprintDataQuality(
                 coverage_status=DataCoverageStatus.UNAVAILABLE,
+                coverage_certainty="UNAVAILABLE",
+                assessment_mode="CIRCULAR_FOOTPRINT",
                 requested_radius_m=radius_m,
                 nominal_grid_spacing_m=spacing_m,
                 total_pixels_in_footprint=0,
@@ -463,6 +470,17 @@ class TerrainAssessmentService:
                 coverage_warnings=["DEM surface file is not loaded."],
             )
             return ElevationAssessmentMetrics(), SlopeAssessmentMetrics(), dq
+
+        # Raster compatibility verification
+        if slp_src is not None:
+            if surf_src.crs != slp_src.crs:
+                warnings.append(f"CRS mismatch: Surface DEM ({surf_src.crs}) vs Slope product ({slp_src.crs}).")
+            if surf_src.transform != slp_src.transform:
+                warnings.append("Transform/resolution mismatch between Surface DEM and Slope product.")
+            if surf_src.width != slp_src.width or surf_src.height != slp_src.height:
+                warnings.append(f"Dimension mismatch: Surface DEM ({surf_src.width}x{surf_src.height}) vs Slope product ({slp_src.width}x{slp_src.height}).")
+        else:
+            warnings.append("LOLA slope product is not loaded.")
 
         # Footprint bounding box in projected meters
         left = proj_x - radius_m
@@ -479,9 +497,6 @@ class TerrainAssessmentService:
         row_start = int(math.floor(min(r_min, r_max)))
         row_end = int(math.ceil(max(r_min, r_max)))
 
-        w_pixels = max(1, col_end - col_start)
-        h_pixels = max(1, row_end - row_start)
-
         # Check intersection with raster bounds
         src_w, src_h = surf_src.width, surf_src.height
         clip_col_start = max(0, col_start)
@@ -489,15 +504,21 @@ class TerrainAssessmentService:
         clip_row_start = max(0, row_start)
         clip_row_end = min(src_h, row_end)
 
+        # Total expected pixels in a full theoretical circle of radius R with 5m pixels
+        # A circle of radius R has area pi*R^2; with pixel area (spacing_m^2):
+        expected_full_pixels = int(math.ceil(math.pi * (radius_m / spacing_m) ** 2))
+
         if clip_col_start >= clip_col_end or clip_row_start >= clip_row_end:
             # Completely out of raster
             dq = FootprintDataQuality(
                 coverage_status=DataCoverageStatus.UNAVAILABLE,
+                coverage_certainty="UNAVAILABLE",
+                assessment_mode="CIRCULAR_FOOTPRINT",
                 requested_radius_m=radius_m,
                 nominal_grid_spacing_m=spacing_m,
-                total_pixels_in_footprint=0,
+                total_pixels_in_footprint=expected_full_pixels,
                 valid_pixels_in_footprint=0,
-                nodata_pixels_in_footprint=0,
+                nodata_pixels_in_footprint=expected_full_pixels,
                 valid_data_percentage=0.0,
                 evaluated_area_m2=0.0,
                 coverage_warnings=["Footprint is entirely outside DEM extent."],
@@ -513,32 +534,37 @@ class TerrainAssessmentService:
         )
 
         surf_data = surf_src.read(1, window=window)
-        slp_data = slp_src.read(1, window=window) if slp_src is not None else None
+        slp_data = None
+        if slp_src is not None and surf_src.width == slp_src.width and surf_src.height == slp_src.height:
+            try:
+                slp_data = slp_src.read(1, window=window)
+            except Exception as e:
+                warnings.append(f"Failed to read slope window: {str(e)}")
 
-        # Build projected coordinates for each pixel in this window
+        # Build projected coordinates for each pixel center in this window
         cols = np.arange(clip_col_start, clip_col_end)
         rows = np.arange(clip_row_start, clip_row_end)
         grid_cols, grid_rows = np.meshgrid(cols, rows)
 
-        # Affine transform: x = a*col + b*row + c; y = d*col + e*row + f
+        # Affine transform with pixel center offset (0.5 * pixel_size)
         px_xs = transform.a * grid_cols + transform.b * grid_rows + transform.c + transform.a * 0.5
         px_ys = transform.d * grid_cols + transform.e * grid_rows + transform.f + transform.e * 0.5
 
-        # Circular mask: distance <= radius_m
+        # Circular mask in metric CRS: distance <= radius_m
         dist_sq = (px_xs - proj_x) ** 2 + (px_ys - proj_y) ** 2
         circle_mask = dist_sq <= (radius_m ** 2)
 
-        # Total expected pixels in a full circle of radius R with 5m pixels
-        expected_full_pixels = int(math.ceil(math.pi * (radius_m / spacing_m) ** 2))
-        total_footprint_pixels = max(int(np.sum(circle_mask)), expected_full_pixels)
+        intersected_circle_pixels = int(np.sum(circle_mask))
+        total_footprint_pixels = max(intersected_circle_pixels, expected_full_pixels)
 
         if not np.any(circle_mask):
             circle_mask[0, 0] = True
+            total_footprint_pixels = max(1, expected_full_pixels)
 
         elev_footprint = surf_data[circle_mask]
         slp_footprint = slp_data[circle_mask] if slp_data is not None else None
 
-        # Identify valid pixels
+        # Identify valid pixels in surface DEM
         nodata_elev = surf_src.nodata if surf_src.nodata is not None else -32767.0
         valid_elev_mask = (elev_footprint != nodata_elev) & (~np.isnan(elev_footprint))
 
@@ -548,17 +574,29 @@ class TerrainAssessmentService:
 
         valid_pct = round((valid_pixel_count / max(1, total_footprint_pixels)) * 100.0, 1)
 
-        # Coverage status
+        # Non-overlapping coverage classification:
+        # UNAVAILABLE: valid_pct == 0.0%
+        # PARTIAL: 0.0% < valid_pct < 95.0%
+        # COMPLETE: 95.0% <= valid_pct <= 100.0% (exactly 95.0% belongs unambiguously to COMPLETE)
         if valid_pixel_count == 0:
             cov_status = DataCoverageStatus.UNAVAILABLE
+            cov_certainty = "UNAVAILABLE"
             warnings.append(f"Footprint of radius {radius_m:.0f} m contains zero valid elevation pixels.")
-        elif valid_pixel_count < total_footprint_pixels * 0.95:
+        elif valid_pct < 95.0:
             cov_status = DataCoverageStatus.PARTIAL
+            cov_certainty = "PARTIAL_COVERAGE"
             warnings.append(
-                f"Partial footprint coverage: {valid_pct:.1f}% valid data ({nodata_pixel_count} nodata pixels)."
+                f"Partial footprint coverage: {valid_pct:.1f}% valid data ({nodata_pixel_count} nodata/uncovered pixels)."
             )
         else:
             cov_status = DataCoverageStatus.COMPLETE
+            if nodata_pixel_count == 0:
+                cov_certainty = "COMPLETE_100PCT"
+            else:
+                cov_certainty = "COMPLETE_GE95_UNMEASURED_RESIDUAL"
+                warnings.append(
+                    f"Footprint has {valid_pct:.1f}% valid coverage with {nodata_pixel_count} unmeasured residual pixel(s)."
+                )
 
         # Elevation stats
         if valid_elevs.size > 0:
@@ -593,6 +631,8 @@ class TerrainAssessmentService:
 
         dq = FootprintDataQuality(
             coverage_status=cov_status,
+            coverage_certainty=cov_certainty,
+            assessment_mode="CIRCULAR_FOOTPRINT",
             requested_radius_m=radius_m,
             nominal_grid_spacing_m=spacing_m,
             total_pixels_in_footprint=total_footprint_pixels,
@@ -625,19 +665,28 @@ class TerrainAssessmentService:
 
         return elev_m, slope_m, dq
 
+        return elev_m, slope_m, dq
+
     def _eval_slope_requirement(
         self,
         req: SingleRequirement,
         point_slope: Optional[float],
         max_footprint_slope: Optional[float],
         exceedance_pct: Optional[float],
-        coverage: DataCoverageStatus,
+        dq: FootprintDataQuality,
     ) -> EvaluatedTerrainRequirement:
-        """Evaluates maximum slope requirement against candidate point slope and footprint max slope."""
+        """
+        Evaluates maximum slope requirement against candidate point slope and footprint max slope.
+        Scientifically certifies compliance:
+        - If point or footprint slope violates limit -> FAIL (definitive failure preserved even if partial).
+        - If missing data/unavailable -> INDETERMINATE.
+        - If measured slopes comply, but unmeasured residual pixels exist -> INDETERMINATE (unmeasured terrain could violate limit).
+        - If measured slopes comply AND footprint is 100% complete (nodata == 0) -> PASS.
+        """
         thresh = req.value
         op = req.operator
 
-        if point_slope is None or coverage == DataCoverageStatus.UNAVAILABLE:
+        if (point_slope is None and max_footprint_slope is None) or dq.coverage_status == DataCoverageStatus.UNAVAILABLE:
             return EvaluatedTerrainRequirement(
                 requirement_id=req.id,
                 requirement_name=req.name,
@@ -649,36 +698,40 @@ class TerrainAssessmentService:
                 actual_value_str="UNAVAILABLE (NoData / Out of Bounds)",
                 unit=req.unit,
                 verdict=ScreeningVerdict.INDETERMINATE,
-                explanation="Slope data is missing or outside DEM coverage.",
+                explanation="Slope data is missing or candidate coordinate is outside DEM coverage.",
                 supporting_data_source="NASA LOLA 5 m Slope Product",
             )
 
-        # Compare point slope against threshold
-        is_point_compliant = self._compare(point_slope, op, thresh)
-
-        # Footprint max check
-        is_footprint_compliant = True
-        if max_footprint_slope is not None:
-            is_footprint_compliant = self._compare(max_footprint_slope, op, thresh)
-
-        actual_str = f"Point: {point_slope:.1f}°"
-        if max_footprint_slope is not None and max_footprint_slope != point_slope:
-            actual_str += f" (Footprint Max: {max_footprint_slope:.1f}°)"
-
-        if not is_point_compliant or not is_footprint_compliant:
-            # Clear Failure
-            verdict = ScreeningVerdict.FAIL
-            exceed_note = f" with {exceedance_pct:.1f}% footprint exceedance" if exceedance_pct is not None else ""
-            explanation = f"Slope exceeds maximum limit ({actual_str} vs threshold {op} {thresh} {req.unit}{exceed_note})."
+        # Distinguish Point mode vs Circular Footprint mode
+        if dq.assessment_mode == "POINT":
+            actual_str = f"Point: {point_slope:.1f}°" if point_slope is not None else "Point: N/A"
         else:
-            # Within threshold
-            if coverage == DataCoverageStatus.COMPLETE:
+            pt_s = f"Point: {point_slope:.1f}°" if point_slope is not None else "Point: N/A"
+            max_s = f"Footprint Max: {max_footprint_slope:.1f}°" if max_footprint_slope is not None else "Footprint Max: N/A"
+            exc_s = f"Exceedance: {exceedance_pct:.1f}%" if exceedance_pct is not None else "Exceedance: N/A"
+            actual_str = f"{pt_s} | {max_s} | {exc_s}"
+
+        # Evaluate compliance
+        point_fails = (point_slope is not None) and not self._compare(point_slope, op, thresh)
+        footprint_fails = (max_footprint_slope is not None) and not self._compare(max_footprint_slope, op, thresh)
+
+        if point_fails or footprint_fails:
+            # Clear Failure: Preserved even if coverage is partial or residual
+            verdict = ScreeningVerdict.FAIL
+            explanation = f"Slope limit exceeded ({actual_str} vs threshold {op} {thresh} {req.unit})."
+        else:
+            # Measured pixels satisfy requirement
+            if dq.assessment_mode == "POINT":
                 verdict = ScreeningVerdict.PASS
-                explanation = f"Measured slope satisfies requirement across complete footprint ({actual_str} vs threshold {op} {thresh} {req.unit})."
+                explanation = f"Candidate point slope satisfies requirement ({actual_str} vs threshold {op} {thresh} {req.unit})."
+            elif dq.nodata_pixels_in_footprint == 0:
+                # 100% complete footprint data
+                verdict = ScreeningVerdict.PASS
+                explanation = f"Measured slope satisfies requirement across complete 100% evaluated footprint ({actual_str} vs threshold {op} {thresh} {req.unit})."
             else:
-                # Partial coverage: cannot certify unmeasured terrain
+                # Incomplete footprint: unmeasured terrain could contain hazardous slope
                 verdict = ScreeningVerdict.INDETERMINATE
-                explanation = f"Measured slope satisfies requirement ({actual_str}), but partial footprint coverage prevents full certification."
+                explanation = f"Measured slopes comply ({actual_str}), but {dq.nodata_pixels_in_footprint} unmeasured pixel(s) ({dq.valid_data_percentage:.1f}% coverage) prevent conclusive certification against maximum slope limit."
 
         return EvaluatedTerrainRequirement(
             requirement_id=req.id,
@@ -700,12 +753,12 @@ class TerrainAssessmentService:
         req: SingleRequirement,
         point_elev: Optional[float],
         min_footprint_elev: Optional[float],
-        coverage: DataCoverageStatus,
+        dq: FootprintDataQuality,
     ) -> EvaluatedTerrainRequirement:
         thresh = req.value
         op = req.operator
 
-        if point_elev is None or coverage == DataCoverageStatus.UNAVAILABLE:
+        if (point_elev is None and min_footprint_elev is None) or dq.coverage_status == DataCoverageStatus.UNAVAILABLE:
             return EvaluatedTerrainRequirement(
                 requirement_id=req.id,
                 requirement_name=req.name,
@@ -721,24 +774,29 @@ class TerrainAssessmentService:
                 supporting_data_source="NASA LOLA 5 m Surface DEM",
             )
 
-        is_point_ok = self._compare(point_elev, op, thresh)
-        eval_elev = min_footprint_elev if min_footprint_elev is not None else point_elev
-        is_footprint_ok = self._compare(eval_elev, op, thresh)
+        if dq.assessment_mode == "POINT":
+            actual_str = f"Point: {point_elev:+.1f} m" if point_elev is not None else "Point: N/A"
+        else:
+            pt_e = f"Point: {point_elev:+.1f} m" if point_elev is not None else "Point: N/A"
+            min_e = f"Footprint Min: {min_footprint_elev:+.1f} m" if min_footprint_elev is not None else "Footprint Min: N/A"
+            actual_str = f"{pt_e} | {min_e}"
 
-        actual_str = f"{point_elev:+.1f} m"
-        if min_footprint_elev is not None and min_footprint_elev != point_elev:
-            actual_str += f" (Min: {min_footprint_elev:+.1f} m)"
+        point_fails = (point_elev is not None) and not self._compare(point_elev, op, thresh)
+        footprint_fails = (min_footprint_elev is not None) and not self._compare(min_footprint_elev, op, thresh)
 
-        if not is_point_ok or not is_footprint_ok:
+        if point_fails or footprint_fails:
             verdict = ScreeningVerdict.FAIL
             explanation = f"Elevation falls below configured lower limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
         else:
-            if coverage == DataCoverageStatus.COMPLETE:
+            if dq.assessment_mode == "POINT":
                 verdict = ScreeningVerdict.PASS
-                explanation = f"Surface elevation satisfies minimum limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
+                explanation = f"Candidate point elevation satisfies minimum limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
+            elif dq.nodata_pixels_in_footprint == 0:
+                verdict = ScreeningVerdict.PASS
+                explanation = f"Surface elevation satisfies minimum limit across complete 100% evaluated footprint ({actual_str} vs threshold {op} {thresh} {req.unit})."
             else:
                 verdict = ScreeningVerdict.INDETERMINATE
-                explanation = f"Measured elevation satisfies limit ({actual_str}), but partial footprint coverage prevents full certification."
+                explanation = f"Measured elevations comply ({actual_str}), but {dq.nodata_pixels_in_footprint} unmeasured pixel(s) ({dq.valid_data_percentage:.1f}% coverage) prevent conclusive certification against minimum elevation limit."
 
         return EvaluatedTerrainRequirement(
             requirement_id=req.id,
@@ -760,12 +818,12 @@ class TerrainAssessmentService:
         req: SingleRequirement,
         point_elev: Optional[float],
         max_footprint_elev: Optional[float],
-        coverage: DataCoverageStatus,
+        dq: FootprintDataQuality,
     ) -> EvaluatedTerrainRequirement:
         thresh = req.value
         op = req.operator
 
-        if point_elev is None or coverage == DataCoverageStatus.UNAVAILABLE:
+        if (point_elev is None and max_footprint_elev is None) or dq.coverage_status == DataCoverageStatus.UNAVAILABLE:
             return EvaluatedTerrainRequirement(
                 requirement_id=req.id,
                 requirement_name=req.name,
@@ -781,24 +839,29 @@ class TerrainAssessmentService:
                 supporting_data_source="NASA LOLA 5 m Surface DEM",
             )
 
-        is_point_ok = self._compare(point_elev, op, thresh)
-        eval_elev = max_footprint_elev if max_footprint_elev is not None else point_elev
-        is_footprint_ok = self._compare(eval_elev, op, thresh)
+        if dq.assessment_mode == "POINT":
+            actual_str = f"Point: {point_elev:+.1f} m" if point_elev is not None else "Point: N/A"
+        else:
+            pt_e = f"Point: {point_elev:+.1f} m" if point_elev is not None else "Point: N/A"
+            max_e = f"Footprint Max: {max_footprint_elev:+.1f} m" if max_footprint_elev is not None else "Footprint Max: N/A"
+            actual_str = f"{pt_e} | {max_e}"
 
-        actual_str = f"{point_elev:+.1f} m"
-        if max_footprint_elev is not None and max_footprint_elev != point_elev:
-            actual_str += f" (Max: {max_footprint_elev:+.1f} m)"
+        point_fails = (point_elev is not None) and not self._compare(point_elev, op, thresh)
+        footprint_fails = (max_footprint_elev is not None) and not self._compare(max_footprint_elev, op, thresh)
 
-        if not is_point_ok or not is_footprint_ok:
+        if point_fails or footprint_fails:
             verdict = ScreeningVerdict.FAIL
             explanation = f"Elevation exceeds configured upper limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
         else:
-            if coverage == DataCoverageStatus.COMPLETE:
+            if dq.assessment_mode == "POINT":
                 verdict = ScreeningVerdict.PASS
-                explanation = f"Surface elevation satisfies upper limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
+                explanation = f"Candidate point elevation satisfies upper limit ({actual_str} vs threshold {op} {thresh} {req.unit})."
+            elif dq.nodata_pixels_in_footprint == 0:
+                verdict = ScreeningVerdict.PASS
+                explanation = f"Surface elevation satisfies upper limit across complete 100% evaluated footprint ({actual_str} vs threshold {op} {thresh} {req.unit})."
             else:
                 verdict = ScreeningVerdict.INDETERMINATE
-                explanation = f"Measured elevation satisfies limit ({actual_str}), but partial footprint coverage prevents full certification."
+                explanation = f"Measured elevations comply ({actual_str}), but {dq.nodata_pixels_in_footprint} unmeasured pixel(s) ({dq.valid_data_percentage:.1f}% coverage) prevent conclusive certification against maximum elevation limit."
 
         return EvaluatedTerrainRequirement(
             requirement_id=req.id,
