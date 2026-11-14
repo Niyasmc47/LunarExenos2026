@@ -115,29 +115,32 @@ export const TerrainExplorer: React.FC = () => {
           )}
         </div>
 
-        {/* Bottom Elevation Profile Transect (Collapsible) */}
-        {showTransect && (
-          <div className="h-44 shrink-0 min-h-[150px] transition-all">
-            <DynamicElevationProfile />
-          </div>
+        {/* Bottom Elevation Profile Transect & Exports (Only in 2D Map mode) */}
+        {workspaceMode === '2d-map' && (
+          <>
+            {showTransect && (
+              <div className="h-44 shrink-0 min-h-[150px] transition-all">
+                <DynamicElevationProfile />
+              </div>
+            )}
+
+            <div className="shrink-0 flex items-center justify-between flex-wrap gap-2">
+              <button
+                onClick={() => setShowTransect(!showTransect)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                  showTransect
+                    ? 'bg-emerald-500 text-black shadow-md'
+                    : 'bg-[#0c121e] hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800'
+                }`}
+              >
+                <LineChart className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
+              </button>
+
+              <ExportToolbar />
+            </div>
+          </>
         )}
-
-        {/* Action Controls & Data Exports Strip */}
-        <div className="shrink-0 flex items-center justify-between flex-wrap gap-2">
-          <button
-            onClick={() => setShowTransect(!showTransect)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-              showTransect
-                ? 'bg-emerald-500 text-black shadow-md'
-                : 'bg-[#0c121e] hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800'
-            }`}
-          >
-            <LineChart className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
-          </button>
-
-          <ExportToolbar />
-        </div>
       </div>
 
       {/* Right Collapsible Inspection & Statistics Sidebar */}
