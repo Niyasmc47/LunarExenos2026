@@ -72,6 +72,28 @@ class HorizonEngineService:
                 citation=citation,
             )
 
+    @staticmethod
+    def compute_external_elevation_bound(
+        r0: float,
+        d_exit_m: float,
+        h_max_regional_m: float = 5140.0,
+        r_moon_m: float = LUNAR_RADIUS_M,
+    ) -> float:
+        """
+        Computes the maximum physically possible apparent elevation angle (in degrees)
+        of unmodeled external lunar topography beyond distance d_exit_m.
+        Uses maximum recorded lunar south polar topography h_max_regional_m (+5,140 m)
+        and spherical lunar curvature.
+        """
+        if d_exit_m <= 0.0:
+            return 90.0
+        r_target_max = r_moon_m + h_max_regional_m
+        theta = d_exit_m / r_moon_m
+        delta_z = r_target_max * math.cos(theta) - r0
+        delta_x = r_target_max * math.sin(theta)
+        angle_rad = math.atan2(delta_z, delta_x)
+        return float(np.clip(math.degrees(angle_rad), -90.0, 90.0))
+
     def calculate_horizon_from_raster(
         self,
         src: rasterio.DatasetReader,
@@ -275,22 +297,32 @@ class HorizonEngineService:
             valid_count_i = int(np.sum(row_valid))
 
             if valid_count_i == 0:
-                # No valid samples along this ray
+                # No valid samples along this ray: entire sector is unknown
                 nodata_count += 1
                 horizon_profile.append(
                     HorizonPoint(
-                        azimuth_deg=az_deg,
+                        azimuth_deg=round(az_deg, 2),
                         horizon_elevation_deg=0.0,
                         distance_to_horizon_m=0.0,
-                        horizon_surface_elevation_m=obs_h0,
-                        horizon_lat=lat,
-                        horizon_lon=lon,
+                        horizon_surface_elevation_m=round(obs_h0, 2),
+                        horizon_lat=round(lat, 6),
+                        horizon_lon=round(lon, 6),
+                        ray_coverage_complete=False,
+                        exit_distance_m=0.0,
+                        external_elevation_bound_deg=90.0,
                     )
                 )
                 continue
 
             if valid_count_i < n_dist:
                 partial_count += 1
+                ray_complete = False
+                d_exit = float(distances[row_valid][-1])
+            else:
+                ray_complete = True
+                d_exit = float(max_search_distance_m)
+
+            bound_deg = self.compute_external_elevation_bound(r0, d_exit)
 
             valid_angles = elevation_angles_deg[i, row_valid]
             valid_dist = distances[row_valid]
@@ -316,6 +348,9 @@ class HorizonEngineService:
                     horizon_surface_elevation_m=round(best_elev, 2),
                     horizon_lat=round(h_lat, 6),
                     horizon_lon=round(h_lon, 6),
+                    ray_coverage_complete=ray_complete,
+                    exit_distance_m=round(d_exit, 1),
+                    external_elevation_bound_deg=round(bound_deg, 3),
                 )
             )
 

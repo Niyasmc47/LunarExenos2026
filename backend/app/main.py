@@ -6,6 +6,12 @@ from app.api.regional_analysis import router as regional_router
 from app.api.exports import router as exports_router
 from app.api.horizon import router as horizon_router
 from app.api.ephemeris import router as ephemeris_router
+from app.api.visibility import router as visibility_router
+from app.api.scenarios import scenarios_router
+from app.api.mission_profiles import router as profiles_router
+from app.api.screening import screening_router
+from app.api.window_planner import window_planner_router
+from app.api.terrain_assessment import terrain_assessment_router
 
 app = FastAPI(
     title="LUNAVISTA Dynamic Lunar Terrain Analysis API",
@@ -28,6 +34,12 @@ app.include_router(regional_router)
 app.include_router(exports_router)
 app.include_router(horizon_router)
 app.include_router(ephemeris_router)
+app.include_router(visibility_router)
+app.include_router(scenarios_router)
+app.include_router(profiles_router)
+app.include_router(screening_router)
+app.include_router(window_planner_router)
+app.include_router(terrain_assessment_router)
 
 @app.get("/health")
 def health_check():

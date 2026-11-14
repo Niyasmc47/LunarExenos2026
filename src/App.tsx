@@ -3,6 +3,11 @@ import { useLocationStore } from './stores/locationStore';
 import { Header } from './components/layout/Header';
 import { Dashboard } from './components/layout/Dashboard';
 import { TerrainExplorer } from './components/terrain-analysis/TerrainExplorer';
+import { MissionComparisonWorkspace } from './components/scenario-comparison/MissionComparisonWorkspace';
+import { MissionRequirementsWorkspace } from './components/mission-requirements/MissionRequirementsWorkspace';
+import { CandidateScreeningWorkspace } from './components/screening/CandidateScreeningWorkspace';
+import { MissionWindowPlannerWorkspace } from './components/window-planner/MissionWindowPlannerWorkspace';
+import { TerrainAssessmentWorkspace } from './components/terrain-assessment/TerrainAssessmentWorkspace';
 
 export const App: React.FC = () => {
   const appScreen = useLocationStore((state) => state.appScreen);
@@ -10,7 +15,21 @@ export const App: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-screen bg-[#070b12] text-slate-100 font-sans overflow-hidden">
       <Header />
-      {appScreen === 'lunar-explorer' ? <Dashboard /> : <TerrainExplorer />}
+      {appScreen === 'lunar-explorer' ? (
+        <Dashboard />
+      ) : appScreen === 'terrain-explorer' ? (
+        <TerrainExplorer />
+      ) : appScreen === 'mission-comparison' ? (
+        <MissionComparisonWorkspace />
+      ) : appScreen === 'candidate-screening' ? (
+        <CandidateScreeningWorkspace />
+      ) : appScreen === 'window-planner' ? (
+        <MissionWindowPlannerWorkspace />
+      ) : appScreen === 'terrain-assessment' ? (
+        <TerrainAssessmentWorkspace />
+      ) : (
+        <MissionRequirementsWorkspace />
+      )}
     </div>
   );
 };

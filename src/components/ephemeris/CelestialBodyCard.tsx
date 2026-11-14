@@ -1,6 +1,6 @@
 import React from 'react';
 import { CelestialBodyPosition } from '../../types/ephemeris';
-import { Sun, Globe, Eye, EyeOff, Radio, Orbit, Clock, Zap, Wifi, WifiOff } from 'lucide-react';
+import { Sun, Globe, Eye, EyeOff, Radio, Orbit, Clock } from 'lucide-react';
 
 interface CelestialBodyCardProps {
   body: CelestialBodyPosition | null;
@@ -48,15 +48,15 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
           )}
           <div>
             <div className="font-bold text-slate-100 uppercase tracking-wider text-xs">
-              {isSun ? 'Sun (Solar Illumination)' : 'Earth (Communications)'}
+              {isSun ? 'Sun (Solar Position)' : 'Earth (Topocentric Geometry)'}
             </div>
             <div className="text-[10px] text-slate-400">
-              {isSun ? 'Determines solar power & surface shadow' : 'Direct-to-Earth (DTE) radio line-of-sight'}
+              {isSun ? 'Geometric direction & elevation above local horizontal' : 'Topocentric line-of-sight & apparent disk'}
             </div>
           </div>
         </div>
 
-        {/* Above vs Below Horizon Tag */}
+        {/* Above vs Below Local Horizontal Tag */}
         {body && (
           <span
             className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 border ${
@@ -66,7 +66,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
             }`}
           >
             {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            {isVisible ? 'ABOVE HORIZON' : 'BELOW HORIZON'}
+            {isVisible ? 'ABOVE LOCAL HORIZONTAL' : 'BELOW LOCAL HORIZONTAL'}
           </span>
         )}
       </div>
@@ -74,9 +74,9 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
       {/* Primary Coordinates Grid */}
       {body ? (
         <div className="space-y-2 mt-2">
-          {/* Plain-English Status Banner */}
+          {/* Plain-English Scientific Status Banner */}
           <div
-            className={`p-2 rounded-lg border flex items-center justify-between gap-2 ${
+            className={`p-2.5 rounded-lg border flex flex-col gap-1.5 ${
               isVisible
                 ? isSun
                   ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -86,32 +86,24 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
           >
             <div className="flex items-center gap-2">
               {isSun ? (
-                <Zap className={`w-4 h-4 ${isVisible ? 'text-amber-400' : 'text-slate-500'}`} />
-              ) : isVisible ? (
-                <Wifi className="w-4 h-4 text-emerald-400" />
+                <Sun className={`w-4 h-4 shrink-0 ${isVisible ? 'text-amber-400' : 'text-slate-500'}`} />
               ) : (
-                <WifiOff className="w-4 h-4 text-rose-400" />
+                <Globe className={`w-4 h-4 shrink-0 ${isVisible ? 'text-emerald-400' : 'text-rose-400'}`} />
               )}
-              <div>
-                <div className="font-bold text-[11px]">
-                  {isSun
-                    ? isVisible
-                      ? '☀️ SOLAR ILLUMINATION ACTIVE'
-                      : '🌑 LUNAR NIGHT / SHADOW'
-                    : isVisible
-                    ? '📡 DIRECT-TO-EARTH LINK OPEN'
-                    : '🚫 DIRECT RADIO BLOCKED BY MOON'}
-                </div>
-                <div className="text-[10px] opacity-80">
-                  {isSun
-                    ? isVisible
-                      ? 'Solar panels are actively generating power at this epoch.'
-                      : 'Landing site is in darkness. Battery/nuclear power required.'
-                    : isVisible
-                    ? 'Clear line of sight to Earth ground stations (Goldstone, Madrid, Canberra).'
-                    : 'Earth is hidden beneath the local horizon. Lunar relay satellite required.'}
-                </div>
+              <div className="font-bold text-[11px]">
+                {isSun
+                  ? isVisible
+                    ? '☀️ Sun Above Local Horizontal'
+                    : '🌑 Sun Below Local Horizontal'
+                  : isVisible
+                  ? '📡 Earth Above Local Horizontal'
+                  : '🚫 Earth Below Local Horizontal'}
               </div>
+            </div>
+            <div className="text-[9.5px] opacity-85 leading-tight bg-black/30 p-1.5 rounded border border-white/5">
+              {isSun
+                ? 'Solar visibility and actual electrical power generation are different measurements. Terrain obstruction and solar-panel system parameters have not yet been evaluated.'
+                : 'Geometric Earth visibility does not guarantee an operational radio link. Terrain obstruction and RF link-budget analysis have not yet been evaluated.'}
             </div>
           </div>
 

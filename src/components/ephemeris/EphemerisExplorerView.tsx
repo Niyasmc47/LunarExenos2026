@@ -35,66 +35,84 @@ export const EphemerisExplorerView: React.FC = () => {
   const isSunUp = sun ? sun.elevation_deg >= 0 : false;
   const isEarthUp = earth ? earth.elevation_deg >= 0 : false;
 
+  const sunStatus = !sun
+    ? 'Sun Position Available — Terrain Visibility Pending'
+    : isSunUp
+    ? 'Sun Above Local Horizontal'
+    : 'Sun Below Local Horizontal';
+
+  const earthStatus = !earth
+    ? 'Earth Position Available — Terrain Visibility Pending'
+    : isEarthUp
+    ? 'Earth Above Local Horizontal'
+    : 'Earth Below Local Horizontal';
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden gap-2">
       {/* Top Ephemeris Control Toolbar */}
       <EphemerisControlToolbar observerLat={observerLat} observerLon={observerLon} />
 
-      {/* High-Level Mission Status Banner (Plain English for Any User) */}
+      {/* High-Level Scientific Solar & Earth Geometry Status Banner */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-[#0c121e]/90 border border-slate-800 rounded-xl p-2.5 font-mono shadow-md text-xs">
-        {/* Sun / Solar Power Status */}
-        <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border ${
+        {/* Sun Geometry Status */}
+        <div className={`flex flex-col gap-1.5 px-3 py-2 rounded-lg border ${
           isSunUp
             ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
             : 'bg-slate-900/80 border-slate-800 text-slate-400'
         }`}>
-          <div className={`p-2 rounded-lg ${isSunUp ? 'bg-amber-400/20 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
-            <Sun className="w-5 h-5" />
+          <div className="flex items-center gap-2.5">
+            <div className={`p-2 rounded-lg ${isSunUp ? 'bg-amber-400/20 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
+              <Sun className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-slate-100 text-[11px] uppercase tracking-wider">
+                  ☀️ {sunStatus}
+                </span>
+                <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                  isSunUp ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
+                }`}>
+                  {sun ? (sun.elevation_deg > 0 ? `+${sun.elevation_deg.toFixed(1)}°` : `${sun.elevation_deg.toFixed(1)}°`) : '--'}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">
+                Geometric elevation: {sun ? `${sun.elevation_deg.toFixed(2)}°` : '--'} | Azimuth: {sun ? `${sun.azimuth_deg.toFixed(1)}°` : '--'}
+              </div>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-100 text-[11px] uppercase tracking-wider">
-                {isSunUp ? '☀️ Daylight (Solar Power Active)' : '🌑 Lunar Night (In Shadow)'}
-              </span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                isSunUp ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
-              }`}>
-                {sun ? (sun.elevation_deg > 0 ? `+${sun.elevation_deg.toFixed(1)}°` : `${sun.elevation_deg.toFixed(1)}°`) : '--'}
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-400 truncate mt-0.5">
-              {isSunUp
-                ? `Solar panels generate electricity at elevation +${sun?.elevation_deg.toFixed(1)}° (${sun?.azimuth_deg.toFixed(0)}° Azimuth)`
-                : 'Sun below horizon. Lunar night conditions; rover must draw battery power.'}
-            </div>
+          <div className="text-[9.5px] text-amber-300/80 bg-black/40 px-2 py-1 rounded border border-amber-500/20 leading-tight">
+            Solar visibility and actual electrical power generation are different measurements. Terrain obstruction and solar-panel system parameters have not yet been evaluated.
           </div>
         </div>
 
-        {/* Earth / Radio Comm Link Status */}
-        <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border ${
+        {/* Earth Geometry Status */}
+        <div className={`flex flex-col gap-1.5 px-3 py-2 rounded-lg border ${
           isEarthUp
             ? 'bg-sky-500/10 border-sky-500/30 text-sky-200'
             : 'bg-slate-900/80 border-slate-800 text-slate-400'
         }`}>
-          <div className={`p-2 rounded-lg ${isEarthUp ? 'bg-sky-400/20 text-sky-400' : 'bg-slate-800 text-rose-400'}`}>
-            <Globe className="w-5 h-5" />
+          <div className="flex items-center gap-2.5">
+            <div className={`p-2 rounded-lg ${isEarthUp ? 'bg-sky-400/20 text-sky-400' : 'bg-slate-800 text-rose-400'}`}>
+              <Globe className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-slate-100 text-[11px] uppercase tracking-wider">
+                  📡 {earthStatus}
+                </span>
+                <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                  isEarthUp ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
+                }`}>
+                  {earth ? (earth.elevation_deg > 0 ? `+${earth.elevation_deg.toFixed(1)}°` : `${earth.elevation_deg.toFixed(1)}°`) : '--'}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">
+                Geometric elevation: {earth ? `${earth.elevation_deg.toFixed(2)}°` : '--'} | Azimuth: {earth ? `${earth.azimuth_deg.toFixed(1)}°` : '--'} (1-way LT: {earth ? `${earth.light_time_seconds.toFixed(2)}s` : '--'})
+              </div>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-100 text-[11px] uppercase tracking-wider">
-                {isEarthUp ? '📡 Direct-to-Earth Link (Connected)' : '🚫 Direct Comm Link (Occulted)'}
-              </span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                isEarthUp ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
-              }`}>
-                {earth ? (earth.elevation_deg > 0 ? `+${earth.elevation_deg.toFixed(1)}°` : `${earth.elevation_deg.toFixed(1)}°`) : '--'}
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-400 truncate mt-0.5">
-              {isEarthUp
-                ? `Uninterrupted radio link to Earth at +${earth?.elevation_deg.toFixed(1)}° elevation (1-way delay: ${earth?.light_time_seconds.toFixed(2)}s)`
-                : 'Earth is hidden beneath the local terrain. Lunar relay satellite link required.'}
-            </div>
+          <div className="text-[9.5px] text-sky-300/80 bg-black/40 px-2 py-1 rounded border border-sky-500/20 leading-tight">
+            Geometric Earth visibility does not guarantee an operational radio link. Terrain obstruction and RF link-budget analysis have not yet been evaluated.
           </div>
         </div>
       </div>
