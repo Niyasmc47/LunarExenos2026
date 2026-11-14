@@ -3,7 +3,9 @@ export interface LunarCoordinates {
   longitude: number;  // -180 to +180 degrees (decimal)
 }
 
-export type LocationSource = 'map' | 'globe' | 'manual' | 'preset' | 'initial';
+export type LocationSource = 'map' | 'globe' | 'manual' | 'preset' | 'initial' | 'terrain';
+
+export type AppScreen = 'lunar-explorer' | 'terrain-explorer';
 
 export type ActiveView = 'split' | '3d' | '2d';
 

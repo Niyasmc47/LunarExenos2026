@@ -7,6 +7,7 @@ import { MoonSphere } from './MoonSphere';
 import { useLocationStore } from '../../stores/locationStore';
 import { formatCoordinates } from '../../utils/lunarCoordinates';
 import { lunarToSpherePosition } from '../../utils/sphereCoordinates';
+import { fetchElevationPoint } from '../../services/terrainApi';
 import { Globe, Crosshair, RotateCcw, Loader2, Sparkles } from 'lucide-react';
 
 export const LunarGlobe: React.FC = () => {
@@ -24,10 +25,8 @@ export const LunarGlobe: React.FC = () => {
     const lat = -89.4632;
     const lon = -137.4896;
     setSelectedCoordinates(lat, lon, 'preset');
-    import('../../services/terrainApi').then(({ fetchElevationPoint }) => {
-      fetchElevationPoint(lat, lon).then((pt) => {
-        if (pt) setCurrentElevationData(pt);
-      });
+    fetchElevationPoint(lat, lon).then((pt) => {
+      if (pt) setCurrentElevationData(pt);
     });
 
     if (!controlsRef.current) return;

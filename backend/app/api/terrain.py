@@ -4,10 +4,13 @@ from app.schemas.terrain import (
     DatasetMetadata,
     ElevationPointResponse,
     TerrainGridResponse,
+    ElevationProfileResponse,
 )
 from app.services.dem_loader import dem_loader
 from app.services.terrain_mesh import terrain_mesh_service
 from app.services.terrain_visualizer import terrain_visualizer
+from app.services.terrain_profile import extract_elevation_profile
+from app.services.terrain_quality import get_terrain_quality_report
 
 router = APIRouter(prefix="/api/terrain", tags=["terrain"])
 
@@ -45,17 +48,27 @@ def get_site01_metadata():
 
 @router.get("/elevation", response_model=ElevationPointResponse)
 def get_elevation_at_point(
-    latitude: float = Query(..., ge=-90.0, le=90.0, description="Lunar Latitude in decimal degrees"),
-    longitude: float = Query(..., ge=-180.0, le=180.0, description="Lunar Longitude in decimal degrees"),
+    latitude: Optional[float] = Query(None, ge=-90.0, le=90.0, description="Lunar Latitude"),
+    longitude: Optional[float] = Query(None, ge=-180.0, le=180.0, description="Lunar Longitude"),
+    lat: Optional[float] = Query(None, ge=-90.0, le=90.0, description="Lunar Latitude alias"),
+    lon: Optional[float] = Query(None, ge=-180.0, le=180.0, description="Lunar Longitude alias"),
 ):
     """
     Returns exact elevation, slope, LOLA count, and uncertainty for any lunar coordinate.
     Properly flags coordinates outside the high-resolution DEM.
     """
-    sample = dem_loader.sample_point(latitude, longitude)
+    actual_lat = latitude if latitude is not None else lat
+    actual_lon = longitude if longitude is not None else lon
+    if actual_lat is None or actual_lon is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Must provide latitude & longitude (or lat & lon)",
+        )
+
+    sample = dem_loader.sample_point(actual_lat, actual_lon)
     return ElevationPointResponse(
-        latitude=latitude,
-        longitude=longitude,
+        latitude=actual_lat,
+        longitude=actual_lon,
         **sample
     )
 
@@ -120,4 +133,51 @@ def get_site01_slope_overlay(
         raise HTTPException(status_code=503, detail="DEM not loaded")
     png_bytes = terrain_visualizer.get_slope_overlay_png(width=width, height=height)
     return Response(content=png_bytes, media_type="image/png")
+
+@router.get("/profile", response_model=ElevationProfileResponse)
+def get_elevation_profile(
+    dataset_id: str = Query("site01", description="Dataset identifier"),
+    start_lat: Optional[float] = Query(None, description="Start latitude"),
+    start_lon: Optional[float] = Query(None, description="Start longitude"),
+    end_lat: Optional[float] = Query(None, description="End latitude"),
+    end_lon: Optional[float] = Query(None, description="End longitude"),
+    start_latitude: Optional[float] = Query(None, description="Start latitude alias"),
+    start_longitude: Optional[float] = Query(None, description="Start longitude alias"),
+    end_latitude: Optional[float] = Query(None, description="End latitude alias"),
+    end_longitude: Optional[float] = Query(None, description="End longitude alias"),
+    num_samples: int = Query(100, ge=10, le=500, description="Number of sample points along transect"),
+):
+    """
+    Returns sampled elevation and slope along a straight transect line between two lunar coordinates.
+    """
+    s_lat = start_lat if start_lat is not None else start_latitude
+    s_lon = start_lon if start_lon is not None else start_longitude
+    e_lat = end_lat if end_lat is not None else end_latitude
+    e_lon = end_lon if end_lon is not None else end_longitude
+
+    if s_lat is None or s_lon is None or e_lat is None or e_lon is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Must provide start_lat/start_lon and end_lat/end_lon (or start_latitude/start_longitude and end_latitude/end_longitude)",
+        )
+
+    if not dem_loader.is_available():
+        raise HTTPException(status_code=503, detail="DEM not loaded")
+
+    return extract_elevation_profile(
+        dataset_id=dataset_id,
+        start_lat=s_lat,
+        start_lon=s_lon,
+        end_lat=e_lat,
+        end_lon=e_lon,
+        num_samples=num_samples,
+    )
+
+@router.get("/site01/quality")
+def get_site01_quality():
+    """
+    Returns scientific data quality, reference frames, and interpolation disclosures for Site01.
+    """
+    return get_terrain_quality_report("site01")
+
 

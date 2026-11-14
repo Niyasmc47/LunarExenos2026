@@ -142,3 +142,25 @@ def test_api_overlays():
     assert res_slp.headers["content-type"] == "image/png"
     assert len(res_slp.content) > 100
 
+def test_api_profile():
+    # Transect across Site01 Connecting Ridge
+    res = client.get(
+        "/api/terrain/profile?start_lat=-89.5&start_lon=-137.0&end_lat=-89.4&end_lon=-138.0&num_samples=25"
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["sample_count"] == 25
+    assert data["total_distance_m"] > 0
+    assert len(data["samples"]) == 25
+    assert "elevation_m" in data["samples"][0]
+    assert "distance_m" in data["samples"][0]
+
+def test_api_quality():
+    res = client.get("/api/terrain/site01/quality")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["dataset_id"] == "site01"
+    assert "reference_frame" in data
+    assert "grid_spacing_m" in data
+
+

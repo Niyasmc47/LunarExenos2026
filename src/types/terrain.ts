@@ -87,3 +87,31 @@ export interface TerrainMeshData {
     longitude: number;
   };
 }
+
+export interface ProfileSample {
+  distance_m: number;
+  latitude: number;
+  longitude: number;
+  projected_x: number;
+  projected_y: number;
+  elevation_m?: number | null;
+  slope_deg?: number | null;
+  quality_status: string;
+}
+
+export interface ElevationProfileData {
+  dataset_id: string;
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  total_distance_m: number;
+  sample_count: number;
+  min_elevation_m?: number | null;
+  max_elevation_m?: number | null;
+  elevation_diff_m?: number | null;
+  mean_slope_deg?: number | null;
+  max_slope_deg?: number | null;
+  samples: ProfileSample[];
+}
+

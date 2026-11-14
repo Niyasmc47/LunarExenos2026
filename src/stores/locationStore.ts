@@ -1,9 +1,12 @@
 import { create } from 'zustand';
-import { ActiveView, LocationSource, LunarCoordinates } from '../types/lunar';
-import { ElevationPoint, TerrainMetadata } from '../types/terrain';
+import { ActiveView, AppScreen, LocationSource, LunarCoordinates } from '../types/lunar';
+import { ElevationPoint, ElevationProfileData, TerrainMetadata } from '../types/terrain';
 import { clampLatitude, normalizeLongitude } from '../utils/lunarCoordinates';
 
 interface LocationState {
+  // Application Screen (MVP 1 Lunar Explorer vs MVP 2 Terrain Explorer)
+  appScreen: AppScreen;
+
   // Current selected coordinates
   selectedLatitude: number;
   selectedLongitude: number;
@@ -28,7 +31,14 @@ interface LocationState {
   currentElevationData: ElevationPoint | null;
   terrainMetadata: TerrainMetadata | null;
 
+  // Elevation Profile Tool (MVP 2)
+  profileStart: { lat: number; lon: number } | null;
+  profileEnd: { lat: number; lon: number } | null;
+  profileData: ElevationProfileData | null;
+  isDrawingProfile: boolean;
+
   // Actions
+  setAppScreen: (screen: AppScreen) => void;
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => void;
   setActiveView: (view: ActiveView) => void;
   setMapLoading: (loading: boolean) => void;
@@ -46,6 +56,11 @@ interface LocationState {
   setCurrentElevationData: (data: ElevationPoint | null) => void;
   setTerrainMetadata: (meta: TerrainMetadata | null) => void;
 
+  // Profile Actions
+  setProfileLine: (start: { lat: number; lon: number } | null, end: { lat: number; lon: number } | null) => void;
+  setProfileData: (data: ElevationProfileData | null) => void;
+  setIsDrawingProfile: (drawing: boolean) => void;
+
   resetToDefault: () => void;
 }
 
@@ -56,6 +71,8 @@ const DEFAULT_COORDINATES: LunarCoordinates = {
 };
 
 export const useLocationStore = create<LocationState>((set, get) => ({
+  appScreen: 'lunar-explorer',
+
   selectedLatitude: DEFAULT_COORDINATES.latitude,
   selectedLongitude: DEFAULT_COORDINATES.longitude,
   selectedLocationSource: 'initial',
@@ -76,6 +93,14 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   elevationLayerType: 'elevation',
   currentElevationData: null,
   terrainMetadata: null,
+
+  // Profile tool defaults (Connecting Ridge crest default transect)
+  profileStart: { lat: -89.55, lon: -136.0 },
+  profileEnd: { lat: -89.38, lon: -139.0 },
+  profileData: null,
+  isDrawingProfile: false,
+
+  setAppScreen: (screen: AppScreen) => set({ appScreen: screen }),
 
   setSelectedCoordinates: (lat: number, lon: number, source: LocationSource) => {
     const clampedLat = clampLatitude(lat);
@@ -117,6 +142,10 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   setElevationLayerType: (type: 'elevation' | 'slope') => set({ elevationLayerType: type }),
   setCurrentElevationData: (data: ElevationPoint | null) => set({ currentElevationData: data }),
   setTerrainMetadata: (meta: TerrainMetadata | null) => set({ terrainMetadata: meta }),
+
+  setProfileLine: (start, end) => set({ profileStart: start, profileEnd: end }),
+  setProfileData: (data) => set({ profileData: data }),
+  setIsDrawingProfile: (drawing) => set({ isDrawingProfile: drawing }),
 
   resetToDefault: () =>
     set({

@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+venv/
+.pytest_cache/
+
+# Large Datasets / NASA GeoTIFFs
+backend/data/lunar/**/*.tif
+backend/data/lunar/**/*.tiff
+*.tif
+*.tiff
+

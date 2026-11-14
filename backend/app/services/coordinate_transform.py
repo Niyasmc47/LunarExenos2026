@@ -70,7 +70,7 @@ class CoordinateTransformService:
         using affine GeoTransform.
         """
         # In pixel-registered rasters, col+0.5, row+0.5 is pixel center
-        x, y = transform * (col + 0.5, row + 0.5)
+        x, y = transform @ (col + 0.5, row + 0.5)
         return float(x), float(y)
 
     def xy_to_pixel(self, x: float, y: float, transform) -> Tuple[float, float]:
@@ -78,7 +78,7 @@ class CoordinateTransformService:
         Converts projected (X, Y) in meters to continuous raster pixel coordinates (col, row).
         """
         inv_transform = ~transform
-        col, row = inv_transform * (x, y)
+        col, row = inv_transform @ (x, y)
         return float(col - 0.5), float(row - 0.5)
 
     def lat_lon_elevation_to_globe_3d(
@@ -115,3 +115,10 @@ class CoordinateTransformService:
 
 # Global singleton
 transformer = CoordinateTransformService()
+
+def lat_lon_to_stereographic(lat: float, lon: float) -> Tuple[float, float]:
+    return transformer.lat_lon_to_xy(lat, lon)
+
+def stereographic_to_lat_lon(x: float, y: float) -> Tuple[float, float]:
+    return transformer.xy_to_lat_lon(x, y)
+

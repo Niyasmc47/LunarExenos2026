@@ -79,3 +79,29 @@ class TerrainGridResponse(BaseModel):
     max_elevation: float
     reference_radius_m: float = 1737400.0
     quality_summary: Dict[str, Any]
+
+class ProfileSample(BaseModel):
+    distance_m: float
+    latitude: float
+    longitude: float
+    projected_x: float
+    projected_y: float
+    elevation_m: Optional[float] = None
+    slope_deg: Optional[float] = None
+    quality_status: str
+
+class ElevationProfileResponse(BaseModel):
+    dataset_id: str
+    start_latitude: float
+    start_longitude: float
+    end_latitude: float
+    end_longitude: float
+    total_distance_m: float
+    sample_count: int
+    min_elevation_m: Optional[float] = None
+    max_elevation_m: Optional[float] = None
+    elevation_diff_m: Optional[float] = None
+    mean_slope_deg: Optional[float] = None
+    max_slope_deg: Optional[float] = None
+    samples: List[ProfileSample]
+

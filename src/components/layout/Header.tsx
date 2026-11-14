@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
 import { formatCoordinates } from '../../utils/lunarCoordinates';
 import { ViewSwitcher } from '../controls/ViewSwitcher';
-import { Orbit, Copy, Check, Radio } from 'lucide-react';
+import { Orbit, Copy, Check, Radio, Globe2, Mountain } from 'lucide-react';
 
 export const Header: React.FC = () => {
+  const appScreen = useLocationStore((state) => state.appScreen);
+  const setAppScreen = useLocationStore((state) => state.setAppScreen);
   const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
   const liveCapabilitiesActive = useLocationStore((state) => state.liveCapabilitiesActive);
@@ -19,7 +21,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="h-16 shrink-0 bg-[#070b12]/95 border-b border-slate-800/80 px-4 md:px-6 flex items-center justify-between backdrop-blur-md z-30">
+    <header className="h-16 shrink-0 bg-[#070b12]/95 border-b border-slate-800/80 px-3 md:px-6 flex items-center justify-between backdrop-blur-md z-30">
       {/* Brand & Project Identity */}
       <div className="flex items-center gap-3">
         <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-slate-900 border border-emerald-500/40 shadow-lg shadow-emerald-950/40">
@@ -33,26 +35,67 @@ export const Header: React.FC = () => {
               LUNAVISTA
             </h1>
             <span className="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded tracking-widest font-semibold">
-              MVP 1
+              {appScreen === 'lunar-explorer' ? 'MVP 1' : 'MVP 2'}
             </span>
           </div>
-          <span className="text-[11px] font-mono text-slate-400 hidden sm:block">
+          <span className="text-[10px] font-mono text-slate-400 hidden xl:block">
             Lunar Landing-Site Evaluation • NASA Space Apps 2026
           </span>
         </div>
       </div>
 
-      {/* Center: View Switcher */}
-      <div className="hidden lg:flex items-center">
-        <ViewSwitcher />
+      {/* Screen Navigation Tabs */}
+      <div className="flex items-center bg-[#0c121e] border border-slate-800 p-1 rounded-xl shadow-inner">
+        <button
+          onClick={() => setAppScreen('lunar-explorer')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+            appScreen === 'lunar-explorer'
+              ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <Globe2 className="w-3.5 h-3.5" />
+          <span>LUNAR EXPLORER</span>
+        </button>
+
+        <button
+          onClick={() => setAppScreen('terrain-explorer')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+            appScreen === 'terrain-explorer'
+              ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+          }`}
+        >
+          <Mountain className="w-3.5 h-3.5" />
+          <span>TERRAIN EXPLORER</span>
+          <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-600/40 hidden sm:inline">
+            SITE 01
+          </span>
+        </button>
       </div>
 
-      {/* Right: Current Active Coordinates & NASA WMTS Status */}
+      {/* Center/Right Controls */}
       <div className="flex items-center gap-3">
+        {/* View Switcher only in Lunar Explorer */}
+        {appScreen === 'lunar-explorer' && (
+          <div className="hidden lg:flex items-center">
+            <ViewSwitcher />
+          </div>
+        )}
+
+        {/* Dataset Label in Terrain Explorer */}
+        {appScreen === 'terrain-explorer' && (
+          <div className="hidden lg:flex items-center gap-1.5 bg-[#0c121e] border border-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300">
+            <Mountain className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[11px] text-slate-400">DEM:</span>
+            <span className="text-emerald-400 font-semibold text-[11px]">NASA LOLA 5m/px</span>
+          </div>
+        )}
+
         {/* Live Service Status */}
         <div className="hidden md:flex items-center gap-1.5 bg-[#0c121e] border border-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-400">
           <Radio className={`w-3.5 h-3.5 ${liveCapabilitiesActive ? 'text-emerald-400' : 'text-amber-400'}`} />
-          <span className="text-[11px]">NASA TREK WMTS:</span>
+          <span className="text-[11px]">NASA TREK:</span>
           <span className={`text-[11px] font-semibold ${liveCapabilitiesActive ? 'text-emerald-400' : 'text-amber-400'}`}>
             {liveCapabilitiesActive ? 'LIVE' : 'ACTIVE'}
           </span>
@@ -62,10 +105,10 @@ export const Header: React.FC = () => {
         <button
           onClick={handleCopyCoords}
           title="Click to copy coordinates"
-          className="flex items-center gap-2 bg-[#0c121e] hover:bg-slate-800/80 border border-slate-700/80 hover:border-emerald-500/50 px-3 py-1.5 rounded-lg text-xs font-mono transition-all group"
+          className="flex items-center gap-2 bg-[#0c121e] hover:bg-slate-800/80 border border-slate-700/80 hover:border-emerald-500/50 px-2.5 md:px-3 py-1.5 rounded-lg text-xs font-mono transition-all group"
         >
           <span className="text-slate-400 text-[11px] hidden sm:inline">COORDS:</span>
-          <span className="text-emerald-400 font-semibold tracking-wide">
+          <span className="text-emerald-400 font-semibold tracking-wide text-[11px] md:text-xs">
             {formatCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude }, 3)}
           </span>
           {copied ? (
