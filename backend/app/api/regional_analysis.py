@@ -29,6 +29,44 @@ from app.services.coordinate_transform import (
 
 router = APIRouter(prefix="/api/regional", tags=["regional_analysis"])
 
+@router.get("/elevation-map.png")
+def get_regional_elevation_map_get(
+    dataset_id: str = Query("site01"),
+    colormap_name: str = Query("hypsometric"),
+    min_lat: Optional[float] = Query(None),
+    max_lat: Optional[float] = Query(None),
+    min_lon: Optional[float] = Query(None),
+    max_lon: Optional[float] = Query(None),
+    output_width: int = Query(512, ge=64, le=2048),
+    output_height: int = Query(512, ge=64, le=2048),
+):
+    """
+    Renders and streams a color-coded elevation map PNG via GET (for OpenLayers / browser images).
+    """
+    dataset = catalogue_service.get_by_id(dataset_id) or catalogue_service.get_by_id("site01")
+    if min_lat is None or max_lat is None or min_lon is None or max_lon is None:
+        min_lat = dataset.bounds_geographic["min_lat"]
+        max_lat = dataset.bounds_geographic["max_lat"]
+        min_lon = dataset.bounds_geographic["min_lon"]
+        max_lon = dataset.bounds_geographic["max_lon"]
+
+    window = raster_window_service.read_window_geographic(
+        dataset_id=dataset.dataset_id,
+        min_lat=min_lat,
+        max_lat=max_lat,
+        min_lon=min_lon,
+        max_lon=max_lon,
+        target_width=output_width,
+        target_height=output_height,
+    )
+
+    rgba = elevation_rendering_service.render_elevation_rgba(
+        elevation=window["elevation"],
+        colormap_name=colormap_name,
+    )
+    png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
+    return Response(content=png_bytes, media_type="image/png")
+
 @router.post("/elevation-map.png")
 def get_regional_elevation_map(req: RegionalMapRequest):
     """
@@ -47,6 +85,51 @@ def get_regional_elevation_map(req: RegionalMapRequest):
     rgba = elevation_rendering_service.render_elevation_rgba(
         elevation=window["elevation"],
         colormap_name=req.colormap_name,
+    )
+    png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
+    return Response(content=png_bytes, media_type="image/png")
+
+@router.get("/slope-map.png")
+def get_regional_slope_map_get(
+    dataset_id: str = Query("site01"),
+    classified: bool = Query(True),
+    min_lat: Optional[float] = Query(None),
+    max_lat: Optional[float] = Query(None),
+    min_lon: Optional[float] = Query(None),
+    max_lon: Optional[float] = Query(None),
+    output_width: int = Query(512, ge=64, le=2048),
+    output_height: int = Query(512, ge=64, le=2048),
+):
+    """
+    Renders and streams a classified 7-tier slope map PNG via GET (for OpenLayers / browser images).
+    """
+    dataset = catalogue_service.get_by_id(dataset_id) or catalogue_service.get_by_id("site01")
+    if min_lat is None or max_lat is None or min_lon is None or max_lon is None:
+        min_lat = dataset.bounds_geographic["min_lat"]
+        max_lat = dataset.bounds_geographic["max_lat"]
+        min_lon = dataset.bounds_geographic["min_lon"]
+        max_lon = dataset.bounds_geographic["max_lon"]
+
+    window = raster_window_service.read_window_geographic(
+        dataset_id=dataset.dataset_id,
+        min_lat=min_lat,
+        max_lat=max_lat,
+        min_lon=min_lon,
+        max_lon=max_lon,
+        target_width=output_width,
+        target_height=output_height,
+    )
+
+    slope = window["slope"]
+    if slope is None:
+        slope = slope_service.derive_slope_from_dem(
+            dem=window["elevation"],
+            pixel_spacing_m=dataset.nominal_pixel_spacing_m,
+        )
+
+    rgba = slope_service.render_slope_rgba(
+        slope_deg=slope,
+        classified=classified,
     )
     png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
     return Response(content=png_bytes, media_type="image/png")
@@ -83,6 +166,49 @@ def get_regional_slope_map(req: RegionalSlopeMapRequest):
     png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
     return Response(content=png_bytes, media_type="image/png")
 
+@router.get("/hillshade.png")
+def get_regional_hillshade_map_get(
+    dataset_id: str = Query("site01"),
+    azimuth_deg: float = Query(315.0),
+    altitude_deg: float = Query(45.0),
+    z_factor: float = Query(1.0),
+    min_lat: Optional[float] = Query(None),
+    max_lat: Optional[float] = Query(None),
+    min_lon: Optional[float] = Query(None),
+    max_lon: Optional[float] = Query(None),
+    output_width: int = Query(512, ge=64, le=2048),
+    output_height: int = Query(512, ge=64, le=2048),
+):
+    """
+    Renders and streams a cartographic hillshade PNG via GET.
+    """
+    dataset = catalogue_service.get_by_id(dataset_id) or catalogue_service.get_by_id("site01")
+    if min_lat is None or max_lat is None or min_lon is None or max_lon is None:
+        min_lat = dataset.bounds_geographic["min_lat"]
+        max_lat = dataset.bounds_geographic["max_lat"]
+        min_lon = dataset.bounds_geographic["min_lon"]
+        max_lon = dataset.bounds_geographic["max_lon"]
+
+    window = raster_window_service.read_window_geographic(
+        dataset_id=dataset.dataset_id,
+        min_lat=min_lat,
+        max_lat=max_lat,
+        min_lon=min_lon,
+        max_lon=max_lon,
+        target_width=output_width,
+        target_height=output_height,
+    )
+
+    rgba = hillshade_service.generate_hillshade_rgba(
+        dem=window["elevation"],
+        pixel_spacing_m=dataset.nominal_pixel_spacing_m,
+        azimuth_deg=azimuth_deg,
+        altitude_deg=altitude_deg,
+        z_factor=z_factor,
+    )
+    png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
+    return Response(content=png_bytes, media_type="image/png")
+
 @router.post("/hillshade.png")
 def get_regional_hillshade_map(req: HillshadeRequest):
     """
@@ -111,6 +237,7 @@ def get_regional_hillshade_map(req: HillshadeRequest):
     png_bytes = raster_export_service.rgba_to_png_bytes(rgba)
     return Response(content=png_bytes, media_type="image/png")
 
+@router.get("/statistics", response_model=RegionalStatisticsResponse)
 @router.post("/statistics", response_model=RegionalStatisticsResponse)
 def get_regional_statistics(
     dataset_id: str = Query("site01"),

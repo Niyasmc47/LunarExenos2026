@@ -53,12 +53,27 @@ export const RegionalMapCanvas: React.FC = () => {
 
   // Helper to build dynamic raster URL
   const getDynamicRasterUrl = () => {
+    const params = new URLSearchParams({
+      dataset_id: activeDatasetId,
+      min_lat: selectedRegionBbox.minLat.toString(),
+      max_lat: selectedRegionBbox.maxLat.toString(),
+      min_lon: selectedRegionBbox.minLon.toString(),
+      max_lon: selectedRegionBbox.maxLon.toString(),
+      output_width: '512',
+      output_height: '512',
+    });
+
     if (activeLayerMode === 'elevation') {
-      return `http://127.0.0.1:8000/api/regional/elevation-map.png`;
+      params.append('colormap_name', activeColormap);
+      return `http://127.0.0.1:8000/api/regional/elevation-map.png?${params.toString()}`;
     } else if (activeLayerMode === 'slope') {
-      return `http://127.0.0.1:8000/api/regional/slope-map.png`;
+      params.append('classified', 'true');
+      return `http://127.0.0.1:8000/api/regional/slope-map.png?${params.toString()}`;
     } else {
-      return `http://127.0.0.1:8000/api/regional/hillshade.png`;
+      params.append('azimuth_deg', hillshadeAzimuth.toString());
+      params.append('altitude_deg', hillshadeAltitude.toString());
+      params.append('z_factor', hillshadeZFactor.toString());
+      return `http://127.0.0.1:8000/api/regional/hillshade.png?${params.toString()}`;
     }
   };
 

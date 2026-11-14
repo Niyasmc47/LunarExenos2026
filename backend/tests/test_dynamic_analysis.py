@@ -96,7 +96,13 @@ def test_discovery_test_d_partial_and_gaps():
         assert not site01_cand["overlaps_completely"]
 
 def test_regional_elevation_map_png():
-    """Validates PNG generation for regional elevation maps with multiple colormaps."""
+    """Validates PNG generation for regional elevation maps with multiple colormaps (POST and GET)."""
+    # Test GET
+    res_get = client.get("/api/regional/elevation-map.png?dataset_id=site01&colormap_name=hypsometric")
+    assert res_get.status_code == 200
+    assert res_get.headers["content-type"] == "image/png"
+    assert len(res_get.content) > 1000
+
     for cmap in ["hypsometric", "turbo", "viridis"]:
         payload = {
             "dataset_id": "site01",
@@ -116,7 +122,13 @@ def test_regional_elevation_map_png():
         assert len(res.content) > 1000
 
 def test_regional_slope_map_png():
-    """Validates classified 7-tier slope map PNG generation."""
+    """Validates classified 7-tier slope map PNG generation (POST and GET)."""
+    # Test GET
+    res_get = client.get("/api/regional/slope-map.png?dataset_id=site01&classified=true")
+    assert res_get.status_code == 200
+    assert res_get.headers["content-type"] == "image/png"
+    assert len(res_get.content) > 1000
+
     payload = {
         "dataset_id": "site01",
         "bounding_box": {

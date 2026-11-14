@@ -23,6 +23,7 @@ export const SouthPoleDualMaps: React.FC = () => {
 
   const elevMarkerUpdaterRef = useRef<((lon: number, lat: number) => void) | null>(null);
   const slopeMarkerUpdaterRef = useRef<((lon: number, lat: number) => void) | null>(null);
+  const elevOverlayRef = useRef<ImageLayer<Static> | null>(null);
 
   const selectedLatitude = useLocationStore((state) => state.selectedLatitude);
   const selectedLongitude = useLocationStore((state) => state.selectedLongitude);
@@ -79,6 +80,7 @@ export const SouthPoleDualMaps: React.FC = () => {
       );
       elevMarkerUpdaterRef.current = updateElevMarker;
 
+      elevOverlayRef.current = elevOverlay;
       elevMapInstance = new Map({
         target: elevElementRef.current,
         layers: [elevWmts, elevOverlay, elevMarkerLayer],
@@ -179,6 +181,18 @@ export const SouthPoleDualMaps: React.FC = () => {
     if (elevMarkerUpdaterRef.current) elevMarkerUpdaterRef.current(selectedLongitude, selectedLatitude);
     if (slopeMarkerUpdaterRef.current) slopeMarkerUpdaterRef.current(selectedLongitude, selectedLatitude);
   }, [selectedLatitude, selectedLongitude]);
+
+  // Update elevation colormap dynamically
+  useEffect(() => {
+    if (!elevOverlayRef.current) return;
+    elevOverlayRef.current.setSource(
+      new Static({
+        url: `http://127.0.0.1:8000/api/regional/elevation-map.png?dataset_id=site01&colormap_name=${activeColormap}`,
+        imageExtent: SITE01_EXTENT,
+        projection: LUNAR_PROJECTION,
+      })
+    );
+  }, [activeColormap]);
 
   const handleResetBoth = () => {
     if (!elevMapRef.current) return;
