@@ -12,7 +12,7 @@ from app.schemas.ephemeris import (
     EphemerisTimeSeriesResponse,
     EphemerisTimeSeriesPoint,
 )
-from app.services.kernel_manager import kernel_manager
+from app.services.kernel_manager import kernel_manager, SPICE_LOCK
 from app.services.dem_loader import dem_loader
 from app.services.coordinate_transform import LUNAR_RADIUS_M
 
@@ -30,234 +30,250 @@ class EphemerisEngineService:
         Calculates exact topocentric positions of Sun and Earth as observed from
         a specific lunar surface location and observer instrument height at epoch.
         """
-        self.kernel_mgr.ensure_kernels_loaded()
-        warnings: List[str] = []
+        with SPICE_LOCK:
+            try:
+                self.kernel_mgr.ensure_kernels_loaded()
+                warnings: List[str] = []
 
-        # 1. Parse Time: convert ISO 8601 string to SPICE Ephemeris Time (ET / TDB seconds past J2000)
-        try:
-            et = spice.str2et(req.timestamp_iso)
-        except Exception as e:
-            raise ValueError(f"Invalid timestamp format or out-of-range epoch: '{req.timestamp_iso}'. Error: {e}")
+                # 1. Parse Time: convert ISO 8601 string to SPICE Ephemeris Time (ET / TDB seconds past J2000)
+                try:
+                    et = spice.str2et(req.timestamp_iso)
+                except Exception as e:
+                    raise ValueError(f"Invalid timestamp format or out-of-range epoch: '{req.timestamp_iso}'. Error: {e}")
 
-        # Validate epoch within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
-        et_min = -3155760000.0  # 1900-01-01T00:00:00Z
-        et_max = 1609459200.0   # 2050-12-31T23:59:59Z
-        if not (et_min <= et <= et_max):
-            raise ValueError(
-                f"Requested epoch '{req.timestamp_iso}' (ET {et:.1f}s) is outside high-precision DE421 / PCK "
-                f"coverage window (1900-01-01 to 2050-12-31)."
-            )
+                # Validate epoch within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
+                et_min = -3155760000.0  # 1900-01-01T00:00:00Z
+                et_max = 1609459200.0   # 2050-12-31T23:59:59Z
+                if not (et_min <= et <= et_max):
+                    raise ValueError(
+                        f"Requested epoch '{req.timestamp_iso}' (ET {et:.1f}s) is outside high-precision DE421 / PCK "
+                        f"coverage window (1900-01-01 to 2050-12-31)."
+                    )
 
-        # 2. Sample Surface Elevation from LOLA DEM
-        sample = dem_loader.sample_point(req.latitude, req.longitude)
-        if sample.get("in_bounds") and sample.get("elevation_m") is not None:
-            surface_elev_m = float(sample["elevation_m"])
-        else:
-            surface_elev_m = 0.0
-            warnings.append(
-                f"Coordinates ({req.latitude:.4f}°, {req.longitude:.4f}°) are outside the active high-resolution DEM; "
-                f"assuming 0.0 m elevation relative to IAU 1,737.4 km lunar sphere."
-            )
+                # 2. Sample Surface Elevation from LOLA DEM
+                sample = dem_loader.sample_point(req.latitude, req.longitude)
+                if sample.get("in_bounds") and sample.get("elevation_m") is not None:
+                    surface_elev_m = float(sample["elevation_m"])
+                else:
+                    surface_elev_m = 0.0
+                    warnings.append(
+                        f"Coordinates ({req.latitude:.4f}°, {req.longitude:.4f}°) are outside the active high-resolution DEM; "
+                        f"assuming 0.0 m elevation relative to IAU 1,737.4 km lunar sphere."
+                    )
 
-        total_observer_elev_m = surface_elev_m + req.observer_height_m
-        obs_radius_km = MOON_RADIUS_KM + (total_observer_elev_m / 1000.0)
+                total_observer_elev_m = surface_elev_m + req.observer_height_m
+                obs_radius_km = MOON_RADIUS_KM + (total_observer_elev_m / 1000.0)
 
-        # 3. Observer Cartesian Position and Local Tangent Basis in MOON_ME
-        phi = math.radians(req.latitude)
-        lam = math.radians(req.longitude)
+                # 3. Observer Cartesian Position and Local Tangent Basis in MOON_ME
+                phi = math.radians(req.latitude)
+                lam = math.radians(req.longitude)
 
-        # Observer position vector in MOON_ME (km)
-        obs_pos_moon_me = np.array([
-            obs_radius_km * math.cos(phi) * math.cos(lam),
-            obs_radius_km * math.cos(phi) * math.sin(lam),
-            obs_radius_km * math.sin(phi),
-        ], dtype=np.float64)
+                # Observer position vector in MOON_ME (km)
+                obs_pos_moon_me = np.array([
+                    obs_radius_km * math.cos(phi) * math.cos(lam),
+                    obs_radius_km * math.cos(phi) * math.sin(lam),
+                    obs_radius_km * math.sin(phi),
+                ], dtype=np.float64)
 
-        # Local Tangent Orthonormal Basis:
-        # Local East: direction of increasing longitude along parallel
-        u_east = np.array([-math.sin(lam), math.cos(lam), 0.0], dtype=np.float64)
-        # Local North: direction of increasing latitude along meridian toward +90°
-        u_north = np.array([-math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi)], dtype=np.float64)
-        # Local Up: outward surface normal
-        u_up = np.array([math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi)], dtype=np.float64)
+                # Local Tangent Orthonormal Basis:
+                # Local East: direction of increasing longitude along parallel
+                u_east = np.array([-math.sin(lam), math.cos(lam), 0.0], dtype=np.float64)
+                # Local North: direction of increasing latitude along meridian toward +90°
+                u_north = np.array([-math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi)], dtype=np.float64)
+                # Local Up: outward surface normal
+                u_up = np.array([math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi)], dtype=np.float64)
 
-        # Validate aberration correction input
-        abcorr = req.aberration_correction.upper()
-        if abcorr not in ["NONE", "LT", "LT+S"]:
-            abcorr = "LT+S"
-            warnings.append(f"Unsupported aberration correction requested; defaulted to 'LT+S' (apparent position).")
+                # Validate aberration correction input
+                abcorr = req.aberration_correction.upper()
+                if abcorr not in ["NONE", "LT", "LT+S"]:
+                    abcorr = "LT+S"
+                    warnings.append(f"Unsupported aberration correction requested; defaulted to 'LT+S' (apparent position).")
 
-        # 4. Topocentric Sun Position
-        sun_pos = self._calculate_topocentric_body(
-            body_name="Sun",
-            target_spice_id="SUN",
-            et=et,
-            obs_pos=obs_pos_moon_me,
-            u_east=u_east,
-            u_north=u_north,
-            u_up=u_up,
-            body_radius_km=SUN_RADIUS_KM,
-            abcorr=abcorr,
-        )
+                # 4. Topocentric Sun Position
+                sun_pos = self._calculate_topocentric_body(
+                    body_name="Sun",
+                    target_spice_id="SUN",
+                    et=et,
+                    obs_pos=obs_pos_moon_me,
+                    u_east=u_east,
+                    u_north=u_north,
+                    u_up=u_up,
+                    body_radius_km=SUN_RADIUS_KM,
+                    abcorr=abcorr,
+                )
 
-        # 5. Topocentric Earth Position
-        earth_pos = self._calculate_topocentric_body(
-            body_name="Earth",
-            target_spice_id="EARTH",
-            et=et,
-            obs_pos=obs_pos_moon_me,
-            u_east=u_east,
-            u_north=u_north,
-            u_up=u_up,
-            body_radius_km=EARTH_EQUATORIAL_RADIUS_KM,
-            abcorr=abcorr,
-        )
+                # 5. Topocentric Earth Position
+                earth_pos = self._calculate_topocentric_body(
+                    body_name="Earth",
+                    target_spice_id="EARTH",
+                    et=et,
+                    obs_pos=obs_pos_moon_me,
+                    u_east=u_east,
+                    u_north=u_north,
+                    u_up=u_up,
+                    body_radius_km=EARTH_EQUATORIAL_RADIUS_KM,
+                    abcorr=abcorr,
+                )
 
-        return EphemerisPositionResponse(
-            observer_latitude=round(req.latitude, 6),
-            observer_longitude=round(req.longitude, 6),
-            observer_surface_elevation_m=round(surface_elev_m, 2),
-            observer_height_m=req.observer_height_m,
-            total_observer_elevation_m=round(total_observer_elev_m, 2),
-            observer_cartesian_moon_me_km=[round(float(c), 4) for c in obs_pos_moon_me],
-            requested_timestamp_iso=req.timestamp_iso,
-            ephemeris_time_tdb_seconds=round(float(et), 4),
-            sun=sun_pos,
-            earth=earth_pos,
-            reference_frame="MOON_ME (DE421)",
-            aberration_correction=abcorr,
-            lunar_radius_model_m=LUNAR_RADIUS_M,
-            dataset_id=req.dataset_id,
-            kernel_provenance=self.kernel_mgr.get_provenance_metadata(),
-            warnings=warnings,
-        )
+                return EphemerisPositionResponse(
+                    observer_latitude=round(req.latitude, 6),
+                    observer_longitude=round(req.longitude, 6),
+                    observer_surface_elevation_m=round(surface_elev_m, 2),
+                    observer_height_m=req.observer_height_m,
+                    total_observer_elevation_m=round(total_observer_elev_m, 2),
+                    observer_cartesian_moon_me_km=[round(float(c), 4) for c in obs_pos_moon_me],
+                    requested_timestamp_iso=req.timestamp_iso,
+                    ephemeris_time_tdb_seconds=round(float(et), 4),
+                    sun=sun_pos,
+                    earth=earth_pos,
+                    reference_frame="MOON_ME (DE421)",
+                    aberration_correction=abcorr,
+                    lunar_radius_model_m=LUNAR_RADIUS_M,
+                    dataset_id=req.dataset_id,
+                    kernel_provenance=self.kernel_mgr.get_provenance_metadata(),
+                    warnings=warnings,
+                )
+            except Exception:
+                try:
+                    spice.reset()
+                except Exception:
+                    pass
+                raise
 
     def calculate_timeseries(self, req: EphemerisTimeSeriesRequest) -> EphemerisTimeSeriesResponse:
         """
         Calculates time-series trajectories of Sun and Earth positions across a defined time interval.
         """
-        self.kernel_mgr.ensure_kernels_loaded()
-        warnings: List[str] = []
+        with SPICE_LOCK:
+            try:
+                self.kernel_mgr.ensure_kernels_loaded()
+                warnings: List[str] = []
 
-        try:
-            et_start = spice.str2et(req.start_timestamp_iso)
-            et_end = spice.str2et(req.end_timestamp_iso)
-        except Exception as e:
-            raise ValueError(f"Invalid start or end timestamp format: {e}")
+                try:
+                    et_start = spice.str2et(req.start_timestamp_iso)
+                    et_end = spice.str2et(req.end_timestamp_iso)
+                except Exception as e:
+                    raise ValueError(f"Invalid start or end timestamp format: {e}")
 
-        # Validate epochs within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
-        et_min = -3155760000.0  # 1900-01-01T00:00:00Z
-        et_max = 1609459200.0   # 2050-12-31T23:59:59Z
-        if not (et_min <= et_start <= et_max) or not (et_min <= et_end <= et_max):
-            raise ValueError(
-                f"Requested interval [{req.start_timestamp_iso}, {req.end_timestamp_iso}] is outside "
-                f"high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)."
-            )
+                # Validate epochs within high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)
+                et_min = -3155760000.0  # 1900-01-01T00:00:00Z
+                et_max = 1609459200.0   # 2050-12-31T23:59:59Z
+                if not (et_min <= et_start <= et_max) or not (et_min <= et_end <= et_max):
+                    raise ValueError(
+                        f"Requested interval [{req.start_timestamp_iso}, {req.end_timestamp_iso}] is outside "
+                        f"high-precision DE421 / PCK coverage window (1900-01-01 to 2050-12-31)."
+                    )
 
-        if et_end <= et_start:
-            raise ValueError("End timestamp must be strictly after start timestamp.")
+                if et_end <= et_start:
+                    raise ValueError("End timestamp must be strictly after start timestamp.")
 
-        step_seconds = req.step_interval_hours * 3600.0
-        total_steps = int(math.ceil((et_end - et_start) / step_seconds)) + 1
+                step_seconds = req.step_interval_hours * 3600.0
+                total_steps = int(math.ceil((et_end - et_start) / step_seconds)) + 1
 
-        if total_steps > 1500:
-            raise ValueError(
-                f"Requested interval yields {total_steps} epochs, which exceeds the limit of 1500 samples. "
-                f"Increase step_interval_hours or narrow the time window."
-            )
+                if total_steps > 1500:
+                    raise ValueError(
+                        f"Requested interval yields {total_steps} epochs, which exceeds the limit of 1500 samples. "
+                        f"Increase step_interval_hours or narrow the time window."
+                    )
 
-        # Sample Surface Elevation
-        sample = dem_loader.sample_point(req.latitude, req.longitude)
-        if sample.get("in_bounds") and sample.get("elevation_m") is not None:
-            surface_elev_m = float(sample["elevation_m"])
-        else:
-            surface_elev_m = 0.0
+                # Sample Surface Elevation
+                sample = dem_loader.sample_point(req.latitude, req.longitude)
+                if sample.get("in_bounds") and sample.get("elevation_m") is not None:
+                    surface_elev_m = float(sample["elevation_m"])
+                else:
+                    surface_elev_m = 0.0
 
-        total_observer_elev_m = surface_elev_m + req.observer_height_m
-        obs_radius_km = MOON_RADIUS_KM + (total_observer_elev_m / 1000.0)
+                total_observer_elev_m = surface_elev_m + req.observer_height_m
+                obs_radius_km = MOON_RADIUS_KM + (total_observer_elev_m / 1000.0)
 
-        phi = math.radians(req.latitude)
-        lam = math.radians(req.longitude)
+                phi = math.radians(req.latitude)
+                lam = math.radians(req.longitude)
 
-        obs_pos_moon_me = np.array([
-            obs_radius_km * math.cos(phi) * math.cos(lam),
-            obs_radius_km * math.cos(phi) * math.sin(lam),
-            obs_radius_km * math.sin(phi),
-        ], dtype=np.float64)
+                obs_pos_moon_me = np.array([
+                    obs_radius_km * math.cos(phi) * math.cos(lam),
+                    obs_radius_km * math.cos(phi) * math.sin(lam),
+                    obs_radius_km * math.sin(phi),
+                ], dtype=np.float64)
 
-        u_east = np.array([-math.sin(lam), math.cos(lam), 0.0], dtype=np.float64)
-        u_north = np.array([-math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi)], dtype=np.float64)
-        u_up = np.array([math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi)], dtype=np.float64)
+                u_east = np.array([-math.sin(lam), math.cos(lam), 0.0], dtype=np.float64)
+                u_north = np.array([-math.sin(phi) * math.cos(lam), -math.sin(phi) * math.sin(lam), math.cos(phi)], dtype=np.float64)
+                u_up = np.array([math.cos(phi) * math.cos(lam), math.cos(phi) * math.sin(lam), math.sin(phi)], dtype=np.float64)
 
-        abcorr = req.aberration_correction.upper()
-        if abcorr not in ["NONE", "LT", "LT+S"]:
-            abcorr = "LT+S"
+                abcorr = req.aberration_correction.upper()
+                if abcorr not in ["NONE", "LT", "LT+S"]:
+                    abcorr = "LT+S"
 
-        series: List[EphemerisTimeSeriesPoint] = []
-        cur_et = et_start
-        for _ in range(total_steps):
-            if cur_et > et_end + 1e-3:
-                break
+                series: List[EphemerisTimeSeriesPoint] = []
+                cur_et = et_start
+                for _ in range(total_steps):
+                    if cur_et > et_end + 1e-3:
+                        break
 
-            # Format UTC ISO string for this epoch
-            cur_iso = spice.et2utc(cur_et, "ISOC", 0) + "Z"
+                    # Format UTC ISO string for this epoch
+                    cur_iso = spice.et2utc(cur_et, "ISOC", 0) + "Z"
 
-            sun_pt = self._calculate_topocentric_body(
-                body_name="Sun",
-                target_spice_id="SUN",
-                et=cur_et,
-                obs_pos=obs_pos_moon_me,
-                u_east=u_east,
-                u_north=u_north,
-                u_up=u_up,
-                body_radius_km=SUN_RADIUS_KM,
-                abcorr=abcorr,
-            )
+                    sun_pt = self._calculate_topocentric_body(
+                        body_name="Sun",
+                        target_spice_id="SUN",
+                        et=cur_et,
+                        obs_pos=obs_pos_moon_me,
+                        u_east=u_east,
+                        u_north=u_north,
+                        u_up=u_up,
+                        body_radius_km=SUN_RADIUS_KM,
+                        abcorr=abcorr,
+                    )
 
-            earth_pt = self._calculate_topocentric_body(
-                body_name="Earth",
-                target_spice_id="EARTH",
-                et=cur_et,
-                obs_pos=obs_pos_moon_me,
-                u_east=u_east,
-                u_north=u_north,
-                u_up=u_up,
-                body_radius_km=EARTH_EQUATORIAL_RADIUS_KM,
-                abcorr=abcorr,
-            )
+                    earth_pt = self._calculate_topocentric_body(
+                        body_name="Earth",
+                        target_spice_id="EARTH",
+                        et=cur_et,
+                        obs_pos=obs_pos_moon_me,
+                        u_east=u_east,
+                        u_north=u_north,
+                        u_up=u_up,
+                        body_radius_km=EARTH_EQUATORIAL_RADIUS_KM,
+                        abcorr=abcorr,
+                    )
 
-            series.append(
-                EphemerisTimeSeriesPoint(
-                    timestamp_iso=cur_iso,
-                    ephemeris_time_tdb=round(float(cur_et), 4),
-                    sun_azimuth_deg=sun_pt.azimuth_deg,
-                    sun_elevation_deg=sun_pt.elevation_deg,
-                    sun_distance_km=sun_pt.distance_km,
-                    sun_angular_diameter_deg=sun_pt.apparent_angular_diameter_deg,
-                    earth_azimuth_deg=earth_pt.azimuth_deg,
-                    earth_elevation_deg=earth_pt.elevation_deg,
-                    earth_distance_km=earth_pt.distance_km,
-                    earth_angular_diameter_deg=earth_pt.apparent_angular_diameter_deg,
+                    series.append(
+                        EphemerisTimeSeriesPoint(
+                            timestamp_iso=cur_iso,
+                            ephemeris_time_tdb=round(float(cur_et), 4),
+                            sun_azimuth_deg=sun_pt.azimuth_deg,
+                            sun_elevation_deg=sun_pt.elevation_deg,
+                            sun_distance_km=sun_pt.distance_km,
+                            sun_angular_diameter_deg=sun_pt.apparent_angular_diameter_deg,
+                            earth_azimuth_deg=earth_pt.azimuth_deg,
+                            earth_elevation_deg=earth_pt.elevation_deg,
+                            earth_distance_km=earth_pt.distance_km,
+                            earth_angular_diameter_deg=earth_pt.apparent_angular_diameter_deg,
+                        )
+                    )
+
+                    cur_et += step_seconds
+
+                return EphemerisTimeSeriesResponse(
+                    observer_latitude=round(req.latitude, 6),
+                    observer_longitude=round(req.longitude, 6),
+                    observer_surface_elevation_m=round(surface_elev_m, 2),
+                    observer_height_m=req.observer_height_m,
+                    start_timestamp_iso=req.start_timestamp_iso,
+                    end_timestamp_iso=req.end_timestamp_iso,
+                    step_interval_hours=req.step_interval_hours,
+                    total_epochs_computed=len(series),
+                    series=series,
+                    reference_frame="MOON_ME (DE421)",
+                    aberration_correction=abcorr,
+                    kernel_provenance=self.kernel_mgr.get_provenance_metadata(),
+                    warnings=warnings,
                 )
-            )
-
-            cur_et += step_seconds
-
-        return EphemerisTimeSeriesResponse(
-            observer_latitude=round(req.latitude, 6),
-            observer_longitude=round(req.longitude, 6),
-            observer_surface_elevation_m=round(surface_elev_m, 2),
-            observer_height_m=req.observer_height_m,
-            start_timestamp_iso=req.start_timestamp_iso,
-            end_timestamp_iso=req.end_timestamp_iso,
-            step_interval_hours=req.step_interval_hours,
-            total_epochs_computed=len(series),
-            series=series,
-            reference_frame="MOON_ME (DE421)",
-            aberration_correction=abcorr,
-            kernel_provenance=self.kernel_mgr.get_provenance_metadata(),
-            warnings=warnings,
-        )
+            except Exception:
+                try:
+                    spice.reset()
+                except Exception:
+                    pass
+                raise
 
     def _calculate_topocentric_body(
         self,

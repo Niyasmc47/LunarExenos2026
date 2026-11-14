@@ -1,8 +1,12 @@
 import os
 import hashlib
+import threading
 from pathlib import Path
 from typing import Dict, Any, List
 import spiceypy as spice
+
+# Global re-entrant lock to ensure thread safety across concurrent FastAPI worker threads
+SPICE_LOCK = threading.RLock()
 
 KERNEL_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "kernels"
 
@@ -54,24 +58,32 @@ class SpiceKernelManager:
     def ensure_kernels_loaded(self) -> None:
         """
         Validates presence of all required kernels and loads them into SPICE pool.
+        Thread-safe under concurrent requests.
         """
-        if self._loaded and len(self._loaded_files) == len(KERNEL_MANIFEST):
-            return
+        with SPICE_LOCK:
+            if self._loaded and len(self._loaded_files) == len(KERNEL_MANIFEST):
+                return
 
-        for item in KERNEL_MANIFEST:
-            path = self.kernel_dir / item["filename"]
-            if not path.exists() or path.stat().st_size < item["expected_min_bytes"]:
-                raise FileNotFoundError(
-                    f"Required SPICE kernel '{item['filename']}' not found or corrupt at {path}. "
-                    f"Source: {item['source_url']}"
-                )
+            try:
+                spice.erract("SET", 10, "RETURN")
+                spice.errdev("SET", 10, "NULL")
+            except Exception:
+                pass
 
-            # Load into SPICE kernel pool if not already loaded
-            if str(path) not in self._loaded_files:
-                spice.furnsh(str(path))
-                self._loaded_files.append(str(path))
+            for item in KERNEL_MANIFEST:
+                path = self.kernel_dir / item["filename"]
+                if not path.exists() or path.stat().st_size < item["expected_min_bytes"]:
+                    raise FileNotFoundError(
+                        f"Required SPICE kernel '{item['filename']}' not found or corrupt at {path}. "
+                        f"Source: {item['source_url']}"
+                    )
 
-        self._loaded = True
+                # Load into SPICE kernel pool if not already loaded
+                if str(path) not in self._loaded_files:
+                    spice.furnsh(str(path))
+                    self._loaded_files.append(str(path))
+
+            self._loaded = True
 
     def get_status(self) -> Dict[str, Any]:
         """

@@ -238,6 +238,21 @@ export const CelestialSkyRadar: React.FC<CelestialSkyRadarProps> = ({
         </svg>
       </div>
 
+      {/* Quick Visual Guide for Normal Users */}
+      <div className="shrink-0 flex items-center justify-between text-[10px] font-mono bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-400 mb-1.5 flex-wrap gap-1">
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full border border-dashed border-emerald-400"></span>
+          Green Circle = Horizon (0°)
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+          Center = Overhead (Zenith, 90°)
+        </span>
+        <span className="flex items-center gap-1 text-slate-500">
+          Dark outer rim = Below ground
+        </span>
+      </div>
+
       {/* Footer Quick Telemetry */}
       <div className="shrink-0 flex items-center justify-between text-[11px] font-mono bg-[#070b12] px-3 py-1.5 rounded-lg border border-slate-800">
         <div className="flex items-center gap-1.5 text-amber-300">

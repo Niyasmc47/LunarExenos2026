@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useEphemerisStore } from '../../stores/ephemerisStore';
 import {
   Calendar,
@@ -6,7 +6,12 @@ import {
   Ruler,
   RefreshCw,
   Play,
+  Pause,
   Layers,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react';
 
 interface EphemerisControlToolbarProps {
@@ -34,6 +39,9 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
     computeTimeSeries,
   } = useEphemerisStore();
 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playTimerRef = useRef<number | null>(null);
+
   const handleComputeAll = () => {
     computePosition(observerLat, observerLon);
     computeTimeSeries(observerLat, observerLon);
@@ -48,15 +56,48 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
     setSelectedTimestamp(iso);
   };
 
+  const stepTime = (deltaHours: number) => {
+    const cur = new Date(selectedTimestamp);
+    const updated = new Date(cur.getTime() + deltaHours * 3600 * 1000);
+    const updatedIso = updated.toISOString().slice(0, 19) + 'Z';
+    setSelectedTimestamp(updatedIso);
+    setTimeout(() => {
+      computePosition(observerLat, observerLon);
+    }, 50);
+  };
+
+  // Auto-play animation loop stepping 1 hour forward
+  useEffect(() => {
+    if (isPlaying) {
+      playTimerRef.current = window.setInterval(() => {
+        const cur = new Date(useEphemerisStore.getState().selectedTimestamp);
+        const next = new Date(cur.getTime() + 3600 * 1000);
+        const nextIso = next.toISOString().slice(0, 19) + 'Z';
+        setSelectedTimestamp(nextIso);
+        computePosition(observerLat, observerLon);
+      }, 1000);
+    } else {
+      if (playTimerRef.current) {
+        clearInterval(playTimerRef.current);
+        playTimerRef.current = null;
+      }
+    }
+    return () => {
+      if (playTimerRef.current) {
+        clearInterval(playTimerRef.current);
+      }
+    };
+  }, [isPlaying, observerLat, observerLon, computePosition, setSelectedTimestamp]);
+
   return (
-    <div className="flex flex-col gap-2.5 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-2.5 shadow-xl text-xs font-mono">
+    <div className="flex flex-col gap-2.5 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl text-xs font-mono">
       {/* Top Controls Row */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        {/* Date / Time Input */}
+        {/* Date / Time Input with Quick Stepper */}
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-slate-300 font-semibold mr-1">
             <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-[11px] uppercase">OBSERVATION EPOCH (UTC):</span>
+            <span className="text-[11px] uppercase">DATE & TIME (UTC):</span>
           </div>
 
           <div className="flex items-center gap-1.5 bg-[#070b12] px-2.5 py-1 rounded-lg border border-slate-800">
@@ -70,16 +111,86 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
             <span className="text-slate-500 text-[10px]">UTC</span>
           </div>
 
-          {/* Quick Presets for Artemis III timeframe */}
+          {/* Time Stepper Buttons for Normal Users */}
+          <div className="flex items-center gap-1 bg-[#070b12] p-0.5 rounded-lg border border-slate-800">
+            <button
+              onClick={() => stepTime(-24)}
+              title="Step Backward 1 Day (-24h)"
+              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              <ChevronsLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => stepTime(-6)}
+              title="Step Backward 6 Hours"
+              className="px-1.5 py-0.5 rounded text-[10px] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              -6h
+            </button>
+            <button
+              onClick={() => stepTime(-1)}
+              title="Step Backward 1 Hour"
+              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Play / Pause Time Animation */}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              title={isPlaying ? 'Pause time animation' : 'Animate celestial motion (+1 hour / sec)'}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
+                isPlaying
+                  ? 'bg-amber-500 text-black shadow-md'
+                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
+              }`}
+            >
+              {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              <span>{isPlaying ? 'PAUSE' : 'ANIMATE'}</span>
+            </button>
+
+            <button
+              onClick={() => stepTime(1)}
+              title="Step Forward 1 Hour"
+              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => stepTime(6)}
+              title="Step Forward 6 Hours"
+              className="px-1.5 py-0.5 rounded text-[10px] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              +6h
+            </button>
+            <button
+              onClick={() => stepTime(24)}
+              title="Step Forward 1 Day (+24h)"
+              className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors"
+            >
+              <ChevronsRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Quick Presets */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => {
                 setSelectedTimestamp('2026-10-04T12:00:00Z');
                 setTimeout(handleComputeAll, 50);
               }}
-              className="px-2 py-0.5 rounded text-[10px] bg-[#070b12] text-slate-400 hover:text-emerald-400 border border-slate-800"
+              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
             >
-              Oct 2026
+              Artemis III (Oct 2026)
+            </button>
+            <button
+              onClick={() => {
+                setSelectedTimestamp('2026-12-21T12:00:00Z');
+                setTimeout(handleComputeAll, 50);
+              }}
+              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-amber-300/80 hover:text-amber-300 border border-slate-800"
+            >
+              Summer Sun (Dec)
             </button>
             <button
               onClick={() => {
@@ -87,7 +198,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setSelectedTimestamp(now);
                 setTimeout(handleComputeAll, 50);
               }}
-              className="px-2 py-0.5 rounded text-[10px] bg-[#070b12] text-slate-400 hover:text-emerald-400 border border-slate-800"
+              className="px-2 py-1 rounded text-[10px] font-semibold bg-[#070b12] text-sky-300/80 hover:text-sky-300 border border-slate-800"
             >
               Now
             </button>
@@ -102,7 +213,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
             className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg shadow-md transition-all disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>CALCULATE POSITION</span>
+            <span>RECOMPUTE</span>
           </button>
 
           <button
@@ -111,7 +222,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
             className="flex items-center gap-1.5 px-3 py-1 bg-sky-500 hover:bg-sky-400 text-black font-bold rounded-lg shadow-md transition-all disabled:opacity-50"
           >
             <Play className={`w-3.5 h-3.5 ${isTimeSeriesLoading ? 'animate-spin' : ''}`} />
-            <span>GENERATE TRAJECTORY</span>
+            <span>PLOT TRAJECTORY</span>
           </button>
         </div>
       </div>
@@ -121,22 +232,27 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
         {/* Observer Height */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-slate-400 flex items-center gap-1">
-            <Ruler className="w-3 h-3 text-sky-400" /> Height (h_obs):
+            <Ruler className="w-3 h-3 text-sky-400" /> Observer Height:
           </span>
-          {[0.0, 1.0, 2.0, 10.0].map((h) => (
+          {[
+            { h: 0.0, label: '0m (Ground level)' },
+            { h: 1.0, label: '1m (Rover)' },
+            { h: 2.0, label: '2m (Astronaut eye)' },
+            { h: 10.0, label: '10m (Lander mast)' },
+          ].map((item) => (
             <button
-              key={h}
+              key={item.h}
               onClick={() => {
-                setObserverHeight(h);
+                setObserverHeight(item.h);
                 setTimeout(handleComputeAll, 50);
               }}
               className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
-                observerHeight === h
+                observerHeight === item.h
                   ? 'bg-emerald-500 text-black'
                   : 'bg-[#070b12] text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              {h}m
+              {item.label}
             </button>
           ))}
         </div>
