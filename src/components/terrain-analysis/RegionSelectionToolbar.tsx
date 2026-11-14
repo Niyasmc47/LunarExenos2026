@@ -55,8 +55,12 @@ export const RegionSelectionToolbar: React.FC = () => {
       .then((resp) => {
         if (resp) {
           setDiscoveryResponse(resp);
-          // Auto-select best coverage or best resolution if active is not in candidates
-          if (resp.best_resolution_candidate) {
+          // Only auto-select if currently active dataset is not in the discovered candidates
+          const currentActive = useDynamicAnalysisStore.getState().activeDatasetId;
+          const isCurrentInCandidates = resp.all_candidates.some(
+            (c) => c.dataset.dataset_id === currentActive
+          );
+          if (!isCurrentInCandidates && resp.best_resolution_candidate) {
             setActiveDatasetId(resp.best_resolution_candidate.dataset.dataset_id);
           }
         }

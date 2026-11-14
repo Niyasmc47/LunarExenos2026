@@ -163,8 +163,15 @@ class DatasetDiscoveryEngine:
         best_coverage: Optional[DatasetDiscoveryCandidate] = None
 
         if candidates:
-            # Candidate with lowest nominal pixel spacing
-            by_res = sorted(candidates, key=lambda c: (c.resolution_rank, -c.coverage_percentage))
+            # Candidate with lowest nominal pixel spacing, prioritizing locally cached datasets and highest coverage
+            by_res = sorted(
+                candidates,
+                key=lambda c: (
+                    c.resolution_rank,
+                    0 if c.dataset.is_local_available else 1,
+                    -c.coverage_percentage,
+                ),
+            )
             best_resolution = by_res[0]
             best_resolution.recommendation_type = "best_resolution"
 

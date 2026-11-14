@@ -80,7 +80,7 @@ export const LunarMap: React.FC = () => {
         center: [selectedLongitude, selectedLatitude],
         zoom: 1.5,
         minZoom: 0.5,
-        maxZoom: 8,
+        maxZoom: 16,
         extent: [-180, -90, 180, 90],
         constrainResolution: false,
       });

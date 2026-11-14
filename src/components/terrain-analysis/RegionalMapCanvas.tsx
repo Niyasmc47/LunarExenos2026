@@ -19,7 +19,7 @@ import { createMoonTrekLayer, LUNAR_PROJECTION } from '../lunar-map/WmtsLayer';
 import { createMarkerLayer } from '../lunar-map/MapMarker';
 import { clampLatitude, normalizeLongitude } from '../../utils/lunarCoordinates';
 import { inspectTerrainPoint } from '../../services/dynamicAnalysisApi';
-import { Ruler } from 'lucide-react';
+import { Ruler, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff } from 'lucide-react';
 
 export const RegionalMapCanvas: React.FC = () => {
   const mapElementRef = useRef<HTMLDivElement>(null);
@@ -50,6 +50,26 @@ export const RegionalMapCanvas: React.FC = () => {
 
   const [drawStep, setDrawStep] = useState<'none' | 'first'>('none');
   const [firstPt, setFirstPt] = useState<{ lat: number; lon: number } | null>(null);
+  const [showLegend, setShowLegend] = useState(true);
+
+  const handleZoomIn = () => {
+    if (!mapRef.current) return;
+    const v = mapRef.current.getView();
+    v.animate({ zoom: Math.min(16.0, (v.getZoom() || 6.2) + 0.8), duration: 250 });
+  };
+
+  const handleZoomOut = () => {
+    if (!mapRef.current) return;
+    const v = mapRef.current.getView();
+    v.animate({ zoom: Math.max(2.5, (v.getZoom() || 6.2) - 0.8), duration: 250 });
+  };
+
+  const handleRecenter = () => {
+    if (!mapRef.current) return;
+    const centerLon = (selectedRegionBbox.minLon + selectedRegionBbox.maxLon) / 2.0;
+    const centerLat = (selectedRegionBbox.minLat + selectedRegionBbox.maxLat) / 2.0;
+    mapRef.current.getView().animate({ center: [centerLon, centerLat], zoom: 6.2, duration: 350 });
+  };
 
   // Helper to build dynamic raster URL
   const getDynamicRasterUrl = () => {
@@ -132,8 +152,8 @@ export const RegionalMapCanvas: React.FC = () => {
         projection: LUNAR_PROJECTION,
         center: [centerLon, centerLat],
         zoom: 6.2,
-        minZoom: 4.0,
-        maxZoom: 10.0,
+        minZoom: 2.5,
+        maxZoom: 16.0,
         extent: [-180, -90, 180, 90],
       });
 
@@ -268,7 +288,46 @@ export const RegionalMapCanvas: React.FC = () => {
         </div>
 
         {/* Action Tools */}
-        <div className="flex items-center gap-2 pointer-events-auto">
+        <div className="flex items-center gap-1.5 pointer-events-auto bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-lg border border-slate-700/60">
+          <button
+            onClick={handleZoomIn}
+            title="Zoom In"
+            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleZoomOut}
+            title="Zoom Out"
+            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleRecenter}
+            title="Recenter Map View"
+            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="h-4 w-px bg-slate-700 my-auto" />
+
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            title={showLegend ? 'Hide Legend Overlay' : 'Show Legend Overlay'}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono transition-colors ${
+              showLegend
+                ? 'bg-slate-800 text-slate-200'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            {showLegend ? <EyeOff className="w-3 h-3 text-slate-400" /> : <Eye className="w-3 h-3 text-emerald-400" />}
+            <span className="hidden sm:inline">LEGEND</span>
+          </button>
+
+          <div className="h-4 w-px bg-slate-700 my-auto" />
+
           <button
             onClick={() => {
               setIsDrawingTransect(!isDrawingTransect);
@@ -276,21 +335,21 @@ export const RegionalMapCanvas: React.FC = () => {
               setFirstPt(null);
             }}
             title={isDrawingTransect ? 'Cancel transect' : 'Click two points on map to draw elevation transect'}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-bold transition-all ${
               isDrawingTransect
                 ? 'bg-emerald-500 text-black shadow-lg animate-pulse'
-                : 'bg-[#0c121e]/90 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400'
+                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
             }`}
           >
             <Ruler className="w-3.5 h-3.5" />
-            <span>{isDrawingTransect ? 'DRAWING TRANSECT...' : 'DRAW TRANSECT'}</span>
+            <span>{isDrawingTransect ? 'CANCEL' : 'TRANSECT'}</span>
           </button>
         </div>
       </div>
 
       {/* Drawing Mode Prompt Banner */}
       {isDrawingTransect && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 px-3.5 py-1.5 rounded-lg text-xs font-mono shadow-xl backdrop-blur-sm flex items-center gap-2">
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 px-3.5 py-1.5 rounded-lg text-xs font-mono shadow-xl backdrop-blur-sm flex items-center gap-2 pointer-events-none">
           <Ruler className="w-4 h-4 text-emerald-400 animate-pulse" />
           <span>
             {drawStep === 'none'
@@ -303,39 +362,41 @@ export const RegionalMapCanvas: React.FC = () => {
       {/* Map Element */}
       <div ref={mapElementRef} className="flex-1 w-full h-full min-h-0 bg-[#020408]" />
 
-      {/* Bottom Context Legend */}
-      <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800">
-        {activeLayerMode === 'elevation' ? (
-          <div className="text-[10px] font-mono text-slate-400 space-y-1">
-            <div className="flex justify-between">
-              <span>-520 m (Deep Basins)</span>
-              <span>+1,140 m (Mean)</span>
-              <span>+1,960 m (Ridge Peaks)</span>
+      {/* Compact Bottom Context Legend */}
+      {showLegend && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 pointer-events-auto bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 shadow-xl max-w-md w-[92%] sm:w-auto">
+          {activeLayerMode === 'elevation' ? (
+            <div className="text-[10px] font-mono text-slate-400 space-y-1">
+              <div className="flex justify-between gap-6">
+                <span>-520 m (Basins)</span>
+                <span>+1,140 m (Mean)</span>
+                <span>+1,960 m (Peaks)</span>
+              </div>
+              <div
+                className="h-1.5 rounded w-full"
+                style={{
+                  background: 'linear-gradient(to right, #1d0e40, #2b4984, #1b8770, #4db150, #d6d338, #ffffff)',
+                }}
+              />
             </div>
-            <div
-              className="h-2 rounded w-full"
-              style={{
-                background: 'linear-gradient(to right, #1d0e40, #2b4984, #1b8770, #4db150, #d6d338, #ffffff)',
-              }}
-            />
-          </div>
-        ) : activeLayerMode === 'slope' ? (
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 text-[9px] font-mono text-center">
-            <div className="bg-emerald-500 text-black px-1 py-0.5 rounded font-bold">0–5° Safe</div>
-            <div className="bg-emerald-400 text-black px-1 py-0.5 rounded font-bold">5–10° Fav</div>
-            <div className="bg-amber-400 text-black px-1 py-0.5 rounded font-bold">10–15° Mod</div>
-            <div className="bg-orange-500 text-black px-1 py-0.5 rounded font-bold">15–20° Ste</div>
-            <div className="bg-rose-500 text-white px-1 py-0.5 rounded font-bold">20–25° Tilt</div>
-            <div className="bg-red-700 text-white px-1 py-0.5 rounded font-bold">25–30° Haz</div>
-            <div className="bg-pink-900 text-white px-1 py-0.5 rounded font-bold">&gt;30° Wall</div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
-            <span>CARTOGRAPHIC HILLSHADE: Azimuth {hillshadeAzimuth.toFixed(0)}°, Altitude {hillshadeAltitude.toFixed(0)}°</span>
-            <span className="text-amber-400">Z-Factor {hillshadeZFactor.toFixed(1)}×</span>
-          </div>
-        )}
-      </div>
+          ) : activeLayerMode === 'slope' ? (
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 text-[9px] font-mono text-center">
+              <div className="bg-emerald-500 text-black px-1 py-0.5 rounded font-bold">0–5° Safe</div>
+              <div className="bg-emerald-400 text-black px-1 py-0.5 rounded font-bold">5–10° Fav</div>
+              <div className="bg-amber-400 text-black px-1 py-0.5 rounded font-bold">10–15° Mod</div>
+              <div className="bg-orange-500 text-black px-1 py-0.5 rounded font-bold">15–20° Ste</div>
+              <div className="bg-rose-500 text-white px-1 py-0.5 rounded font-bold">20–25° Tilt</div>
+              <div className="bg-red-700 text-white px-1 py-0.5 rounded font-bold">25–30° Haz</div>
+              <div className="bg-pink-900 text-white px-1 py-0.5 rounded font-bold">&gt;30° Wall</div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-4 text-[10px] font-mono text-slate-400">
+              <span>HILLSHADE: Az {hillshadeAzimuth.toFixed(0)}°, Alt {hillshadeAltitude.toFixed(0)}°</span>
+              <span className="text-amber-400">Z {hillshadeZFactor.toFixed(1)}×</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

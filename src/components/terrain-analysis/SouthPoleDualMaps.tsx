@@ -10,7 +10,7 @@ import { createMoonTrekLayer, LUNAR_PROJECTION } from '../lunar-map/WmtsLayer';
 import { createMarkerLayer } from '../lunar-map/MapMarker';
 import { clampLatitude, normalizeLongitude, formatCoordinates } from '../../utils/lunarCoordinates';
 import { inspectTerrainPoint } from '../../services/dynamicAnalysisApi';
-import { RotateCcw, MapPin, Mountain } from 'lucide-react';
+import { RotateCcw, MapPin, Mountain, ZoomIn, ZoomOut } from 'lucide-react';
 
 const SITE01_EXTENT = [-171.4692, -89.8351, -101.8887, -89.0903] as [number, number, number, number];
 
@@ -49,8 +49,8 @@ export const SouthPoleDualMaps: React.FC = () => {
         projection: LUNAR_PROJECTION,
         center: [-137.4896, -89.4632],
         zoom: 6.2,
-        minZoom: 4.5,
-        maxZoom: 9.0,
+        minZoom: 3.5,
+        maxZoom: 16.0,
         extent: [-180, -90, 180, 90],
       });
 
@@ -58,8 +58,8 @@ export const SouthPoleDualMaps: React.FC = () => {
         projection: LUNAR_PROJECTION,
         center: [-137.4896, -89.4632],
         zoom: 6.2,
-        minZoom: 4.5,
-        maxZoom: 9.0,
+        minZoom: 3.5,
+        maxZoom: 16.0,
         extent: [-180, -90, 180, 90],
       });
 
@@ -194,6 +194,18 @@ export const SouthPoleDualMaps: React.FC = () => {
     );
   }, [activeColormap]);
 
+  const handleZoomIn = () => {
+    if (!elevMapRef.current) return;
+    const v = elevMapRef.current.getView();
+    v.animate({ zoom: Math.min(16.0, (v.getZoom() || 6.2) + 0.8), duration: 250 });
+  };
+
+  const handleZoomOut = () => {
+    if (!elevMapRef.current) return;
+    const v = elevMapRef.current.getView();
+    v.animate({ zoom: Math.max(3.5, (v.getZoom() || 6.2) - 0.8), duration: 250 });
+  };
+
   const handleResetBoth = () => {
     if (!elevMapRef.current) return;
     elevMapRef.current.getView().animate({
@@ -233,6 +245,23 @@ export const SouthPoleDualMaps: React.FC = () => {
                 {cmap}
               </button>
             ))}
+          </div>
+
+          <div className="flex items-center gap-1 border-l border-slate-800 pl-2">
+            <button
+              onClick={handleZoomIn}
+              title="Zoom In"
+              className="p-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleZoomOut}
+              title="Zoom Out"
+              className="p-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
           </div>
 
           <button
