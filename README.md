@@ -31,6 +31,6 @@ npm run test:e2e
 
 ## Terrain and later MVPs
 
-The Python backend and local DEMs are needed only for Terrain Explorer and later scientific analysis. Existing `backend/requirements.txt` is incomplete (including missing SpiceyPy); see the product audit before treating it as a reproducible backend setup. MVP 1 changes do not certify the horizon, ephemeris or visibility engines.
+The Python backend and local DEMs are needed for Terrain Explorer and later scientific analysis. Install `backend/requirements.txt` into the backend environment. Sunlight analysis requires the real SpiceyPy/CSPICE library and the NASA kernels in `backend/data/kernels`; placeholder astronomy libraries are rejected. After replacing a dependency, restart the backend and rerun comparisons and screening to replace previously calculated results. Average Sun-disk visibility accounts for partial illumination; any-sunlight duration counts time with even a partially visible disk. MVP 1 changes do not certify the horizon, ephemeris or visibility engines.
 
 See [MVP 1 delivery and verification](docs/MVP1_Delivery.md), [updated roadmap](docs/LUNAVISTA_Updated_MVP_Roadmap.md), and [product audit](docs/LUNAVISTA_Product_Document.md).

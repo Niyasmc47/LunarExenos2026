@@ -201,7 +201,8 @@ export const ScenarioMapOverview: React.FC = () => {
                   Surface Elevation: <b className="text-slate-200">{t.observer_surface_elevation_m.toFixed(1)} m</b> | Local Slope: <b className="text-amber-400">{t.local_slope_deg !== undefined ? `${t.local_slope_deg.toFixed(1)}°` : 'N/A'}</b>
                 </div>
                 <div className="text-[10px] text-emerald-400 font-bold">
-                  Total Sunlight: {activeRes.solar.total_sun_visible_hours.toFixed(1)} h ({(activeRes.solar.illumination_fraction * 100).toFixed(0)}%)
+                  Average visible Sun disk: {activeRes.solar.time_weighted_sunlight_percentage?.toFixed(1) ?? 'Unavailable'}{activeRes.solar.time_weighted_sunlight_percentage != null ? '%' : ''}
+                  {' | '}Any sunlight: {activeRes.solar.total_sun_visible_hours.toFixed(1)} h
                 </div>
               </>
             );

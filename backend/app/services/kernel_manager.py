@@ -61,6 +61,14 @@ class SpiceKernelManager:
         Thread-safe under concurrent requests.
         """
         with SPICE_LOCK:
+            # A demo stub can expose the same functions while ignoring all kernels.
+            # Never report those approximate coordinates as NASA/SPICE results.
+            toolkit_version = spice.tkvrsn("TOOLKIT")
+            if "stub" in spice.__version__.lower() or not toolkit_version.startswith("CSPICE_"):
+                raise RuntimeError(
+                    "A real SpiceyPy/CSPICE installation is required for sunlight analysis. "
+                    "Install backend/requirements.txt; placeholder astronomy calculations are unsupported."
+                )
             if self._loaded and len(self._loaded_files) == len(KERNEL_MANIFEST):
                 return
 

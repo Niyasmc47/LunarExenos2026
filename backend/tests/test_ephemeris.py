@@ -10,6 +10,18 @@ from app.services.kernel_manager import kernel_manager
 
 client = TestClient(app)
 
+def test_placeholder_astronomy_is_rejected_even_after_loading(monkeypatch):
+    from app.services.kernel_manager import SpiceKernelManager, KERNEL_MANIFEST
+    import spiceypy as spice
+
+    manager = SpiceKernelManager()
+    manager._loaded = True
+    manager._loaded_files = [item['filename'] for item in KERNEL_MANIFEST]
+    monkeypatch.setattr(spice, '__version__', '0.0.0-stub')
+    with pytest.raises(RuntimeError, match='real SpiceyPy/CSPICE'):
+        manager.ensure_kernels_loaded()
+
+
 def test_kernel_manager_status_and_manifest():
     """
     Validates that all required NAIF kernels (LSK, PCK, FK, SPK) are verified and loaded.

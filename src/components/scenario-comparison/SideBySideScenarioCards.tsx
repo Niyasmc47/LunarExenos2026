@@ -98,18 +98,22 @@ export const SideBySideScenarioCards: React.FC = () => {
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="flex items-center gap-1 font-bold text-amber-300">
                       <Sun className="w-3.5 h-3.5" />
-                      <span>Sunlight Duration</span>
+                      <span>Average Sun Visibility</span>
                     </span>
-                    <span className="text-amber-400 font-bold" title="Time-weighted disk fraction / Total contact hours">
-                      {s.total_sun_visible_hours.toFixed(1)} h ({((s as any).time_weighted_sunlight_percentage ?? (s.illumination_fraction * 100)).toFixed(0)}% eff)
+                    <span className="text-amber-400 font-bold" title="Visible fraction of the Sun disk averaged over the analysis window; not electrical efficiency.">
+                      {s.time_weighted_sunlight_percentage?.toFixed(1) ?? 'Unavailable'}{s.time_weighted_sunlight_percentage != null ? '%' : ''}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
+                    <div className="col-span-2">Any sunlight (full or partial): <b className="text-slate-200">{s.total_sun_visible_hours.toFixed(1)}h</b></div>
                     <div>Full Sun: <b className="text-slate-200">{s.total_sun_full_hours.toFixed(1)}h</b></div>
                     <div>Partial: <b className="text-slate-200">{s.total_sun_partial_hours.toFixed(1)}h</b></div>
                     <div>Darkness: <b className="text-rose-400">{s.total_darkness_hours.toFixed(1)}h</b></div>
                     <div>Max Dark: <b className="text-rose-400">{s.longest_darkness_hours.toFixed(1)}h</b></div>
                   </div>
+                  {s.coverage_certainty === 'INDETERMINATE_PARTIAL_DEM' && (
+                    <p className="text-[10px] text-amber-300">Limited terrain coverage: distant terrain may reduce visibility.</p>
+                  )}
                 </div>
 
                 {/* Section 2: Earth Direct Line-of-Sight */}

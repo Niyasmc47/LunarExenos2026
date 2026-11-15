@@ -34,7 +34,7 @@ export const ComparativeCharts: React.FC = () => {
           <div className="flex items-center gap-3 text-[10px] text-slate-400">
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block"></span>
-              <span>Sunlight</span>
+              <span>Any sunlight (full or partial)</span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-sm bg-cyan-400 inline-block"></span>
@@ -59,10 +59,11 @@ export const ComparativeCharts: React.FC = () => {
             const c = scRes.combined;
             const isActive = activeScenarioId === sc.id;
 
-            const sunPct = (s.total_sun_visible_hours / totalDuration) * 100;
-            const earthPct = (e.total_earth_visible_hours / totalDuration) * 100;
-            const bothPct = (c.both_visible_hours / totalDuration) * 100;
-            const darkPct = (s.total_darkness_hours / totalDuration) * 100;
+            const duration = c.total_interval_hours || 1;
+            const sunPct = (s.total_sun_visible_hours / duration) * 100;
+            const earthPct = (e.total_earth_visible_hours / duration) * 100;
+            const bothPct = (c.both_visible_hours / duration) * 100;
+            const darkPct = (s.total_darkness_hours / duration) * 100;
 
             return (
               <div
@@ -87,12 +88,12 @@ export const ComparativeCharts: React.FC = () => {
                 <div className="space-y-1">
                   {/* Sun Bar */}
                   <div className="flex items-center gap-2">
-                    <span className="w-14 text-[9px] text-amber-400">Sunlight</span>
+                    <span className="w-14 text-[9px] text-amber-400">Any sunlight</span>
                     <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-slate-800">
                       <div
                         style={{ width: `${sunPct}%` }}
                         className="bg-amber-400 h-full transition-all duration-500"
-                        title={`Sunlight: ${s.total_sun_visible_hours.toFixed(1)}h (${sunPct.toFixed(1)}%)`}
+                        title={`Any sunlight (full or partial): ${s.total_sun_visible_hours.toFixed(1)}h (${sunPct.toFixed(1)}%)`}
                       />
                       <div
                         style={{ width: `${darkPct}%` }}
@@ -159,7 +160,7 @@ export const ComparativeCharts: React.FC = () => {
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="font-bold text-slate-300">{sc.name}</span>
                   <span className="text-slate-400">
-                    Sunlight: {(scRes.solar.illumination_fraction * 100).toFixed(0)}%
+                    Average visible Sun disk: {scRes.solar.time_weighted_sunlight_percentage?.toFixed(1) ?? 'Unavailable'}{scRes.solar.time_weighted_sunlight_percentage != null ? '%' : ''}
                   </span>
                 </div>
 
