@@ -114751,5 +114751,401 @@
       "Candidate window search evaluation provides engineering planning metrics, not certified NASA flight rules."
     ],
     "warnings": []
+  },
+  {
+    "id": "search-1ff41f33",
+    "name": "Search: test 12 / 14-Day Long Duration Rover Profile (1 windows)",
+    "created_at_iso": "2026-11-15T09:07:44.212266+00:00",
+    "profile_id": "profile-d679e01a",
+    "profile_name": "14-Day Long Duration Rover Profile",
+    "profile_version": 1,
+    "profile_snapshot": {
+      "id": "profile-d679e01a",
+      "name": "14-Day Long Duration Rover Profile",
+      "description": "Tests scope mismatch handling when evaluated against 72h scenario",
+      "mission_type": "robotic_exploration",
+      "duration_days": 14.0,
+      "start_timestamp_iso": "2026-10-04T12:00:00Z",
+      "end_timestamp_iso": "2026-10-18T12:00:00Z",
+      "observer_height_m": 2.0,
+      "time_display_preference": "UTC",
+      "requirements": {
+        "solar": {
+          "min_total_sunlight_hours": {
+            "id": "min_total_sunlight_hours",
+            "name": "Minimum Total Geometric Sunlight Duration",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 150.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "",
+            "scientific_disclaimer": null
+          },
+          "min_full_sunlight_hours": {
+            "id": "min_full_sunlight_hours",
+            "name": "Minimum Full Sunlight Duration",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 48.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+            "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+          },
+          "max_continuous_darkness_hours": {
+            "id": "max_continuous_darkness_hours",
+            "name": "Maximum Continuous Darkness Duration",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 48.0,
+            "unit": "hours",
+            "operator": "le",
+            "description": "",
+            "scientific_disclaimer": null
+          },
+          "min_sunlight_percentage": {
+            "id": "min_sunlight_percentage",
+            "name": "Minimum Sunlight Percentage",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": true,
+            "value": 60.0,
+            "unit": "%",
+            "operator": "ge",
+            "description": "Ratio of total illuminated hours to total mission duration (expressed in %).",
+            "scientific_disclaimer": "Denominator is the total user-configured mission duration."
+          },
+          "min_daily_sunlight_hours": {
+            "id": "min_daily_sunlight_hours",
+            "name": "Minimum Daily Sunlight Duration",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 6.0,
+            "unit": "hours/day",
+            "operator": "ge",
+            "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+            "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+          }
+        },
+        "earth": {
+          "min_total_earth_visible_hours": {
+            "id": "min_total_earth_visible_hours",
+            "name": "Minimum Total Geometric Earth Visibility",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 48.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Minimum cumulative duration of direct geometric line-of-sight to Earth across the mission analysis window.",
+            "scientific_disclaimer": "Geometric Earth visibility does not guarantee an operational radio link; RF link budget, antenna pointing, and data rates are not modeled."
+          },
+          "max_continuous_earth_blackout_hours": {
+            "id": "max_continuous_earth_blackout_hours",
+            "name": "Maximum Continuous Earth LOS Blackout",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 12.0,
+            "unit": "hours",
+            "operator": "le",
+            "description": "Maximum allowable duration of continuous Direct-to-Earth loss of signal (LOS).",
+            "scientific_disclaimer": "Periods where Earth disk is completely obstructed by local terrain."
+          },
+          "min_daily_earth_visible_hours": {
+            "id": "min_daily_earth_visible_hours",
+            "name": "Minimum Daily Earth Visibility",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 4.0,
+            "unit": "hours/day",
+            "operator": "ge",
+            "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+            "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+          },
+          "min_full_disk_earth_visible_hours": {
+            "id": "min_full_disk_earth_visible_hours",
+            "name": "Minimum Full-Disk Earth Visibility",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 24.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+            "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+          }
+        },
+        "terrain": {
+          "max_local_slope_deg": {
+            "id": "max_local_slope_deg",
+            "name": "Maximum Allowable Landing Site Slope",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 15.0,
+            "unit": "deg",
+            "operator": "le",
+            "description": "",
+            "scientific_disclaimer": null
+          },
+          "min_elevation_m": {
+            "id": "min_elevation_m",
+            "name": "Minimum Surface Elevation",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 0.0,
+            "unit": "m",
+            "operator": "ge",
+            "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+            "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+          },
+          "max_elevation_m": {
+            "id": "max_elevation_m",
+            "name": "Maximum Surface Elevation",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 2500.0,
+            "unit": "m",
+            "operator": "le",
+            "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+            "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+          },
+          "max_roughness_factor": {
+            "id": "max_roughness_factor",
+            "name": "Maximum Local Terrain Roughness Factor",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 5.0,
+            "unit": "deg_std",
+            "operator": "le",
+            "description": "Local standard deviation of slope within the landing area footprint.",
+            "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+          }
+        }
+      },
+      "version": 1,
+      "is_template": false,
+      "created_at_iso": "2026-11-15T03:50:55.227304+00:00",
+      "updated_at_iso": "2026-11-15T03:50:55.227304+00:00"
+    },
+    "scenario_id": "scenario-d25cf4e7",
+    "scenario_name": "test 12",
+    "site_id": "site04",
+    "latitude": -89.7614,
+    "longitude": -157.1156,
+    "observer_height_m": 2.0,
+    "search_start_iso": "2026-10-04T00:00:00Z",
+    "search_end_iso": "2026-10-14T00:00:00Z",
+    "search_span_days": 10.0,
+    "mission_duration_days": 10.0,
+    "mission_duration_hours": 240.0,
+    "search_step_hours": 12.0,
+    "analysis_step_hours": 2.0,
+    "total_windows_evaluated": 1,
+    "compliant_windows_count": 0,
+    "non_compliant_windows_count": 1,
+    "indeterminate_windows_count": 0,
+    "windows": [
+      {
+        "window_id": "win-001",
+        "window_index": 1,
+        "start_timestamp_iso": "2026-10-04T00:00:00Z",
+        "end_timestamp_iso": "2026-10-14T00:00:00Z",
+        "duration_days": 10.0,
+        "duration_hours": 240.0,
+        "classification": "NON_COMPLIANT",
+        "hard_constraints_passed": 4,
+        "hard_constraints_failed": 1,
+        "hard_constraints_indeterminate": 0,
+        "total_hard_constraints": 5,
+        "solar_summary": {
+          "total_sunlight_hours": 240.0,
+          "full_sunlight_hours": 240.0,
+          "partial_sunlight_hours": 0.0,
+          "darkness_hours": 0.0,
+          "longest_darkness_hours": 0.0,
+          "illumination_percentage": 100.0,
+          "min_daily_sunlight_hours": 24.0,
+          "sunrise_transitions": 0,
+          "sunset_transitions": 0,
+          "time_weighted_sunlight_percentage": null,
+          "any_sunlight_percentage": null,
+          "full_sunlight_percentage": null,
+          "partial_sunlight_percentage": null,
+          "darkness_percentage": null
+        },
+        "earth_summary": {
+          "total_earth_visible_hours": 68.0,
+          "full_disk_earth_visible_hours": 36.0,
+          "partial_earth_visible_hours": 32.0,
+          "earth_blackout_hours": 172.0,
+          "longest_earth_blackout_hours": 172.0,
+          "earth_visibility_percentage": 21.67,
+          "min_daily_earth_visible_hours": 0.0,
+          "earthrise_transitions": 0,
+          "earthset_transitions": 1,
+          "time_weighted_earth_percentage": null,
+          "any_earth_percentage": null,
+          "full_earth_percentage": null,
+          "partial_earth_percentage": null,
+          "blackout_percentage": null
+        },
+        "surface_elevation_m": 1727.984,
+        "local_slope_deg": 2.27,
+        "hard_constraint_results": [
+          {
+            "requirement_id": "min_total_sunlight_hours",
+            "requirement_name": "Minimum Total Geometric Sunlight Duration",
+            "category": "solar",
+            "classification": "HARD_CONSTRAINT",
+            "operator": "ge",
+            "threshold_value": 150.0,
+            "threshold_str": "\u2265 150.0 hours",
+            "actual_value": 240.0,
+            "actual_value_str": "240.0 hours",
+            "unit": "hours",
+            "verdict": "PASS",
+            "explanation": "Observed value of 240.0 hours satisfies criterion \u2265 150.0 hours.",
+            "supporting_data_source": "Visibility Engine (MVP 5) - Cumulative Solar Illumination",
+            "analysis_period": "2026-10-04T00:00:00Z to 2026-10-14T00:00:00Z (10.00 Earth days)"
+          },
+          {
+            "requirement_id": "max_continuous_darkness_hours",
+            "requirement_name": "Maximum Continuous Darkness Duration",
+            "category": "solar",
+            "classification": "HARD_CONSTRAINT",
+            "operator": "le",
+            "threshold_value": 48.0,
+            "threshold_str": "\u2264 48.0 hours",
+            "actual_value": 0.0,
+            "actual_value_str": "0.0 hours",
+            "unit": "hours",
+            "verdict": "PASS",
+            "explanation": "Observed value of 0.0 hours satisfies criterion \u2264 48.0 hours.",
+            "supporting_data_source": "Visibility Engine (MVP 5) - Longest Darkness Run",
+            "analysis_period": "2026-10-04T00:00:00Z to 2026-10-14T00:00:00Z (10.00 Earth days)"
+          },
+          {
+            "requirement_id": "min_total_earth_visible_hours",
+            "requirement_name": "Minimum Total Geometric Earth Visibility",
+            "category": "earth",
+            "classification": "HARD_CONSTRAINT",
+            "operator": "ge",
+            "threshold_value": 48.0,
+            "threshold_str": "\u2265 48.0 hours",
+            "actual_value": 68.0,
+            "actual_value_str": "68.0 hours",
+            "unit": "hours",
+            "verdict": "PASS",
+            "explanation": "Observed value of 68.0 hours satisfies criterion \u2265 48.0 hours.",
+            "supporting_data_source": "Visibility Engine (MVP 5) - Geometric Earth Line-of-Sight",
+            "analysis_period": "2026-10-04T00:00:00Z to 2026-10-14T00:00:00Z (10.00 Earth days)"
+          },
+          {
+            "requirement_id": "max_continuous_earth_blackout_hours",
+            "requirement_name": "Maximum Continuous Earth LOS Blackout",
+            "category": "earth",
+            "classification": "HARD_CONSTRAINT",
+            "operator": "le",
+            "threshold_value": 12.0,
+            "threshold_str": "\u2264 12.0 hours",
+            "actual_value": 172.0,
+            "actual_value_str": "172.0 hours",
+            "unit": "hours",
+            "verdict": "FAIL",
+            "explanation": "Observed value of 172.0 hours violates criterion \u2264 12.0 hours.",
+            "supporting_data_source": "Visibility Engine (MVP 5) - Longest Earth Blackout Run",
+            "analysis_period": "2026-10-04T00:00:00Z to 2026-10-14T00:00:00Z (10.00 Earth days)"
+          },
+          {
+            "requirement_id": "max_local_slope_deg",
+            "requirement_name": "Maximum Allowable Landing Site Slope",
+            "category": "terrain",
+            "classification": "HARD_CONSTRAINT",
+            "operator": "le",
+            "threshold_value": 15.0,
+            "threshold_str": "\u2264 15.0 deg",
+            "actual_value": 2.27,
+            "actual_value_str": "2.3 deg",
+            "unit": "deg",
+            "verdict": "PASS",
+            "explanation": "Observed value of 2.3 deg satisfies criterion \u2264 15.0 deg.",
+            "supporting_data_source": "NASA LOLA 5 m DEM (Site 01) - Local Slope",
+            "analysis_period": "2026-10-04T00:00:00Z to 2026-10-14T00:00:00Z (10.00 Earth days)"
+          }
+        ],
+        "soft_preference_results": [
+          {
+            "requirement_id": "min_sunlight_percentage",
+            "requirement_name": "Minimum Sunlight Percentage",
+            "category": "solar",
+            "operator": "ge",
+            "threshold_value": 60.0,
+            "threshold_str": "\u2265 60.0 %",
+            "actual_value": 100.0,
+            "actual_value_str": "100.0 %",
+            "unit": "%",
+            "is_available": true,
+            "notes": "Observed: 100.0 %. Preference: \u2265 60.0 %."
+          }
+        ],
+        "informational_metrics": [
+          {
+            "id": "window_span",
+            "name": "Mission Window Span",
+            "category": "time",
+            "value": 240.0,
+            "value_str": "240.0 hours (10.00 Earth days)",
+            "unit": "hours",
+            "source": "Window Planner Engine"
+          },
+          {
+            "id": "start_epoch",
+            "name": "Window Start Epoch (UTC)",
+            "category": "time",
+            "value": "2026-10-04T00:00:00Z",
+            "value_str": "2026-10-04T00:00:00Z",
+            "unit": null,
+            "source": "Search Configuration"
+          },
+          {
+            "id": "end_epoch",
+            "name": "Window End Epoch (UTC)",
+            "category": "time",
+            "value": "2026-10-14T00:00:00Z",
+            "value_str": "2026-10-14T00:00:00Z",
+            "unit": null,
+            "source": "Search Configuration"
+          }
+        ],
+        "coverage_status": "COMPLETE",
+        "coverage_certainty": "COMPLETE_DEM",
+        "warnings": []
+      }
+    ],
+    "dem_provenance": {
+      "dataset_id": "site04",
+      "product_name": "Site 04 \u2014 Shackleton Rim",
+      "citation": "Barker, M. K., et al. (2021). Improved LOLA Elevation Maps for South Pole Landing Sites: Error Estimates and Their Impact on Illumination Conditions. Planetary and Space Science, 203, 105119. https://doi.org/10.1016/j.pss.2020.105119",
+      "bounds": {
+        "left": -19000.0,
+        "bottom": -20000.0,
+        "right": -3000.0,
+        "top": -4000.0
+      },
+      "grid_resolution_m": 5.0,
+      "vertical_datum": "IAU Moon 2000 Sphere (R = 1,737,400 m)"
+    },
+    "spice_provenance": {
+      "spice_toolkit": "CSPICE_N0067 via SpiceyPy",
+      "reference_frame": "MOON_ME (Lunar Mean Earth / Polar Axis DE421)",
+      "ephemeris_model": "NASA JPL DE421 (1900-2050)",
+      "active_kernels": [],
+      "aberration_correction": "LT+S"
+    },
+    "scientific_disclaimers": [
+      "Geometric solar illumination does not model photovoltaic panel incidence angle, dust degradation, or electrical conversion efficiency.",
+      "Geometric Earth line-of-sight does not evaluate RF telecommunications link budget, DSN ground station schedules, or radio hardware margin.",
+      "Local slope and surface elevation alone do not guarantee touchdown safety; sub-pixel boulders and micro-craters are unmodeled.",
+      "Candidate window search evaluation provides engineering planning metrics, not certified NASA flight rules."
+    ],
+    "warnings": []
   }
 ]
