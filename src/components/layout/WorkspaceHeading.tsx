@@ -1,6 +1,7 @@
 import { CircleHelp, ExternalLink } from 'lucide-react';
 import { useLocationStore } from '../../stores/locationStore';
 import { navigation } from './navigation';
+import { API_BASE_URL } from '../../services/apiClient';
 
 export function WorkspaceHeading() {
   const screen = useLocationStore(s => s.appScreen);
@@ -15,7 +16,7 @@ export function WorkspaceHeading() {
       </div>
       <div className="flex items-center gap-2">
         <a
-          href="http://127.0.0.1:8000/docs"
+          href={`${API_BASE_URL || ''}/docs`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-amber-200 px-3 py-2 border border-slate-700/60 rounded-lg hover:border-amber-400/40 bg-slate-900/40 transition-colors"

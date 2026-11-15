@@ -4,6 +4,7 @@ import {
   getExportStatisticsCsvUrl,
   getExportClippedGeotiffUrl,
 } from '../../services/dynamicAnalysisApi';
+import { API_BASE_URL } from '../../services/apiClient';
 import { Download, FileText, Database, Check } from 'lucide-react';
 
 export const ExportToolbar: React.FC = () => {
@@ -27,7 +28,7 @@ export const ExportToolbar: React.FC = () => {
 
   const handleExportProfileCsv = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/exports/profile-csv', {
+      const res = await fetch(`${API_BASE_URL}/api/exports/profile-csv`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

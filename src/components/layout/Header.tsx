@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Moon, Globe2, Mountain, GitCompare, SlidersHorizontal, ShieldCheck, CalendarClock, Compass, Scale, FileText, Menu, X } from 'lucide-react';
 import { useLocationStore } from '../../stores/locationStore';
 import { navigation, navigationGroups } from './navigation';
+import { API_BASE_URL } from '../../services/apiClient';
 const icons = { 'lunar-explorer': Globe2, 'terrain-explorer': Mountain, 'mission-requirements': SlidersHorizontal, 'mission-comparison': GitCompare, 'candidate-screening': ShieldCheck, 'window-planner': CalendarClock, 'terrain-assessment': Compass, 'trade-off-analysis': Scale, 'mission-reports': FileText };
 export function Header() {
  const screen = useLocationStore(s => s.appScreen);
@@ -17,7 +18,7 @@ export function Header() {
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
     <span>Lunar mission planning</span>
     <a
-      href="http://127.0.0.1:8000/docs"
+      href={`${API_BASE_URL || ''}/docs`}
       target="_blank"
       rel="noopener noreferrer"
       style={{ color: '#e5c68d', fontSize: '11px', textDecoration: 'none', fontWeight: 600 }}

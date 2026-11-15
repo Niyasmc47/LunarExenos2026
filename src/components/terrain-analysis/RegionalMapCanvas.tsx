@@ -18,6 +18,7 @@ import { useLocationStore } from '../../stores/locationStore';
 import { createMoonTrekLayer, LUNAR_PROJECTION } from '../lunar-map/WmtsLayer';
 import { createMarkerLayer } from '../lunar-map/MapMarker';
 import { clampLatitude, normalizeLongitude } from '../../utils/lunarCoordinates';
+import { API_BASE_URL } from '../../services/apiClient';
 import { inspectTerrainPoint } from '../../services/dynamicAnalysisApi';
 import { Ruler, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff } from 'lucide-react';
 
@@ -85,15 +86,15 @@ export const RegionalMapCanvas: React.FC = () => {
 
     if (activeLayerMode === 'elevation') {
       params.append('colormap_name', activeColormap);
-      return `http://127.0.0.1:8000/api/regional/elevation-map.png?${params.toString()}`;
+      return `${API_BASE_URL}/api/regional/elevation-map.png?${params.toString()}`;
     } else if (activeLayerMode === 'slope') {
       params.append('classified', 'true');
-      return `http://127.0.0.1:8000/api/regional/slope-map.png?${params.toString()}`;
+      return `${API_BASE_URL}/api/regional/slope-map.png?${params.toString()}`;
     } else {
       params.append('azimuth_deg', hillshadeAzimuth.toString());
       params.append('altitude_deg', hillshadeAltitude.toString());
       params.append('z_factor', hillshadeZFactor.toString());
-      return `http://127.0.0.1:8000/api/regional/hillshade.png?${params.toString()}`;
+      return `${API_BASE_URL}/api/regional/hillshade.png?${params.toString()}`;
     }
   };
 

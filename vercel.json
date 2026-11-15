@@ -2,6 +2,18 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://lunavista-api-2026-c5htd5h5d0bmd2gf.centralindia-01.azurewebsites.net/api/$1"
+    },
+    {
+      "source": "/docs",
+      "destination": "https://lunavista-api-2026-c5htd5h5d0bmd2gf.centralindia-01.azurewebsites.net/docs"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "https://lunavista-api-2026-c5htd5h5d0bmd2gf.centralindia-01.azurewebsites.net/openapi.json"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

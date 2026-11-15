@@ -10,6 +10,7 @@ import { createMoonTrekLayer, LUNAR_PROJECTION } from '../lunar-map/WmtsLayer';
 import { createMarkerLayer } from '../lunar-map/MapMarker';
 import { clampLatitude, normalizeLongitude, formatCoordinates } from '../../utils/lunarCoordinates';
 import { inspectTerrainPoint } from '../../services/dynamicAnalysisApi';
+import { API_BASE_URL } from '../../services/apiClient';
 import { RotateCcw, MapPin, Mountain, ZoomIn, ZoomOut } from 'lucide-react';
 
 const SITE01_EXTENT = [-171.4692, -89.8351, -101.8887, -89.0903] as [number, number, number, number];
@@ -67,7 +68,7 @@ export const SouthPoleDualMaps: React.FC = () => {
       const elevWmts = createMoonTrekLayer(() => {}, () => {}, () => {});
       const elevOverlay = new ImageLayer({
         source: new Static({
-          url: 'http://127.0.0.1:8000/api/regional/elevation-map.png',
+          url: `${API_BASE_URL}/api/regional/elevation-map.png`,
           imageExtent: SITE01_EXTENT,
           projection: LUNAR_PROJECTION,
         }),
@@ -92,7 +93,7 @@ export const SouthPoleDualMaps: React.FC = () => {
       const slopeWmts = createMoonTrekLayer(() => {}, () => {}, () => {});
       const slopeOverlay = new ImageLayer({
         source: new Static({
-          url: 'http://127.0.0.1:8000/api/regional/slope-map.png',
+          url: `${API_BASE_URL}/api/regional/slope-map.png`,
           imageExtent: SITE01_EXTENT,
           projection: LUNAR_PROJECTION,
         }),
@@ -187,7 +188,7 @@ export const SouthPoleDualMaps: React.FC = () => {
     if (!elevOverlayRef.current) return;
     elevOverlayRef.current.setSource(
       new Static({
-        url: `http://127.0.0.1:8000/api/regional/elevation-map.png?dataset_id=site01&colormap_name=${activeColormap}`,
+        url: `${API_BASE_URL}/api/regional/elevation-map.png?dataset_id=site01&colormap_name=${activeColormap}`,
         imageExtent: SITE01_EXTENT,
         projection: LUNAR_PROJECTION,
       })

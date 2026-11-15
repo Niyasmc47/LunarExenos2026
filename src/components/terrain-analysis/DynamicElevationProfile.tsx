@@ -11,6 +11,7 @@ import {
 import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { useLocationStore } from '../../stores/locationStore';
 import { fetchTransectProfile } from '../../services/dynamicAnalysisApi';
+import { API_BASE_URL } from '../../services/apiClient';
 import {
   Activity,
   Download,
@@ -69,7 +70,7 @@ export const DynamicElevationProfile: React.FC = () => {
   const handleExportCsv = async () => {
     if (!transectStart || !transectEnd) return;
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/exports/profile-csv', {
+      const res = await fetch(`${API_BASE_URL}/api/exports/profile-csv`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
