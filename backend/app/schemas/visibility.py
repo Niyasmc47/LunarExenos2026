@@ -101,6 +101,15 @@ class SolarMetrics(BaseModel):
     longest_illumination_hours: float
     illumination_fraction: float
     sunlight_percentage: Optional[float] = None
+    any_sunlight_percentage: float = 0.0
+    full_sunlight_percentage: float = 0.0
+    partial_sunlight_percentage: float = 0.0
+    darkness_percentage: float = 0.0
+    time_weighted_solar_disk_fraction: float = 0.0
+    time_weighted_sunlight_percentage: float = 0.0
+    indeterminate_hours: float = 0.0
+    indeterminate_percentage: float = 0.0
+    coverage_certainty: CoverageCertainty = CoverageCertainty.CONFIRMED_EVALUATED
     sunrise_count: int
     sunset_count: int
     max_sun_elevation_deg: float
@@ -117,6 +126,15 @@ class EarthMetrics(BaseModel):
     longest_earth_visible_hours: float
     earth_visibility_fraction: float
     earth_visibility_percentage: Optional[float] = None
+    any_earth_visible_percentage: float = 0.0
+    full_earth_percentage: float = 0.0
+    partial_earth_percentage: float = 0.0
+    earth_blackout_percentage: float = 0.0
+    time_weighted_earth_disk_fraction: float = 0.0
+    time_weighted_earth_percentage: float = 0.0
+    indeterminate_hours: float = 0.0
+    indeterminate_percentage: float = 0.0
+    coverage_certainty: CoverageCertainty = CoverageCertainty.CONFIRMED_EVALUATED
     earthrise_count: int
     earthset_count: int
     max_earth_elevation_deg: float

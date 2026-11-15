@@ -14,6 +14,7 @@ import CircleStyle from 'ol/style/Circle.js';
 import Fill from 'ol/style/Fill.js';
 import { defaults as defaultControls } from 'ol/control.js';
 import { useLocationStore } from '../../stores/locationStore';
+import { useDynamicAnalysisStore, PREDEFINED_SITES } from '../../stores/dynamicAnalysisStore';
 import { createMoonTrekLayer, LUNAR_PROJECTION } from '../lunar-map/WmtsLayer';
 import { createMarkerLayer } from '../lunar-map/MapMarker';
 import { clampLatitude, normalizeLongitude, formatCoordinates } from '../../utils/lunarCoordinates';
@@ -47,6 +48,7 @@ export const TerrainMap2D: React.FC = () => {
 
   const profileStart = useLocationStore((state) => state.profileStart);
   const profileEnd = useLocationStore((state) => state.profileEnd);
+  const activeDatasetId = useDynamicAnalysisStore((state) => state.activeDatasetId) || 'site01';
   const setProfileLine = useLocationStore((state) => state.setProfileLine);
   const isDrawingProfile = useLocationStore((state) => state.isDrawingProfile);
   const setIsDrawingProfile = useLocationStore((state) => state.setIsDrawingProfile);
@@ -238,10 +240,12 @@ export const TerrainMap2D: React.FC = () => {
     }
   }, [selectedLatitude, selectedLongitude]);
 
+  const activeSite = PREDEFINED_SITES.find((s) => s.id === activeDatasetId) || PREDEFINED_SITES[0];
+
   const handleRecenter = () => {
     if (!mapRef.current) return;
     mapRef.current.getView().animate({
-      center: [-137.4896, -89.4632],
+      center: [activeSite.center.lon, activeSite.center.lat],
       zoom: 6.2,
       duration: 400,
     });
@@ -301,7 +305,7 @@ export const TerrainMap2D: React.FC = () => {
       <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
         <button
           onClick={handleRecenter}
-          title="Recenter to Site 01 (Connecting Ridge)"
+          title={`Recenter to ${activeSite.name}`}
           className="p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-emerald-400 transition-colors"
         >
           <RotateCcw className="w-4 h-4" />

@@ -722,19 +722,23 @@ class MissionWindowPlannerService:
         sunrises = 0
         sunsets = 0
         prev_vis = False
+        time_weighted_sun_integral = 0.0
 
         for i in range(len(points) - 1):
             pt = points[i]
+            pt_next = points[i+1]
             t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
             t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
             dt_h = (t2 - t1) / 3600.0
 
-            f = getattr(pt, "sun_visible_fraction", 0.0)
-            is_vis = f > 0.0
+            f1 = getattr(pt, "sun_visible_fraction", 0.0)
+            f2 = getattr(pt_next, "sun_visible_fraction", 0.0)
+            time_weighted_sun_integral += 0.5 * (f1 + f2) * dt_h
+            is_vis = f1 > 0.0 or f2 > 0.0
 
             if is_vis:
                 total_sun += dt_h
-                if f >= 0.999:
+                if f1 >= 0.999 and f2 >= 0.999:
                     full_sun += dt_h
                 else:
                     partial_sun += dt_h
@@ -759,7 +763,12 @@ class MissionWindowPlannerService:
         partial_sun = max(0.0, total_sun - full_sun)
         darkness = max(0.0, duration_hours - total_sun)
         longest_darkness = min(duration_hours, max(longest_darkness, current_darkness_run))
-        illum_pct = round((total_sun / max(0.01, duration_hours)) * 100.0, 2)
+        
+        tw_sun_pct = round(min(100.0, max(0.0, (time_weighted_sun_integral / max(0.01, duration_hours)) * 100.0)), 2)
+        full_sun_pct = round((full_sun / max(0.01, duration_hours)) * 100.0, 2)
+        partial_sun_pct = round((partial_sun / max(0.01, duration_hours)) * 100.0, 2)
+        dark_pct = round(max(0.0, 100.0 - full_sun_pct - partial_sun_pct), 2)
+        any_sun_pct = round(full_sun_pct + partial_sun_pct, 2)
 
         return {
             "total_sunlight_hours": round(total_sun, 2),
@@ -767,7 +776,12 @@ class MissionWindowPlannerService:
             "partial_sunlight_hours": round(partial_sun, 2),
             "darkness_hours": round(darkness, 2),
             "longest_darkness_hours": round(longest_darkness, 2),
-            "illumination_percentage": illum_pct,
+            "illumination_percentage": tw_sun_pct,
+            "time_weighted_sunlight_percentage": tw_sun_pct,
+            "any_sunlight_percentage": any_sun_pct,
+            "full_sunlight_percentage": full_sun_pct,
+            "partial_sunlight_percentage": partial_sun_pct,
+            "darkness_percentage": dark_pct,
             "sunrise_transitions": sunrises,
             "sunset_transitions": sunsets,
         }
@@ -796,19 +810,23 @@ class MissionWindowPlannerService:
         earthrises = 0
         earthsets = 0
         prev_vis = False
+        time_weighted_earth_integral = 0.0
 
         for i in range(len(points) - 1):
             pt = points[i]
+            pt_next = points[i+1]
             t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
             t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
             dt_h = (t2 - t1) / 3600.0
 
-            f = getattr(pt, "earth_visible_fraction", 0.0)
-            is_vis = f > 0.0
+            f1 = getattr(pt, "earth_visible_fraction", 0.0)
+            f2 = getattr(pt_next, "earth_visible_fraction", 0.0)
+            time_weighted_earth_integral += 0.5 * (f1 + f2) * dt_h
+            is_vis = f1 > 0.0 or f2 > 0.0
 
             if is_vis:
                 total_earth += dt_h
-                if f >= 0.999:
+                if f1 >= 0.999 and f2 >= 0.999:
                     full_earth += dt_h
                 else:
                     partial_earth += dt_h
@@ -833,7 +851,12 @@ class MissionWindowPlannerService:
         partial_earth = max(0.0, total_earth - full_earth)
         blackout = max(0.0, duration_hours - total_earth)
         longest_blackout = min(duration_hours, max(longest_blackout, current_blackout_run))
-        vis_pct = round((total_earth / max(0.01, duration_hours)) * 100.0, 2)
+
+        tw_earth_pct = round(min(100.0, max(0.0, (time_weighted_earth_integral / max(0.01, duration_hours)) * 100.0)), 2)
+        full_earth_pct = round((full_earth / max(0.01, duration_hours)) * 100.0, 2)
+        partial_earth_pct = round((partial_earth / max(0.01, duration_hours)) * 100.0, 2)
+        blackout_pct = round(max(0.0, 100.0 - full_earth_pct - partial_earth_pct), 2)
+        any_earth_pct = round(full_earth_pct + partial_earth_pct, 2)
 
         return {
             "total_earth_visible_hours": round(total_earth, 2),
@@ -841,7 +864,12 @@ class MissionWindowPlannerService:
             "partial_earth_visible_hours": round(partial_earth, 2),
             "earth_blackout_hours": round(blackout, 2),
             "longest_earth_blackout_hours": round(longest_blackout, 2),
-            "earth_visibility_percentage": vis_pct,
+            "earth_visibility_percentage": tw_earth_pct,
+            "time_weighted_earth_percentage": tw_earth_pct,
+            "any_earth_percentage": any_earth_pct,
+            "full_earth_percentage": full_earth_pct,
+            "partial_earth_percentage": partial_earth_pct,
+            "blackout_percentage": blackout_pct,
             "earthrise_transitions": earthrises,
             "earthset_transitions": earthsets,
         }

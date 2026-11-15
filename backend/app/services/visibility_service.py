@@ -351,6 +351,13 @@ class VisibilityEngineService:
         Extracts sorted azimuth, elevation, completeness, and external elevation bound
         arrays with 360-degree wrapping for circular interpolation.
         """
+        if not profile:
+            az_default = np.array([0.0, 360.0], dtype=np.float64)
+            el_default = np.array([0.0, 0.0], dtype=np.float64)
+            comp_default = np.array([0.0, 0.0], dtype=np.float64)
+            bound_default = np.array([90.0, 90.0], dtype=np.float64)
+            return az_default, el_default, comp_default, bound_default
+
         az_list = [p.azimuth_deg for p in profile]
         el_list = [p.horizon_elevation_deg for p in profile]
         comp_list = [1.0 if getattr(p, "ray_coverage_complete", True) else 0.0 for p in profile]
@@ -385,7 +392,7 @@ class VisibilityEngineService:
         coverage_status: str,
         horizon_comp: Optional[np.ndarray] = None,
         horizon_bound: Optional[np.ndarray] = None,
-        n_slices: int = 31,
+        n_slices: int = 61,
     ) -> CelestialDiskVisibility:
         """
         Integrates visible area of celestial disk against local terrain skyline.
@@ -395,15 +402,16 @@ class VisibilityEngineService:
         ang_radius = angular_diameter_deg / 2.0
         h_center = float(np.interp(azimuth_deg % 360.0, horizon_az, horizon_el, period=360.0))
 
+        cov_stat = (coverage_status or "").lower()
         if horizon_comp is None:
-            if coverage_status == "complete":
+            if cov_stat == "complete":
                 horizon_comp = np.ones_like(horizon_az)
                 horizon_bound = np.zeros_like(horizon_az)
             else:
                 horizon_comp = np.zeros_like(horizon_az)
                 horizon_bound = np.full_like(horizon_az, 90.0)
         elif horizon_bound is None:
-            horizon_bound = np.zeros_like(horizon_az) if coverage_status == "complete" else np.full_like(horizon_az, 90.0)
+            horizon_bound = np.zeros_like(horizon_az) if cov_stat == "complete" else np.full_like(horizon_az, 90.0)
 
         upper_limb_el = elevation_deg + ang_radius
         lower_limb_el = elevation_deg - ang_radius
@@ -482,7 +490,7 @@ class VisibilityEngineService:
         elif has_indeterminate_slice:
             certainty = CoverageCertainty.INDETERMINATE_PARTIAL_DEM
             state = VisibilityState.INDETERMINATE
-        elif coverage_status != "complete" and state in (VisibilityState.FULLY_VISIBLE, VisibilityState.PARTIALLY_VISIBLE):
+        elif cov_stat != "complete" and state in (VisibilityState.FULLY_VISIBLE, VisibilityState.PARTIALLY_VISIBLE):
             b_center = float(np.interp(azimuth_deg % 360.0, horizon_az, horizon_bound, period=360.0))
             if upper_limb_el <= b_center:
                 certainty = CoverageCertainty.INDETERMINATE_PARTIAL_DEM
@@ -842,12 +850,30 @@ class VisibilityEngineService:
                 else:
                     earth_state = "PARTIAL"
 
+                # Time-weighted integral of visible disk fractions
+                sun_integral_dt = 0.5 * (sun_f_u + sun_f_v) * dt_h
+                earth_integral_dt = 0.5 * (earth_f_u + earth_f_v) * dt_h
+
+                # Indeterminate tracking: if either point is indeterminate
+                is_sun_indet = (
+                    p0.sun_visibility_state == VisibilityState.INDETERMINATE
+                    or p1.sun_visibility_state == VisibilityState.INDETERMINATE
+                )
+                is_earth_indet = (
+                    p0.earth_visibility_state == VisibilityState.INDETERMINATE
+                    or p1.earth_visibility_state == VisibilityState.INDETERMINATE
+                )
+
                 sub_intervals.append({
                     "u": u,
                     "v": v,
                     "dt": dt_h,
                     "sun_state": sun_state,
                     "earth_state": earth_state,
+                    "sun_integral": sun_integral_dt,
+                    "earth_integral": earth_integral_dt,
+                    "is_sun_indet": is_sun_indet,
+                    "is_earth_indet": is_earth_indet,
                 })
 
         # 2. Sum durations from sub-intervals
@@ -866,6 +892,44 @@ class VisibilityEngineService:
         earth_partial_hours = round(earth_partial_raw, 2)
         earth_blackout_hours = round(max(0.0, total_duration_hours - earth_full_hours - earth_partial_hours), 2)
         earth_vis_hours = round(earth_full_hours + earth_partial_hours, 2)
+
+        # Time-weighted disk fraction integrals
+        total_sun_integral_raw = sum(s["sun_integral"] for s in sub_intervals)
+        total_earth_integral_raw = sum(s["earth_integral"] for s in sub_intervals)
+        tw_sun_fraction = float(np.clip(total_sun_integral_raw / max(0.01, total_duration_hours), 0.0, 1.0))
+        tw_earth_fraction = float(np.clip(total_earth_integral_raw / max(0.01, total_duration_hours), 0.0, 1.0))
+        tw_sun_pct = round(tw_sun_fraction * 100.0, 2)
+        tw_earth_pct = round(tw_earth_fraction * 100.0, 2)
+
+        # Indeterminate coverage tracking
+        sun_indet_raw = sum(s["dt"] for s in sub_intervals if s["is_sun_indet"])
+        earth_indet_raw = sum(s["dt"] for s in sub_intervals if s["is_earth_indet"])
+        sun_indet_hours = round(min(total_duration_hours, sun_indet_raw), 2)
+        earth_indet_hours = round(min(total_duration_hours, earth_indet_raw), 2)
+        sun_indet_pct = round((sun_indet_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+        earth_indet_pct = round((earth_indet_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+
+        sun_certainty = (
+            CoverageCertainty.INDETERMINATE_PARTIAL_DEM
+            if sun_indet_hours > 0.0
+            else CoverageCertainty.CONFIRMED_EVALUATED
+        )
+        earth_certainty = (
+            CoverageCertainty.INDETERMINATE_PARTIAL_DEM
+            if earth_indet_hours > 0.0
+            else CoverageCertainty.CONFIRMED_EVALUATED
+        )
+
+        # Discrete percentage definitions guaranteeing exact FULL + PARTIAL + DARKNESS == 100.00%
+        full_sun_pct = round((sun_full_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+        partial_sun_pct = round((sun_partial_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+        darkness_sun_pct = round(max(0.0, 100.0 - full_sun_pct - partial_sun_pct), 2)
+        any_sun_pct = round(full_sun_pct + partial_sun_pct, 2)
+
+        full_earth_pct = round((earth_full_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+        partial_earth_pct = round((earth_partial_hours / max(0.01, total_duration_hours)) * 100.0, 2)
+        blackout_earth_pct = round(max(0.0, 100.0 - full_earth_pct - partial_earth_pct), 2)
+        any_earth_pct = round(full_earth_pct + partial_earth_pct, 2)
 
         both_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] != "DARK" and s["earth_state"] != "BLACKOUT")
         sun_only_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] != "DARK" and s["earth_state"] == "BLACKOUT")
@@ -910,7 +974,16 @@ class VisibilityEngineService:
             longest_darkness_end_iso=dark_end,
             longest_illumination_hours=round(min(total_duration_hours, longest_illum_hrs), 2),
             illumination_fraction=round(sun_vis_hours / max(0.01, total_duration_hours), 4),
-            sunlight_percentage=round((sun_vis_hours / max(0.01, total_duration_hours)) * 100.0, 2),
+            sunlight_percentage=any_sun_pct,
+            any_sunlight_percentage=any_sun_pct,
+            full_sunlight_percentage=full_sun_pct,
+            partial_sunlight_percentage=partial_sun_pct,
+            darkness_percentage=darkness_sun_pct,
+            time_weighted_solar_disk_fraction=round(tw_sun_fraction, 4),
+            time_weighted_sunlight_percentage=tw_sun_pct,
+            indeterminate_hours=sun_indet_hours,
+            indeterminate_percentage=sun_indet_pct,
+            coverage_certainty=sun_certainty,
             sunrise_count=sunrise_cnt,
             sunset_count=sunset_cnt,
             max_sun_elevation_deg=round(float(np.max(sun_elevs)), 2),
@@ -931,7 +1004,16 @@ class VisibilityEngineService:
             longest_earth_blackout_end_iso=blk_end,
             longest_earth_visible_hours=round(min(total_duration_hours, longest_earth_vis_hrs), 2),
             earth_visibility_fraction=round(earth_vis_hours / max(0.01, total_duration_hours), 4),
-            earth_visibility_percentage=round((earth_vis_hours / max(0.01, total_duration_hours)) * 100.0, 2),
+            earth_visibility_percentage=any_earth_pct,
+            any_earth_visible_percentage=any_earth_pct,
+            full_earth_percentage=full_earth_pct,
+            partial_earth_percentage=partial_earth_pct,
+            earth_blackout_percentage=blackout_earth_pct,
+            time_weighted_earth_disk_fraction=round(tw_earth_fraction, 4),
+            time_weighted_earth_percentage=tw_earth_pct,
+            indeterminate_hours=earth_indet_hours,
+            indeterminate_percentage=earth_indet_pct,
+            coverage_certainty=earth_certainty,
             earthrise_count=earthrise_cnt,
             earthset_count=earthset_cnt,
             max_earth_elevation_deg=round(float(np.max(earth_elevs)), 2),

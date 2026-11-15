@@ -100,8 +100,8 @@ export const SideBySideScenarioCards: React.FC = () => {
                       <Sun className="w-3.5 h-3.5" />
                       <span>Sunlight Duration</span>
                     </span>
-                    <span className="text-amber-400 font-bold">
-                      {s.total_sun_visible_hours.toFixed(1)} h ({(s.illumination_fraction * 100).toFixed(0)}%)
+                    <span className="text-amber-400 font-bold" title="Time-weighted disk fraction / Total contact hours">
+                      {s.total_sun_visible_hours.toFixed(1)} h ({((s as any).time_weighted_sunlight_percentage ?? (s.illumination_fraction * 100)).toFixed(0)}% eff)
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">

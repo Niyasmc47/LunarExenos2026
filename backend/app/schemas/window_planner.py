@@ -27,6 +27,11 @@ class WindowSolarSummary(BaseModel):
     min_daily_sunlight_hours: float
     sunrise_transitions: int
     sunset_transitions: int
+    time_weighted_sunlight_percentage: Optional[float] = None
+    any_sunlight_percentage: Optional[float] = None
+    full_sunlight_percentage: Optional[float] = None
+    partial_sunlight_percentage: Optional[float] = None
+    darkness_percentage: Optional[float] = None
 
 class WindowEarthSummary(BaseModel):
     total_earth_visible_hours: float
@@ -38,6 +43,11 @@ class WindowEarthSummary(BaseModel):
     min_daily_earth_visible_hours: float
     earthrise_transitions: int
     earthset_transitions: int
+    time_weighted_earth_percentage: Optional[float] = None
+    any_earth_percentage: Optional[float] = None
+    full_earth_percentage: Optional[float] = None
+    partial_earth_percentage: Optional[float] = None
+    blackout_percentage: Optional[float] = None
 
 class EvaluatedMissionWindow(BaseModel):
     window_id: str = Field(..., description="Unique window identifier (e.g. 'win-001')")

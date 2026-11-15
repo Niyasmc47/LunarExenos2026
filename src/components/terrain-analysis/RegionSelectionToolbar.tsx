@@ -105,17 +105,24 @@ export const RegionSelectionToolbar: React.FC = () => {
           </div>
 
           {PREDEFINED_SITES.map((site) => {
-            const isSelected = activeDatasetId === site.id;
+            const isSelected =
+              Boolean(activeDatasetId && site.id && activeDatasetId.toLowerCase().replace(/[-_]/g, '') === site.id.toLowerCase().replace(/[-_]/g, '')) ||
+              Boolean(selectedRegionBbox &&
+                Math.abs(selectedRegionBbox.minLat - site.bbox.minLat) < 0.005 &&
+                Math.abs(selectedRegionBbox.maxLat - site.bbox.maxLat) < 0.005);
             return (
               <button
                 key={site.id}
+                aria-pressed={isSelected}
+                data-testid={`region-btn-${site.id}`}
                 onClick={() => {
+                  setActiveDatasetId(site.datasetId);
                   selectPredefinedSite(site.id);
                   handleTriggerDiscovery(site.bbox, true);
                 }}
                 className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
                   isSelected
-                    ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                    ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20 font-bold'
                     : 'bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-slate-700'
                 }`}
               >

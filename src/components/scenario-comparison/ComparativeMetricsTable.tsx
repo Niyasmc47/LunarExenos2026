@@ -97,10 +97,18 @@ export const ComparativeMetricsTable: React.FC = () => {
             </td>
           </tr>
           <tr>
-            <td className="py-1.5 pr-4 text-slate-400">Total Sunlight Duration</td>
+            <td className="py-1.5 pr-4 text-slate-400">Time-Weighted Solar Disk Visibility</td>
             {scenarios.map((r) => (
-              <td key={r.scenario.id} className="py-1.5 px-3 text-amber-300 font-bold">
-                {r.solar.total_sun_visible_hours.toFixed(1)} h ({(r.solar.illumination_fraction * 100).toFixed(1)}%)
+              <td key={r.scenario.id} className="py-1.5 px-3 text-amber-400 font-bold">
+                {(r.solar.time_weighted_sunlight_percentage ?? (r.solar.illumination_fraction * 100)).toFixed(1)}%
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td className="py-1.5 pr-4 text-slate-400">Total Contact Sunlight Opportunity</td>
+            {scenarios.map((r) => (
+              <td key={r.scenario.id} className="py-1.5 px-3 text-amber-300">
+                {r.solar.total_sun_visible_hours.toFixed(1)} h ({(r.solar.any_sunlight_percentage ?? (r.solar.illumination_fraction * 100)).toFixed(1)}%)
               </td>
             ))}
           </tr>

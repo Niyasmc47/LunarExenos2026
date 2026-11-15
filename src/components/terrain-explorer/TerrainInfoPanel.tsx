@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
+import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { fetchTerrainMetadata } from '../../services/terrainApi';
 import { formatCoordinates } from '../../utils/lunarCoordinates';
 import {
@@ -24,6 +25,7 @@ export const TerrainInfoPanel: React.FC = () => {
   const setTerrainLod = useLocationStore((state) => state.setTerrainLod);
 
   const elevationLayerType = useLocationStore((state) => state.elevationLayerType);
+  const activeDatasetId = useDynamicAnalysisStore((state) => state.activeDatasetId) || 'site01';
 
   useEffect(() => {
     fetchTerrainMetadata().then((meta) => {
@@ -65,7 +67,7 @@ export const TerrainInfoPanel: React.FC = () => {
               ) : (
                 <span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                  Outside Site01 DEM
+                  Outside {activeDatasetId.toUpperCase()} DEM
                 </span>
               )}
             </div>

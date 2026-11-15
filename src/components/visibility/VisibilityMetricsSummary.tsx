@@ -85,37 +85,50 @@ export const VisibilityMetricsSummary: React.FC = () => {
           <div className="mt-2 space-y-2 text-[11px]">
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
-                <div className="text-slate-500 text-[10px]">TOTAL SUNLIGHT</div>
+                <div className="text-slate-500 text-[10px]">TIME-WEIGHTED DISK</div>
                 <div className="text-amber-300 font-bold text-sm">
-                  {solar.total_sun_visible_hours.toFixed(1)} h
+                  {(solar.time_weighted_sunlight_percentage ?? (solar.illumination_fraction * 100)).toFixed(1)}%
                 </div>
                 <div className="text-slate-400 text-[10px]">
-                  ({(solar.illumination_fraction * 100).toFixed(1)}% of window)
+                  Effective solar flux area
                 </div>
               </div>
               <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
-                <div className="text-slate-500 text-[10px]">LONGEST DARKNESS</div>
-                <div className="text-rose-400 font-bold text-sm">
-                  {solar.longest_darkness_hours.toFixed(1)} h
+                <div className="text-slate-500 text-[10px]">ANY CONTACT TIME</div>
+                <div className="text-amber-400 font-bold text-sm">
+                  {solar.total_sun_visible_hours.toFixed(1)} h
                 </div>
                 <div className="text-slate-400 text-[10px]">
-                  Continuous shadow
+                  ({(solar.any_sunlight_percentage ?? (solar.illumination_fraction * 100)).toFixed(1)}% of window)
                 </div>
               </div>
             </div>
 
             <div className="space-y-1 pt-1 text-[10px] text-slate-300">
               <div className="flex justify-between">
-                <span className="text-slate-400">Full Sunlight:</span>
-                <span className="font-bold">{solar.total_sun_full_hours.toFixed(1)} h</span>
+                <span className="text-slate-400">Full Sunlight (F=1):</span>
+                <span className="font-bold">
+                  {solar.total_sun_full_hours.toFixed(1)} h
+                  {solar.full_sunlight_percentage !== undefined ? ` (${solar.full_sunlight_percentage.toFixed(1)}%)` : ''}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Partial Sunlight:</span>
-                <span className="font-bold">{solar.total_sun_partial_hours.toFixed(1)} h</span>
+                <span className="text-slate-400">Partial Grazing (0&lt;F&lt;1):</span>
+                <span className="font-bold">
+                  {solar.total_sun_partial_hours.toFixed(1)} h
+                  {solar.partial_sunlight_percentage !== undefined ? ` (${solar.partial_sunlight_percentage.toFixed(1)}%)` : ''}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Total Darkness:</span>
-                <span className="font-bold">{solar.total_darkness_hours.toFixed(1)} h</span>
+                <span className="text-slate-400">Total Darkness (F=0):</span>
+                <span className="font-bold">
+                  {solar.total_darkness_hours.toFixed(1)} h
+                  {solar.darkness_percentage !== undefined ? ` (${solar.darkness_percentage.toFixed(1)}%)` : ''}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Longest Darkness:</span>
+                <span className="font-bold text-rose-400">{solar.longest_darkness_hours.toFixed(1)} h</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Transitions:</span>
@@ -123,6 +136,11 @@ export const VisibilityMetricsSummary: React.FC = () => {
                   {solar.sunrise_count} Sunrises, {solar.sunset_count} Sunsets
                 </span>
               </div>
+              {solar.coverage_certainty === 'INDETERMINATE_PARTIAL_DEM' && (
+                <div className="text-[10px] text-amber-400/90 pt-1 border-t border-slate-800">
+                  ⚠️ DEM horizon incomplete: {solar.indeterminate_hours?.toFixed(1)} h ({solar.indeterminate_percentage?.toFixed(1)}%) indeterminate.
+                </div>
+              )}
             </div>
           </div>
         ) : (

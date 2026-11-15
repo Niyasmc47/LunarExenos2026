@@ -419,12 +419,16 @@ class CandidateScreeningService:
             scope_mismatch=scope_mismatch,
         )
 
+        measured_sun_pct = getattr(vis_resp.solar_metrics, "time_weighted_sunlight_percentage", None)
+        if measured_sun_pct is None:
+            measured_sun_pct = vis_resp.solar_metrics.illumination_fraction * 100.0
+
         self._eval_requirement(
             req=req_set.solar.min_sunlight_percentage,
-            measured=vis_resp.solar_metrics.illumination_fraction * 100.0,
+            measured=measured_sun_pct,
             category="solar",
             is_coverage_indeterminate=is_coverage_indeterminate,
-            source="Visibility Engine (MVP 5) - Illumination Fraction of Total Duration",
+            source="Visibility Engine - Time-Weighted Visible Solar Disk Fraction",
             analysis_period=analysis_period_str,
             hard_results=hard_results,
             soft_results=soft_results,
@@ -646,7 +650,43 @@ class CandidateScreeningService:
                 value=vis_resp.solar_metrics.total_sun_visible_hours,
                 value_str=f"{vis_resp.solar_metrics.total_sun_visible_hours:.1f} h",
                 unit="hours",
-                source="Visibility Engine (MVP 5)",
+                source="Visibility Engine",
+            ),
+            InformationalMetricItem(
+                id="time_weighted_sunlight_percentage",
+                name="Time-Weighted Solar Disk Visibility",
+                category="solar",
+                value=getattr(vis_resp.solar_metrics, "time_weighted_sunlight_percentage", None),
+                value_str=f"{getattr(vis_resp.solar_metrics, 'time_weighted_sunlight_percentage', 0.0):.2f}%",
+                unit="%",
+                source="Visibility Engine - Integrated Finite Solar Disk Area",
+            ),
+            InformationalMetricItem(
+                id="full_sunlight_hours",
+                name="Full Sunlight (100% disk clearance)",
+                category="solar",
+                value=vis_resp.solar_metrics.total_sun_full_hours,
+                value_str=f"{vis_resp.solar_metrics.total_sun_full_hours:.1f} h ({getattr(vis_resp.solar_metrics, 'full_sunlight_percentage', 0.0):.1f}%)",
+                unit="hours",
+                source="Visibility Engine",
+            ),
+            InformationalMetricItem(
+                id="partial_sunlight_hours",
+                name="Partial Grazing Sunlight (0 < F < 1)",
+                category="solar",
+                value=vis_resp.solar_metrics.total_sun_partial_hours,
+                value_str=f"{vis_resp.solar_metrics.total_sun_partial_hours:.1f} h ({getattr(vis_resp.solar_metrics, 'partial_sunlight_percentage', 0.0):.1f}%)",
+                unit="hours",
+                source="Visibility Engine",
+            ),
+            InformationalMetricItem(
+                id="darkness_hours",
+                name="Total Darkness (F = 0)",
+                category="solar",
+                value=vis_resp.solar_metrics.total_darkness_hours,
+                value_str=f"{vis_resp.solar_metrics.total_darkness_hours:.1f} h ({getattr(vis_resp.solar_metrics, 'darkness_percentage', 0.0):.1f}%)",
+                unit="hours",
+                source="Visibility Engine",
             ),
             InformationalMetricItem(
                 id="total_earth_visible_hours",
@@ -655,7 +695,7 @@ class CandidateScreeningService:
                 value=vis_resp.earth_metrics.total_earth_visible_hours,
                 value_str=f"{vis_resp.earth_metrics.total_earth_visible_hours:.1f} h",
                 unit="hours",
-                source="Visibility Engine (MVP 5)",
+                source="Visibility Engine",
             ),
             InformationalMetricItem(
                 id="horizon_ray_coverage",
