@@ -17,14 +17,11 @@ import {
   LineChart,
   Compass,
   Sun,
-  Eye,
 } from 'lucide-react';
 import { HorizonExplorerView } from '../horizon/HorizonExplorerView';
 import { HorizonTelemetryCard } from '../horizon/HorizonTelemetryCard';
 import { EphemerisExplorerView } from '../ephemeris/EphemerisExplorerView';
 import { EphemerisProvenancePanel } from '../ephemeris/EphemerisProvenancePanel';
-import { VisibilityExplorerView } from '../visibility/VisibilityExplorerView';
-import { VisibilityMetricsSummary } from '../visibility/VisibilityMetricsSummary';
 import { useHorizonStore } from '../../stores/horizonStore';
 import { useLocationStore } from '../../stores/locationStore';
 import { useCelestialSimulationStore } from '../../stores/celestialSimulationStore';
@@ -184,21 +181,6 @@ export const TerrainExplorer: React.FC = () => {
               <Sun className="w-3.5 h-3.5 text-amber-400" />
               <span>Ephemeris</span>
             </button>
-
-            {/* Visibility */}
-            <button
-              aria-pressed={workspaceMode === 'visibility'}
-              onClick={() => setWorkspaceMode('visibility')}
-              title="Terrain-aware Sun & Earth visibility, disk partial illumination, and mission timelines"
-              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
-                workspaceMode === 'visibility'
-                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Eye className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Visibility</span>
-            </button>
           </div>
         </div>
 
@@ -243,10 +225,8 @@ export const TerrainExplorer: React.FC = () => {
             <RegionalMapCanvas />
           ) : workspaceMode === 'horizon' ? (
             <HorizonExplorerView />
-          ) : workspaceMode === 'ephemeris' ? (
-            <EphemerisExplorerView />
           ) : (
-            <VisibilityExplorerView />
+            <EphemerisExplorerView />
           )}
         </div>
 
@@ -303,8 +283,6 @@ export const TerrainExplorer: React.FC = () => {
               />
             ) : workspaceMode === 'ephemeris' ? (
               <EphemerisProvenancePanel />
-            ) : workspaceMode === 'visibility' ? (
-              <VisibilityMetricsSummary />
             ) : (
               <RegionalStatisticsPanel />
             )}
