@@ -73,9 +73,9 @@ export const RadarComparisonChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0b101c] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-6 shadow-xl space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2b2d32]">
         <div>
           <h3 className="text-sm font-mono font-bold text-white flex items-center gap-2">
             <Compass className="w-4 h-4 text-cyan-400" />
@@ -98,8 +98,8 @@ export const RadarComparisonChart: React.FC = () => {
                 onClick={() => toggleAlternative(alt.id)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium border transition-all flex items-center gap-1.5 ${
                   isChecked
-                    ? 'bg-slate-900 border-slate-700 text-white shadow'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-500 opacity-60 hover:opacity-100'
+                    ? 'bg-slate-900 border-[#303238] text-white shadow'
+                    : 'bg-[#08090b] border-[#2b2d32] text-slate-500 opacity-60 hover:opacity-100'
                 }`}
               >
                 <span
@@ -151,8 +151,8 @@ export const RadarComparisonChart: React.FC = () => {
               content={({ payload, label }) => {
                 if (!payload || payload.length === 0) return null;
                 return (
-                  <div className="p-3 bg-slate-950/95 border border-slate-800 rounded-xl shadow-2xl font-mono text-xs space-y-1 z-50">
-                    <p className="font-bold text-white pb-1 border-b border-slate-800">{label}</p>
+                  <div className="p-3 bg-[#08090b]/95 border border-[#2b2d32] rounded-xl shadow-2xl font-mono text-xs space-y-1 z-50">
+                    <p className="font-bold text-white pb-1 border-b border-[#2b2d32]">{label}</p>
                     {payload.map((entry: any, i: number) => (
                       <div key={i} className="flex items-center justify-between gap-4 text-[11px]">
                         <span style={{ color: entry.stroke }}>{entry.name}:</span>
@@ -170,7 +170,7 @@ export const RadarComparisonChart: React.FC = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800/60 text-[10px] font-mono text-slate-400 flex items-start gap-2">
+      <div className="p-3 bg-[#08090b] rounded-xl border border-[#202228] text-[10px] font-mono text-slate-400 flex items-start gap-2">
         <HelpCircle className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
         <span>
           <strong>Interpretation:</strong> A larger enclosed polygon area indicates superior all-around performance across active preference metrics. Notice that cost criteria (slope, continuous darkness, blackout) have inverted directions so that 100% represents the best performance (lowest cost).

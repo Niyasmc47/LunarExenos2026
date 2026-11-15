@@ -56,7 +56,7 @@ export const HardConstraintsMatrix: React.FC<HardConstraintsMatrixProps> = ({ re
 
   if (results.length === 0) {
     return (
-      <div className="p-6 bg-[#0b101c] border border-slate-800 rounded-xl text-center text-slate-400 font-mono text-xs">
+      <div className="p-6 bg-[#141619] border border-[#2b2d32] rounded-xl text-center text-slate-400 font-mono text-xs">
         No active hard constraints configured for this mission profile.
       </div>
     );
@@ -64,9 +64,9 @@ export const HardConstraintsMatrix: React.FC<HardConstraintsMatrixProps> = ({ re
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-2 border-b border-[#202228]">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-rose-400" />
+          <ShieldAlert className="w-4 h-4 text-[#ffe3b0]" />
           <h3 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
             HARD CONSTRAINT EVALUATION MATRIX
           </h3>
@@ -82,32 +82,54 @@ export const HardConstraintsMatrix: React.FC<HardConstraintsMatrixProps> = ({ re
             key={res.requirement_id}
             className={`p-3.5 rounded-xl border transition-all ${
               res.verdict === 'PASS'
-                ? 'bg-[#0a1420]/80 border-emerald-950/60 hover:border-emerald-500/30'
+                ? 'bg-[#141619] border-[#2b2d32] hover:border-emerald-500/40'
                 : res.verdict === 'FAIL'
-                ? 'bg-[#180d14]/80 border-rose-950/60 hover:border-rose-500/30'
-                : 'bg-[#18140a]/80 border-amber-950/60 hover:border-amber-500/30'
+                ? 'bg-[#141619] border-rose-900/40 hover:border-rose-500/40'
+                : 'bg-[#141619] border-amber-900/40 hover:border-amber-500/40'
             }`}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-2">
                 {getCategoryIcon(res.category)}
-                <span className="font-mono text-xs font-bold text-slate-200">
+                <span className="font-mono text-xs font-bold text-slate-100">
                   {res.requirement_name}
                 </span>
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                <span
+                  className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded font-semibold border"
+                  style={{
+                    backgroundColor:
+                      res.category === 'solar'
+                        ? 'rgba(255, 227, 176, 0.1)'
+                        : res.category === 'earth'
+                        ? 'rgba(123, 208, 255, 0.1)'
+                        : 'rgba(16, 185, 129, 0.1)',
+                    color:
+                      res.category === 'solar'
+                        ? '#ffe3b0'
+                        : res.category === 'earth'
+                        ? '#7bd0ff'
+                        : '#34d399',
+                    borderColor:
+                      res.category === 'solar'
+                        ? 'rgba(255, 227, 176, 0.25)'
+                        : res.category === 'earth'
+                        ? 'rgba(123, 208, 255, 0.25)'
+                        : 'rgba(16, 185, 129, 0.25)',
+                  }}
+                >
                   {res.category}
                 </span>
               </div>
               <div>{getVerdictBadge(res.verdict)}</div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono bg-[#08090b] p-2.5 rounded-lg border border-[#202228] mb-2">
               <div>
-                <span className="text-slate-400 text-[11px] block">Required Criterion:</span>
+                <span className="text-slate-400 text-[10px] uppercase font-semibold block">Required Criterion:</span>
                 <span className="font-semibold text-slate-200">{res.threshold_str}</span>
               </div>
               <div>
-                <span className="text-slate-400 text-[11px] block">Actual Measured:</span>
+                <span className="text-slate-400 text-[10px] uppercase font-semibold block">Actual Measured:</span>
                 <span
                   className={`font-semibold ${
                     res.verdict === 'PASS'
@@ -126,7 +148,7 @@ export const HardConstraintsMatrix: React.FC<HardConstraintsMatrixProps> = ({ re
               {res.explanation}
             </p>
 
-            <div className="flex flex-wrap items-center justify-between text-[10px] font-mono text-slate-400 pt-1.5 border-t border-slate-800/60 gap-1">
+            <div className="flex flex-wrap items-center justify-between text-[10px] font-mono text-slate-400 pt-1.5 border-t border-[#202228] gap-1">
               <span>Source: {res.supporting_data_source}</span>
               <span>Horizon: {res.analysis_period}</span>
             </div>

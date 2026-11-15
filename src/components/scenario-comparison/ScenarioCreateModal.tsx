@@ -67,9 +67,9 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <DialogSurface label="Create a scenario" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs">
-      <div className="bg-[#0c121e] border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-[#141619] border border-[#303238] rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-[#2b2d32]">
           <div className="flex items-center gap-2">
             <Plus className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-100 text-sm">CREATE CANDIDATE MISSION SCENARIO</span>
@@ -100,7 +100,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Connecting Ridge — Outpost Echo"
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -111,7 +111,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g. Primary rover habitat zone with high solar illumination"
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -121,7 +121,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <select
               value={siteId}
               onChange={(e) => handleSiteSelect(e.target.value)}
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
               <option value="site01">Site 01 — Connecting Ridge (5 m/pixel LOLA DEM - Locally Available)</option>
             </select>
@@ -142,7 +142,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 required
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[9px] text-slate-500">Bounds: -89.8351° to -89.0903°</span>
             </div>
@@ -157,7 +157,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 required
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[9px] text-slate-500">Bounds: -171.4692° to -101.8887°</span>
             </div>
@@ -175,7 +175,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   className={`px-3 py-1 rounded font-bold transition-all ${
                     observerHeight === h
                       ? 'bg-emerald-500 text-black'
-                      : 'bg-[#070b12] text-slate-400 border border-slate-700 hover:text-slate-200'
+                      : 'bg-[#0e1013] text-slate-400 border border-[#303238] hover:text-slate-200'
                   }`}
                 >
                   {h} m
@@ -193,7 +193,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 required
                 value={startIso}
                 onChange={(e) => setStartIso(e.target.value)}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
@@ -204,7 +204,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 required
                 value={endIso}
                 onChange={(e) => setEndIso(e.target.value)}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
@@ -218,13 +218,13 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 required
                 value={stepHours}
                 onChange={(e) => setStepHours(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           {/* Footer Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-[#2b2d32] flex items-center justify-end gap-2">
             <button
               type="button"
               aria-label="Close dialog" onClick={onClose}

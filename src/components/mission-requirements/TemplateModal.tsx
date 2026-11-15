@@ -23,9 +23,9 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
 
   return (
     <DialogSurface label="Choose a mission template" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-4xl bg-[#0b101c] border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-4xl bg-[#141619] border border-[#303238]/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <div className="px-6 py-4 border-b border-[#2b2d32] flex items-center justify-between bg-slate-900/50">
           <div className="flex items-center gap-2.5">
             <Sparkles className="w-5 h-5 text-emerald-400" />
             <h2 className="text-base font-bold text-slate-100 font-mono tracking-wide">
@@ -55,11 +55,11 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
           {templates.map((tpl) => (
             <div
               key={tpl.id}
-              className="p-4 rounded-xl border border-slate-800 bg-[#0d1424] hover:border-emerald-500/50 hover:bg-[#111a30] transition-all flex flex-col justify-between"
+              className="p-4 rounded-xl border border-[#2b2d32] bg-[#0d1424] hover:border-emerald-500/50 hover:bg-[#111a30] transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-[#303238]">
                     {tpl.mission_type.replace('_', ' ')}
                   </span>
                   <div className="flex items-center gap-1 text-xs font-mono text-slate-400">
@@ -76,7 +76,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
                 </p>
 
                 {/* Key parameters preview */}
-                <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 mb-4 text-[11px] font-mono">
+                <div className="grid grid-cols-3 gap-2 bg-[#08090b] p-2.5 rounded-lg border border-[#202228] mb-4 text-[11px] font-mono">
                   <div className="flex flex-col">
                     <span className="text-slate-400 flex items-center gap-1">
                       <Sun className="w-3 h-3 text-amber-400" /> Min Sun
@@ -116,7 +116,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/40 flex items-center justify-between">
+        <div className="px-6 py-3 border-t border-[#2b2d32] bg-slate-900/40 flex items-center justify-between">
           <span className="text-xs text-slate-400 font-mono">
             {templates.length} templates available
           </span>

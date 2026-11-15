@@ -10,15 +10,15 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
   const { dem_provenance, spice_provenance, scientific_disclaimers, warnings } = candidate;
 
   return (
-    <div className="space-y-4 bg-[#0b101c] border border-slate-800 rounded-xl p-4">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+    <div className="space-y-4 bg-[#141619] border border-[#2b2d32] rounded-xl p-4 shadow-md">
+      <div className="flex items-center justify-between pb-2 border-b border-[#202228]">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <h3 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
-            DATA COMPLETENESS & PROVENANCE
+            DATA COMPLETENESS &amp; PROVENANCE
           </h3>
         </div>
-        <span className="text-[10px] font-mono text-slate-400">
+        <span className="text-[10px] font-mono text-[#ffe3b0] bg-[#ffe3b0]/10 border border-[#ffe3b0]/25 px-2 py-0.5 rounded">
           Coverage: {candidate.coverage_certainty}
         </span>
       </div>
@@ -39,15 +39,15 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
         {/* DEM Provenance */}
-        <div className="bg-slate-950/60 border border-slate-800/80 p-3 rounded-lg space-y-2">
+        <div className="bg-[#08090b] border border-[#202228] p-3 rounded-lg space-y-2">
           <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-            <Database className="w-3.5 h-3.5 text-cyan-400" />
+            <Database className="w-3.5 h-3.5 text-[#7bd0ff]" />
             <span>Digital Elevation Model (DEM)</span>
           </div>
           <div className="space-y-1 text-[11px] text-slate-400">
             <div>
               <span className="text-slate-400">Product:</span>{' '}
-              <span className="text-slate-200">{dem_provenance.product_name || 'NASA LOLA 5 m DEM'}</span>
+              <span className="text-slate-200 font-semibold">{dem_provenance.product_name || 'NASA LOLA 5 m DEM'}</span>
             </div>
             <div>
               <span className="text-slate-400">Citation:</span>{' '}
@@ -55,7 +55,7 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
             </div>
             <div>
               <span className="text-slate-400">Resolution:</span>{' '}
-              <span className="text-slate-200">{dem_provenance.grid_resolution_m || 5.0} m/pixel</span>
+              <span className="text-[#ffe3b0] font-semibold">{dem_provenance.grid_resolution_m || 5.0} m/pixel</span>
             </div>
             <div>
               <span className="text-slate-400">Vertical Datum:</span>{' '}
@@ -65,15 +65,15 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
         </div>
 
         {/* SPICE Ephemeris Provenance */}
-        <div className="bg-slate-950/60 border border-slate-800/80 p-3 rounded-lg space-y-2">
+        <div className="bg-[#08090b] border border-[#202228] p-3 rounded-lg space-y-2">
           <div className="flex items-center gap-1.5 text-slate-300 font-bold">
-            <Orbit className="w-3.5 h-3.5 text-amber-400" />
-            <span>NASA SPICE Toolkit & Reference Frame</span>
+            <Orbit className="w-3.5 h-3.5 text-[#ffe3b0]" />
+            <span>NASA SPICE Toolkit &amp; Reference Frame</span>
           </div>
           <div className="space-y-1 text-[11px] text-slate-400">
             <div>
               <span className="text-slate-400">Frame:</span>{' '}
-              <span className="text-slate-200">{spice_provenance.reference_frame || 'MOON_ME (DE421)'}</span>
+              <span className="text-slate-200 font-semibold">{spice_provenance.reference_frame || 'MOON_ME (DE421)'}</span>
             </div>
             <div>
               <span className="text-slate-400">Ephemeris Model:</span>{' '}
@@ -92,7 +92,7 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
       </div>
 
       {/* Mandatory Scientific Disclaimers */}
-      <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 space-y-1 font-sans">
+      <div className="pt-2 border-t border-[#2b2d32] text-[11px] text-slate-400 space-y-1 font-sans">
         <span className="font-mono text-[10px] text-slate-400 uppercase font-semibold block">
           Mandatory Scientific Disclaimers:
         </span>

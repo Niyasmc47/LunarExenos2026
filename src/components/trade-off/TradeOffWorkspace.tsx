@@ -51,9 +51,9 @@ export const TradeOffWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="tradeoff-page analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
+    <div className="tradeoff-page analysis-page flex-1 flex flex-col h-full bg-[#0e1013] overflow-y-auto">
       {/* Top Workspace Bar */}
-      <div className="bg-[#090e1a] border-b border-slate-800 px-6 py-3.5 shrink-0 flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-[#141619] border-b border-[#2b2d32] px-6 py-3.5 shrink-0 flex flex-wrap items-center justify-between gap-4">
         {/* Study Selector & Title */}
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
@@ -69,7 +69,7 @@ export const TradeOffWorkspace: React.FC = () => {
                 <select
                   aria-label="Saved trade-off studies" value={activeStudy?.id || ''}
                   onChange={(e) => selectStudy(e.target.value)}
-                  className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-3 py-1 rounded-lg focus:outline-none focus:border-purple-500"
+                  className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1 rounded-lg focus:outline-none focus:border-purple-500"
                 >
                   {studies.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -97,7 +97,7 @@ export const TradeOffWorkspace: React.FC = () => {
               <button
                 onClick={reanalyzeCurrentStudy}
                 disabled={isLoading}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                className="px-3 py-1.5 rounded-lg border border-[#303238] hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors disabled:opacity-50"
                 title="Recalculate multi-criteria scores and Pareto frontier"
               >
                 <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isLoading ? 'animate-spin' : ''}`} />
@@ -106,7 +106,7 @@ export const TradeOffWorkspace: React.FC = () => {
 
               <button
                 onClick={openExportModal}
-                className="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 rounded-lg border border-[#303238] hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors"
                 title="Export results as JSON or CSV"
               >
                 <Download className="w-3.5 h-3.5 text-emerald-400" />
@@ -115,7 +115,7 @@ export const TradeOffWorkspace: React.FC = () => {
 
               <button
                 onClick={handleDelete}
-                className="p-1.5 rounded-lg border border-slate-800 hover:border-rose-800/60 bg-slate-900 text-slate-500 hover:text-rose-400 transition-colors"
+                className="p-1.5 rounded-lg border border-[#2b2d32] hover:border-rose-800/60 bg-slate-900 text-slate-500 hover:text-rose-400 transition-colors"
                 title="Delete trade-off study"
               >
                 <Trash2 className="w-4 h-4" />
@@ -135,7 +135,7 @@ export const TradeOffWorkspace: React.FC = () => {
 
       {/* Tabs Navigation Bar */}
       {activeStudy && (
-        <div className="bg-[#0b1120] border-b border-slate-800/80 px-6 shrink-0 flex items-center gap-1 overflow-x-auto">
+        <div className="bg-[#0b1120] border-b border-[#202228] px-6 shrink-0 flex items-center gap-1 overflow-x-auto">
           <button
             aria-pressed={activeTab === 'comparison'} onClick={() => setActiveTab('comparison')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${

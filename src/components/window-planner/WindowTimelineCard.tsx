@@ -35,10 +35,10 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
       className={`border rounded-xl p-4 transition-all ${
         isActive
           ? 'bg-slate-900/95 border-indigo-500/80 shadow-lg shadow-indigo-950/30'
-          : 'bg-[#0f172a]/70 hover:bg-[#0f172a]/90 border-slate-800'
+          : 'bg-[#141619] hover:bg-[#191b20] border-[#2b2d32]'
       }`}
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-800/60">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#202228]">
         <div className="flex items-center gap-3">
           {/* Comparison Checkbox */}
           <button
@@ -116,7 +116,7 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
         {/* Solar Summary */}
-        <div className="space-y-1.5 bg-slate-900/40 rounded-lg p-2.5 border border-slate-800/40">
+        <div className="space-y-1.5 bg-slate-900/40 rounded-lg p-2.5 border border-[#202228]">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="flex items-center gap-1.5 text-amber-400 font-semibold">
               <Sun className="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
         </div>
 
         {/* Earth Summary */}
-        <div className="space-y-1.5 bg-slate-900/40 rounded-lg p-2.5 border border-slate-800/40">
+        <div className="space-y-1.5 bg-slate-900/40 rounded-lg p-2.5 border border-[#202228]">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="flex items-center gap-1.5 text-sky-400 font-semibold">
               <Radio className="w-3.5 h-3.5" />

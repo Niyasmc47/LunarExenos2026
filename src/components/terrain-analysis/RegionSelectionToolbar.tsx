@@ -77,7 +77,7 @@ export const RegionSelectionToolbar: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-2.5 shadow-xl text-xs font-mono">
+    <div className="flex flex-col gap-2 bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-2.5 shadow-xl text-xs font-mono">
       {/* Top Predefined Sites Selector */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -96,7 +96,7 @@ export const RegionSelectionToolbar: React.FC = () => {
               className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
                 selectedRegionBbox.minLat === site.bbox.minLat
                   ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
-                  : 'bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-slate-700'
+                  : 'bg-[#0e1013] text-slate-300 hover:text-emerald-400 border border-[#2b2d32] hover:border-[#303238]'
               }`}
             >
               {site.name}
@@ -107,7 +107,7 @@ export const RegionSelectionToolbar: React.FC = () => {
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
           title="Toggle NASA dataset discovery and bounding box editor"
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-[11px] transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0e1013] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-[#2b2d32] text-[11px] transition-colors"
         >
           <SlidersHorizontal className="w-3 h-3" />
           <span>{showAdvanced ? 'Hide data settings' : 'Data source & boundaries'}</span>
@@ -116,7 +116,7 @@ export const RegionSelectionToolbar: React.FC = () => {
       </div>
 
       {showAdvanced && (
-        <div className="border-t border-slate-800 pt-2 space-y-2">
+        <div className="border-t border-[#2b2d32] pt-2 space-y-2">
 
       {/* Manual Bounding Box Editor & Area Calculation */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
@@ -125,7 +125,7 @@ export const RegionSelectionToolbar: React.FC = () => {
             <Square className="w-3.5 h-3.5 text-emerald-400" /> BOUNDS:
           </span>
 
-          <div className="flex items-center gap-1 bg-[#070b12] px-2 py-1 rounded border border-slate-800">
+          <div className="flex items-center gap-1 bg-[#0e1013] px-2 py-1 rounded border border-[#2b2d32]">
             <span className="text-[10px] text-slate-500">LAT:</span>
             <input
               type="text"
@@ -142,7 +142,7 @@ export const RegionSelectionToolbar: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-[#070b12] px-2 py-1 rounded border border-slate-800">
+          <div className="flex items-center gap-1 bg-[#0e1013] px-2 py-1 rounded border border-[#2b2d32]">
             <span className="text-[10px] text-slate-500">LON:</span>
             <input
               type="text"
@@ -171,7 +171,7 @@ export const RegionSelectionToolbar: React.FC = () => {
 
         {/* Calculated Surface Area */}
         {discoveryResponse && (
-          <div className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-[#070b12] px-2.5 py-1 rounded border border-slate-800">
+          <div className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-[#0e1013] px-2.5 py-1 rounded border border-[#2b2d32]">
             <Ruler className="w-3.5 h-3.5 text-emerald-400" />
             <span>REGION AREA:</span>
             <span className="text-slate-200 font-bold">
@@ -183,7 +183,7 @@ export const RegionSelectionToolbar: React.FC = () => {
 
       {/* Dynamic Dataset Discovery Recommendation Banner */}
       {discoveryResponse && (
-        <div className="bg-[#070b12] border border-slate-800 rounded-lg p-2.5 space-y-2 mt-1">
+        <div className="bg-[#0e1013] border border-[#2b2d32] rounded-lg p-2.5 space-y-2 mt-1">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
@@ -199,7 +199,7 @@ export const RegionSelectionToolbar: React.FC = () => {
               <select
                 value={activeDatasetId}
                 onChange={(e) => setActiveDatasetId(e.target.value)}
-                className="bg-[#0c121e] border border-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs outline-none cursor-pointer"
+                className="bg-[#141619] border border-[#303238] text-emerald-400 px-2 py-0.5 rounded text-xs outline-none cursor-pointer"
               >
                 {discoveryResponse.all_candidates.map((c) => (
                   <option key={c.dataset.dataset_id} value={c.dataset.dataset_id}>
@@ -218,7 +218,7 @@ export const RegionSelectionToolbar: React.FC = () => {
                 className={`p-2 rounded border cursor-pointer transition-all ${
                   activeDatasetId === discoveryResponse.best_resolution_candidate.dataset.dataset_id
                     ? 'bg-emerald-950/40 border-emerald-500/80 text-emerald-300'
-                    : 'bg-[#0c121e] border-slate-800 hover:border-slate-700 text-slate-300'
+                    : 'bg-[#141619] border-[#2b2d32] hover:border-[#303238] text-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between font-bold mb-0.5">
@@ -241,7 +241,7 @@ export const RegionSelectionToolbar: React.FC = () => {
                 className={`p-2 rounded border cursor-pointer transition-all ${
                   activeDatasetId === discoveryResponse.best_coverage_candidate.dataset.dataset_id
                     ? 'bg-emerald-950/40 border-emerald-500/80 text-emerald-300'
-                    : 'bg-[#0c121e] border-slate-800 hover:border-slate-700 text-slate-300'
+                    : 'bg-[#141619] border-[#2b2d32] hover:border-[#303238] text-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between font-bold mb-0.5">

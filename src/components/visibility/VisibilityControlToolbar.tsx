@@ -80,11 +80,11 @@ export const VisibilityControlToolbar: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0c121e]/95 border border-slate-800 rounded-xl p-2.5 space-y-2 font-mono text-xs shadow-xl">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-2.5 space-y-2 font-mono text-xs shadow-xl">
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* Epoch Stepper and Animation Controls */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 bg-[#070b12] px-2.5 py-1 rounded-lg border border-slate-800 text-slate-300">
+          <div className="flex items-center gap-1.5 bg-[#0e1013] px-2.5 py-1 rounded-lg border border-[#2b2d32] text-slate-300">
             <Calendar className="w-3.5 h-3.5 text-emerald-400" />
             <span className="text-[10px] text-slate-400 uppercase">EPOCH:</span>
             <input
@@ -97,7 +97,7 @@ export const VisibilityControlToolbar: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-[#070b12] p-1 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-1 bg-[#0e1013] p-1 rounded-lg border border-[#2b2d32]">
             <button
               onClick={() => handleStep(-24)}
               className="px-2 py-0.5 rounded text-[11px] font-bold text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
@@ -158,7 +158,7 @@ export const VisibilityControlToolbar: React.FC = () => {
         </div>
 
         {/* Observer Eye Height */}
-        <div className="flex items-center gap-1.5 bg-[#070b12] px-2 py-1 rounded-lg border border-slate-800">
+        <div className="flex items-center gap-1.5 bg-[#0e1013] px-2 py-1 rounded-lg border border-[#2b2d32]">
           <span className="text-[10px] text-slate-400 uppercase">EYE HEIGHT:</span>
           {[0, 1.0, 2.0, 10.0].map((h) => (
             <button
@@ -185,7 +185,7 @@ export const VisibilityControlToolbar: React.FC = () => {
             disabled={isLoadingInstant}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold border transition-all ${
               isLoadingInstant
-                ? 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed'
+                ? 'bg-slate-800 border-[#303238] text-slate-500 cursor-not-allowed'
                 : 'bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/40 text-emerald-300'
             }`}
           >
@@ -209,14 +209,14 @@ export const VisibilityControlToolbar: React.FC = () => {
       </div>
 
       {/* Presets and Timeline Duration Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-[11px]">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-[#202228] text-[11px]">
         <div className="flex items-center gap-2">
           <span className="text-slate-400 text-[10px] uppercase">PRESETS:</span>
           {PRESETS.map((p) => (
             <button
               key={p.name}
               onClick={() => handlePreset(p.timestamp)}
-              className="px-2 py-0.5 rounded bg-slate-800/70 hover:bg-slate-700 border border-slate-700/60 text-slate-300 hover:text-emerald-300 transition-colors"
+              className="px-2 py-0.5 rounded bg-slate-800/70 hover:bg-slate-700 border border-[#2b2d32] text-slate-300 hover:text-emerald-300 transition-colors"
               title={`${p.name} (${p.note})`}
             >
               {p.name.split(':')[0]}

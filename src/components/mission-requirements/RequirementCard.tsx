@@ -35,7 +35,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
         );
       case 'INFORMATIONAL_METRIC':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-[#303238]">
             <Info className="w-3 h-3 text-slate-400" />
             INFORMATIONAL
           </span>
@@ -63,7 +63,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
               type="checkbox"
               checked={requirement.enabled}
               onChange={(e) => onUpdate({ enabled: e.target.checked })}
-              className="w-4 h-4 rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer"
+              className="w-4 h-4 rounded bg-[#08090b] border-[#303238] text-emerald-500 focus:ring-0 cursor-pointer"
             />
           )}
           <span
@@ -85,7 +85,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
                   classification: e.target.value as RequirementClassification,
                 })
               }
-              className="text-[10px] font-mono bg-slate-950 border border-slate-700 text-slate-200 px-2 py-1 rounded focus:outline-none focus:border-emerald-500"
+              className="text-[10px] font-mono bg-[#08090b] border border-[#303238] text-slate-200 px-2 py-1 rounded focus:outline-none focus:border-emerald-500"
             >
               <option value="HARD_CONSTRAINT">HARD CONSTRAINT (Mandatory)</option>
               <option value="SOFT_PREFERENCE">SOFT PREFERENCE (Trade-off)</option>
@@ -143,7 +143,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
 
       {/* Scientific Disclaimer */}
       {requirement.scientific_disclaimer && (
-        <div className="mt-2 text-[10px] text-slate-400 font-sans italic bg-slate-900/40 p-2 rounded border border-slate-800/50">
+        <div className="mt-2 text-[10px] text-slate-400 font-sans italic bg-slate-900/40 p-2 rounded border border-[#2b2d32]/50">
           <span className="font-semibold text-slate-300">Scientific Note: </span>
           {requirement.scientific_disclaimer}
         </div>

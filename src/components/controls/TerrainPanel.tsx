@@ -32,9 +32,9 @@ export const TerrainPanel: React.FC = () => {
   }, [setTerrainMetadata]);
 
   return (
-    <div className="flex flex-col gap-4 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-4 shadow-xl">
+    <div className="flex flex-col gap-4 bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-4 shadow-xl">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex items-center justify-between border-b border-[#2b2d32] pb-3">
         <div className="flex items-center gap-2">
           <Mountain className="w-4 h-4 text-emerald-400" />
           <h2 className="text-xs font-bold tracking-wider uppercase text-slate-200 font-mono">
@@ -47,7 +47,7 @@ export const TerrainPanel: React.FC = () => {
       </div>
 
       {/* Target Site Card */}
-      <div className="bg-[#070b12] border border-slate-800 rounded-lg p-3 text-xs font-mono space-y-1.5">
+      <div className="bg-[#0e1013] border border-[#2b2d32] rounded-lg p-3 text-xs font-mono space-y-1.5">
         <div className="flex items-center justify-between text-slate-400">
           <span className="font-semibold text-slate-200">Site 01 — Connecting Ridge</span>
           <span className="text-[10px] text-emerald-400">South Pole</span>
@@ -70,7 +70,7 @@ export const TerrainPanel: React.FC = () => {
             className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold transition-colors ${
               terrainEnabled
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                : 'bg-slate-800 text-slate-400 border border-slate-700'
+                : 'bg-slate-800 text-slate-400 border border-[#303238]'
             }`}
           >
             {terrainEnabled ? 'ENABLED' : 'DISABLED'}
@@ -78,7 +78,7 @@ export const TerrainPanel: React.FC = () => {
         </div>
 
         {/* Vertical Exaggeration Slider */}
-        <div className="space-y-1 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+        <div className="space-y-1 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
           <div className="flex justify-between items-center text-[11px] font-mono">
             <span className="text-slate-400">Vertical Exaggeration:</span>
             <span className="text-emerald-400 font-bold">{terrainExaggeration.toFixed(1)}×</span>
@@ -106,7 +106,7 @@ export const TerrainPanel: React.FC = () => {
         </div>
 
         {/* LOD Level of Detail Selector */}
-        <div className="space-y-1 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+        <div className="space-y-1 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
           <span className="text-[11px] font-mono text-slate-400 block mb-1">Mesh Resolution (LOD):</span>
           <div className="grid grid-cols-3 gap-1.5">
             {(['low', 'medium', 'high'] as const).map((lod) => (
@@ -117,7 +117,7 @@ export const TerrainPanel: React.FC = () => {
                 className={`py-1 text-[10px] font-mono rounded font-semibold uppercase transition-all ${
                   terrainLod === lod
                     ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
-                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700/60'
+                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-[#2b2d32]'
                 }`}
               >
                 {lod === 'low' ? 'Low (4K)' : lod === 'medium' ? 'Med (16K)' : 'High (65K)'}
@@ -128,7 +128,7 @@ export const TerrainPanel: React.FC = () => {
       </div>
 
       {/* 2D Map Elevation Overlay Controls */}
-      <div className="space-y-2 pt-2 border-t border-slate-800">
+      <div className="space-y-2 pt-2 border-t border-[#2b2d32]">
         <div className="flex items-center justify-between">
           <label className="text-[11px] font-mono text-slate-300 font-semibold flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-emerald-400" />
@@ -140,7 +140,7 @@ export const TerrainPanel: React.FC = () => {
             className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold transition-colors ${
               elevationLayerVisible
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                : 'bg-slate-800 text-slate-400 border border-slate-700'
+                : 'bg-slate-800 text-slate-400 border border-[#303238]'
             }`}
           >
             {elevationLayerVisible ? 'VISIBLE' : 'HIDDEN'}
@@ -148,7 +148,7 @@ export const TerrainPanel: React.FC = () => {
         </div>
 
         {elevationLayerVisible && (
-          <div className="space-y-2 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+          <div className="space-y-2 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
             <div className="grid grid-cols-2 gap-1.5">
               <button
                 type="button"
@@ -156,7 +156,7 @@ export const TerrainPanel: React.FC = () => {
                 className={`py-1 px-2 text-[10px] font-mono rounded font-semibold transition-all ${
                   elevationLayerType === 'elevation'
                     ? 'bg-emerald-500 text-black shadow-md'
-                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700'
+                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-[#303238]'
                 }`}
               >
                 ELEVATION TINT
@@ -167,7 +167,7 @@ export const TerrainPanel: React.FC = () => {
                 className={`py-1 px-2 text-[10px] font-mono rounded font-semibold transition-all ${
                   elevationLayerType === 'slope'
                     ? 'bg-amber-500 text-black shadow-md'
-                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700'
+                    : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-[#303238]'
                 }`}
               >
                 SLOPE HAZARDS
@@ -209,13 +209,13 @@ export const TerrainPanel: React.FC = () => {
       </div>
 
       {/* Live Elevation & Slope Point Inspection */}
-      <div className="space-y-1.5 pt-2 border-t border-slate-800">
+      <div className="space-y-1.5 pt-2 border-t border-[#2b2d32]">
         <label className="text-[11px] font-mono text-slate-300 font-semibold flex items-center gap-1.5">
           <Activity className="w-3.5 h-3.5 text-emerald-400" />
           <span>REAL-TIME TERRAIN TELEMETRY</span>
         </label>
 
-        <div className="bg-[#070b12] border border-slate-800 rounded-lg p-3 text-xs font-mono space-y-2">
+        <div className="bg-[#0e1013] border border-[#2b2d32] rounded-lg p-3 text-xs font-mono space-y-2">
           {currentElevationData?.in_bounds ? (
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -256,7 +256,7 @@ export const TerrainPanel: React.FC = () => {
       </div>
 
       {/* Scientific Data Quality & Provenance Card */}
-      <div className="bg-[#070b12] border border-slate-800/80 rounded-lg p-2.5 text-[10px] font-mono text-slate-400 space-y-1">
+      <div className="bg-[#0e1013] border border-[#202228] rounded-lg p-2.5 text-[10px] font-mono text-slate-400 space-y-1">
         <div className="flex items-center gap-1 text-slate-300 font-semibold">
           <Info className="w-3 h-3 text-emerald-400" />
           <span>DATASET PROVENANCE</span>

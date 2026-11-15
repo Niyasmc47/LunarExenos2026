@@ -251,7 +251,7 @@ export const RegionalMapCanvas: React.FC = () => {
   }, [selectedLatitude, selectedLongitude]);
 
   return (
-    <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group">
+    <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group">
       {/* Top Layer Tabs */}
       <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-1.5 bg-[#0e1013]/90 backdrop-blur-md p-1 rounded-lg border border-[#2b2d32] pointer-events-auto text-xs font-mono">

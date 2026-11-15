@@ -52,26 +52,26 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
     switch (candidate.coverage_certainty) {
       case 'COMPLETE_DEM':
         return (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold">
             Complete DEM
           </span>
         );
       case 'PARTIAL_DEM':
         return (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">
             Partial DEM
           </span>
         );
       case 'INDETERMINATE_PARTIAL_DEM':
         return (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-semibold">
             Partial DEM (Indeterminate)
           </span>
         );
       case 'OUT_OF_BOUNDS':
       default:
         return (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#202228] text-slate-400 border border-[#2b2d32]">
             Out of Bounds
           </span>
         );
@@ -83,8 +83,8 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
       onClick={onSelect}
       className={`p-4 rounded-xl border cursor-pointer transition-all ${
         isSelected
-          ? 'bg-[#121a2d] border-emerald-500 shadow-md shadow-emerald-500/10'
-          : 'bg-[#0b101c] border-slate-800 hover:border-slate-700 hover:bg-[#0e1526]'
+          ? 'bg-[#191b20] border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-lg shadow-[#ffe3b0]/5'
+          : 'bg-[#141619] border-[#2b2d32] hover:border-slate-600 hover:bg-[#191b20]'
       }`}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -93,13 +93,13 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
             <span>{candidate.candidate_name}</span>
           </h3>
           <div className="flex items-center gap-2 mt-1 text-xs font-mono text-slate-400">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-slate-400" />
+            <span className="flex items-center gap-1 text-[#ffe3b0]">
+              <MapPin className="w-3 h-3 text-[#ffe3b0]" />
               {candidate.latitude.toFixed(4)}°, {candidate.longitude.toFixed(4)}°
             </span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <Layers className="w-3 h-3 text-slate-400" />
+            <span className="text-slate-600">•</span>
+            <span className="flex items-center gap-1 text-[#7bd0ff]">
+              <Layers className="w-3 h-3 text-[#7bd0ff]" />
               {candidate.site_id}
             </span>
           </div>
@@ -108,9 +108,11 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
       </div>
 
       {/* Constraints Tally Bar */}
-      <div className="space-y-1.5 mb-3">
+      <div className="space-y-1.5 mb-3 bg-[#08090b] p-2.5 rounded-lg border border-[#202228]">
         <div className="flex items-center justify-between text-[11px] font-mono">
-          <span className="text-slate-400">Hard Constraints:</span>
+          <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+            Hard Constraints:
+          </span>
           <span className="font-semibold text-slate-200">
             <span className="text-emerald-400">{candidate.hard_constraints_passed} Pass</span>
             {' • '}
@@ -121,7 +123,7 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex">
+        <div className="w-full h-1.5 bg-[#202228] rounded-full overflow-hidden flex border border-[#2b2d32]">
           <div
             style={{
               width: `${(candidate.hard_constraints_passed / Math.max(1, candidate.total_hard_constraints)) * 100}%`,
@@ -144,7 +146,7 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
       </div>
 
       {/* Quick stats footer */}
-      <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px] font-mono">
+      <div className="flex items-center justify-between pt-2 border-t border-[#202228] text-[11px] font-mono">
         <div className="flex items-center gap-3 text-slate-400">
           <span className="flex items-center gap-1">
             <Mountain className="w-3 h-3 text-slate-400" />
@@ -154,16 +156,18 @@ export const CandidateSummaryCard: React.FC<CandidateSummaryCardProps> = ({
           </span>
           <span>
             Slope:{' '}
-            {candidate.local_slope_deg !== null && candidate.local_slope_deg !== undefined
-              ? `${candidate.local_slope_deg.toFixed(1)}°`
-              : 'N/A'}
+            <b className="text-slate-200 font-semibold">
+              {candidate.local_slope_deg !== null && candidate.local_slope_deg !== undefined
+                ? `${candidate.local_slope_deg.toFixed(1)}°`
+                : 'N/A'}
+            </b>
           </span>
         </div>
         <div className="flex items-center gap-1.5">
           {getCoverageBadge()}
           <ChevronRight
             className={`w-4 h-4 transition-transform ${
-              isSelected ? 'text-emerald-400 translate-x-0.5' : 'text-slate-600'
+              isSelected ? 'text-[#ffe3b0] translate-x-0.5' : 'text-slate-600'
             }`}
           />
         </div>

@@ -31,11 +31,11 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       className={`border rounded-xl p-5 transition-all ${
         isActive
           ? 'bg-slate-900/95 border-emerald-500/80 shadow-lg shadow-emerald-950/30'
-          : 'bg-[#0f172a]/70 hover:bg-[#0f172a]/90 border-slate-800'
+          : 'bg-[#141619] hover:bg-[#191b20] border-[#2b2d32]'
       }`}
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#202228]">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-mono font-bold text-white tracking-wide">
@@ -98,7 +98,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       {/* Primary Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3.5">
         {/* Elevation Metrics Panel */}
-        <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-800/50 space-y-2">
+        <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32]/50 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
               <Mountain className="w-3.5 h-3.5" />
@@ -109,7 +109,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-slate-950/60 p-2 rounded-lg border border-slate-800/40">
+          <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-[#08090b] p-2 rounded-lg border border-[#202228]">
             <div>
               <span className="text-[9px] text-slate-500 uppercase block">
                 {dq.requested_radius_m === 0 ? 'Point Elev' : 'Footprint Min'}
@@ -134,7 +134,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         </div>
 
         {/* Slope Metrics Panel */}
-        <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-800/50 space-y-2">
+        <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32]/50 space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="text-sky-400 font-semibold flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5" />
@@ -145,7 +145,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-slate-950/60 p-2 rounded-lg border border-slate-800/40">
+          <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-300 bg-[#08090b] p-2 rounded-lg border border-[#202228]">
             <div>
               <span className="text-[9px] text-slate-500 uppercase block">
                 {dq.requested_radius_m === 0 ? 'Point Slope' : 'Footprint Min'}
@@ -208,7 +208,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       {/* Roughness & Data Quality Callout */}
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Roughness Status */}
-        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-slate-800 text-[10px] font-mono space-y-1">
+        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
           <div className="flex items-center justify-between text-slate-400">
             <span className="font-semibold text-amber-400/90 flex items-center gap-1">
               <Layers className="w-3 h-3 text-amber-400" />
@@ -222,7 +222,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         </div>
 
         {/* Spatial Coverage */}
-        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-slate-800 text-[10px] font-mono space-y-1">
+        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
           <div className="flex items-center justify-between text-slate-400">
             <span>
               {dq.requested_radius_m === 0 ? (
@@ -244,7 +244,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       </div>
 
       {/* Footer / Inspect Button */}
-      <div className="flex items-center justify-between mt-3 pt-2 text-[11px] font-mono border-t border-slate-800/40">
+      <div className="flex items-center justify-between mt-3 pt-2 text-[11px] font-mono border-t border-[#202228]">
         <span className="text-slate-500">
           Source: <span className="text-slate-400">NASA LOLA 5 m/px Polar DEM</span>
         </span>

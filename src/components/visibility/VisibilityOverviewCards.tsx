@@ -79,7 +79,7 @@ function getCombinedBadge(state?: CombinedVisibilityState) {
       return {
         label: 'EVALUATING COMBINED STATE...',
         desc: 'Awaiting instant visibility evaluation from backend engine.',
-        bg: 'bg-slate-800 text-slate-400 border-slate-700',
+        bg: 'bg-slate-800 text-slate-400 border-[#303238]',
       };
   }
 }
@@ -110,9 +110,9 @@ export const VisibilityOverviewCards: React.FC = () => {
       {/* Grid of Sun and Earth Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
         {/* Sun Card */}
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 font-mono text-xs shadow-lg flex flex-col justify-between">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 font-mono text-xs shadow-lg flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
               <div className="flex items-center gap-2">
                 <Sun className="w-4 h-4 text-amber-400" />
                 <span className="font-bold text-slate-200">SUN VISIBILITY & ILLUMINATION</span>
@@ -128,7 +128,7 @@ export const VisibilityOverviewCards: React.FC = () => {
             {sun ? (
               <div className="mt-2 space-y-2">
                 {/* Horizontal plane status */}
-                <div className="flex items-center justify-between text-[11px] bg-[#070b12] px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+                <div className="flex items-center justify-between text-[11px] bg-[#0e1013] px-2.5 py-1.5 rounded-lg border border-[#202228]">
                   <span className="text-slate-400">Geometric Horizon Status:</span>
                   <span className={`font-bold ${sun.elevation_deg >= 0 ? 'text-amber-300' : 'text-slate-400'}`}>
                     {sun.elevation_deg >= 0 ? 'Sun Above Local Horizontal' : 'Sun Below Local Horizontal'}
@@ -137,19 +137,19 @@ export const VisibilityOverviewCards: React.FC = () => {
 
                 {/* Telemetry Row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">SUN AZIMUTH</div>
                     <div className="text-slate-200 font-bold">{sun.azimuth_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">SUN ELEVATION</div>
                     <div className="text-amber-400 font-bold">{sun.elevation_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">SKYLINE ELEVATION</div>
                     <div className="text-emerald-400 font-bold">{sun.horizon_elevation_at_azimuth_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">UPPER LIMB CLEARANCE</div>
                     <div className={`font-bold ${sun.upper_limb_clearance_deg >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                       {sun.upper_limb_clearance_deg >= 0 ? '+' : ''}{sun.upper_limb_clearance_deg.toFixed(2)}°
@@ -172,7 +172,7 @@ export const VisibilityOverviewCards: React.FC = () => {
           </div>
 
           {/* Mandatory Scientific Disclaimer */}
-          <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-start gap-1.5 text-[10px] text-slate-400 leading-tight">
+          <div className="mt-2.5 pt-2 border-t border-[#202228] flex items-start gap-1.5 text-[10px] text-slate-400 leading-tight">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-500/80 shrink-0 mt-0.5" />
             <span>
               <b>Scientific Note:</b> Solar visibility and actual electrical power generation are different measurements. Terrain obstruction and solar-panel system parameters have not yet been evaluated.
@@ -181,9 +181,9 @@ export const VisibilityOverviewCards: React.FC = () => {
         </div>
 
         {/* Earth Card */}
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 font-mono text-xs shadow-lg flex flex-col justify-between">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 font-mono text-xs shadow-lg flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-cyan-400" />
                 <span className="font-bold text-slate-200">EARTH DIRECT LINE-OF-SIGHT</span>
@@ -199,7 +199,7 @@ export const VisibilityOverviewCards: React.FC = () => {
             {earth ? (
               <div className="mt-2 space-y-2">
                 {/* Horizontal plane status */}
-                <div className="flex items-center justify-between text-[11px] bg-[#070b12] px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+                <div className="flex items-center justify-between text-[11px] bg-[#0e1013] px-2.5 py-1.5 rounded-lg border border-[#202228]">
                   <span className="text-slate-400">Geometric Horizon Status:</span>
                   <span className={`font-bold ${earth.elevation_deg >= 0 ? 'text-cyan-300' : 'text-slate-400'}`}>
                     {earth.elevation_deg >= 0 ? 'Earth Above Local Horizontal' : 'Earth Below Local Horizontal'}
@@ -208,19 +208,19 @@ export const VisibilityOverviewCards: React.FC = () => {
 
                 {/* Telemetry Row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px]">
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">EARTH AZIMUTH</div>
                     <div className="text-slate-200 font-bold">{earth.azimuth_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">EARTH ELEVATION</div>
                     <div className="text-cyan-400 font-bold">{earth.elevation_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">SKYLINE ELEVATION</div>
                     <div className="text-emerald-400 font-bold">{earth.horizon_elevation_at_azimuth_deg.toFixed(2)}°</div>
                   </div>
-                  <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/60">
+                  <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                     <div className="text-slate-500 text-[10px]">UPPER LIMB CLEARANCE</div>
                     <div className={`font-bold ${earth.upper_limb_clearance_deg >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                       {earth.upper_limb_clearance_deg >= 0 ? '+' : ''}{earth.upper_limb_clearance_deg.toFixed(2)}°
@@ -243,7 +243,7 @@ export const VisibilityOverviewCards: React.FC = () => {
           </div>
 
           {/* Mandatory Scientific Disclaimer */}
-          <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-start gap-1.5 text-[10px] text-slate-400 leading-tight">
+          <div className="mt-2.5 pt-2 border-t border-[#202228] flex items-start gap-1.5 text-[10px] text-slate-400 leading-tight">
             <Radio className="w-3.5 h-3.5 text-cyan-500/80 shrink-0 mt-0.5" />
             <span>
               <b>Scientific Note:</b> Geometric Earth visibility does not guarantee an operational radio link. Terrain obstruction and RF link-budget analysis have not yet been evaluated.

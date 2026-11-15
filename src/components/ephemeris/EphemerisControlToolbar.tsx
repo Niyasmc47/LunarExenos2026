@@ -94,7 +94,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
   }, [isPlaying, observerLat, observerLon, computePosition, setSelectedTimestamp]);
 
   return (
-    <div className="flex flex-col gap-2.5 bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl text-xs font-mono">
+    <div className="flex flex-col gap-2.5 bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3 shadow-xl text-xs font-mono">
       {/* Top Controls Row */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         {/* Date / Time Input with Quick Stepper */}
@@ -104,7 +104,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
             <span className="text-[11px] uppercase">DATE & TIME (UTC):</span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-[#070b12] px-2.5 py-1 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-1.5 bg-[#0e1013] px-2.5 py-1 rounded-lg border border-[#2b2d32]">
             <Clock className="w-3.5 h-3.5 text-slate-400" />
             <input
               type="datetime-local"
@@ -116,7 +116,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
           </div>
 
           {/* Time Stepper Buttons for Normal Users */}
-          <div className="flex items-center gap-1 bg-[#070b12] p-0.5 rounded-lg border border-slate-800">
+          <div className="flex items-center gap-1 bg-[#0e1013] p-0.5 rounded-lg border border-[#2b2d32]">
             <button
               onClick={() => stepTime(-24)}
               title="Step Backward 1 Day (-24h)"
@@ -185,7 +185,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setTimeout(handleComputeAll, 50);
               }}
               title="NASA Artemis III Planned Mission Window (Target epoch October 2026)"
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-amber-300/90 hover:text-amber-200 border border-amber-500/30 flex items-center gap-1"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0e1013] text-amber-300/90 hover:text-amber-200 border border-amber-500/30 flex items-center gap-1"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
               Planned: Artemis III Window (Late 2026)
@@ -196,7 +196,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setTimeout(handleComputeAll, 50);
               }}
               title="Illustrative: Lunar South Pole Summer Solstice (Maximum Solar Elevation)"
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0e1013] text-slate-300 hover:text-emerald-400 border border-[#2b2d32]"
             >
               Illustrative: Summer Solstice (Dec 2026)
             </button>
@@ -206,7 +206,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setTimeout(handleComputeAll, 50);
               }}
               title="Illustrative: Lunar South Pole Winter Solstice (Minimum Solar Elevation)"
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0e1013] text-slate-300 hover:text-emerald-400 border border-[#2b2d32]"
             >
               Illustrative: Winter Solstice (Jun 2026)
             </button>
@@ -217,7 +217,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
                 setTimeout(handleComputeAll, 50);
               }}
               title="Illustrative: Real-Time Current Epoch (Now UTC)"
-              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#070b12] text-sky-300/80 hover:text-sky-300 border border-slate-800"
+              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#0e1013] text-sky-300/80 hover:text-sky-300 border border-[#2b2d32]"
             >
               Simulation: Current UTC
             </button>
@@ -247,7 +247,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
       </div>
 
       {/* Secondary Controls: Observer Height, Duration, Aberration Correction */}
-      <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-slate-800 text-[11px]">
+      <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-[#2b2d32] text-[11px]">
         {/* Observer Height */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-slate-400 flex items-center gap-1">
@@ -268,7 +268,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
               className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
                 observerHeight === item.h
                   ? 'bg-emerald-500 text-black'
-                  : 'bg-[#070b12] text-slate-400 hover:text-slate-200 border border-slate-800'
+                  : 'bg-[#0e1013] text-slate-400 hover:text-slate-200 border border-[#2b2d32]'
               }`}
             >
               {item.label}
@@ -295,7 +295,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
               className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${
                 timeSeriesDurationDays === item.days
                   ? 'bg-sky-500 text-black'
-                  : 'bg-[#070b12] text-slate-400 hover:text-slate-200 border border-slate-800'
+                  : 'bg-[#0e1013] text-slate-400 hover:text-slate-200 border border-[#2b2d32]'
               }`}
             >
               {item.label}
@@ -315,7 +315,7 @@ export const EphemerisControlToolbar: React.FC<EphemerisControlToolbarProps> = (
               setTimeout(handleComputeAll, 50);
             }}
             title="Toggle between LT+S (Apparent light-time & stellar aberration) and NONE (Geometric)"
-            className="px-2 py-0.5 rounded text-[10px] bg-[#070b12] text-amber-300 font-bold border border-slate-800 hover:border-amber-500"
+            className="px-2 py-0.5 rounded text-[10px] bg-[#0e1013] text-amber-300 font-bold border border-[#2b2d32] hover:border-amber-500"
           >
             {aberrationCorrection === 'LT+S' ? 'LT+S (Apparent)' : 'NONE (Geometric)'}
           </button>

@@ -46,8 +46,8 @@ export const RegionalStatisticsPanel: React.FC = () => {
   return (
     <div className="flex flex-col gap-3 text-xs font-mono">
       {/* SECTION 1: POINT INSPECTION TELEMETRY */}
-      <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3.5 shadow-xl space-y-2.5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div className="bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3.5 shadow-xl space-y-2.5">
+        <div className="flex items-center justify-between border-b border-[#2b2d32] pb-2">
           <span className="flex items-center gap-1.5 font-bold uppercase text-slate-200">
             <MapPin className="w-4 h-4 text-emerald-400" />
             INSPECTED LOCATION
@@ -114,8 +114,8 @@ export const RegionalStatisticsPanel: React.FC = () => {
       </div>
 
       {/* SECTION 2: REGIONAL TERRAIN STATISTICS */}
-      <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3.5 shadow-xl space-y-2.5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div className="bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3.5 shadow-xl space-y-2.5">
+        <div className="flex items-center justify-between border-b border-[#2b2d32] pb-2">
           <div className="flex items-center gap-1.5 font-bold uppercase text-slate-200">
             <BarChart3 className="w-4 h-4 text-emerald-400" />
             <span>REGIONAL STATISTICS</span>
@@ -132,28 +132,28 @@ export const RegionalStatisticsPanel: React.FC = () => {
           <div className="space-y-3">
             {/* 4-Box Elevation Stats */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
                 <div className="text-[10px] text-slate-500">MAX ELEVATION</div>
                 <div className="text-emerald-400 font-bold text-sm">
                   {regionalStatistics.elevation_max_m !== null ? `+${regionalStatistics.elevation_max_m} m` : 'N/A'}
                 </div>
               </div>
 
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
                 <div className="text-[10px] text-slate-500">MIN ELEVATION</div>
                 <div className="text-cyan-400 font-bold text-sm">
                   {regionalStatistics.elevation_min_m !== null ? `${regionalStatistics.elevation_min_m} m` : 'N/A'}
                 </div>
               </div>
 
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
                 <div className="text-[10px] text-slate-500">MEAN ELEVATION</div>
                 <div className="text-slate-200 font-bold text-sm">
                   {regionalStatistics.elevation_mean_m !== null ? `+${regionalStatistics.elevation_mean_m} m` : 'N/A'}
                 </div>
               </div>
 
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
                 <div className="text-[10px] text-slate-500">TOTAL RELIEF (ΔH)</div>
                 <div className="text-amber-400 font-bold text-sm">
                   {regionalStatistics.elevation_range_m !== null ? `${regionalStatistics.elevation_range_m} m` : 'N/A'}
@@ -162,7 +162,7 @@ export const RegionalStatisticsPanel: React.FC = () => {
             </div>
 
             {/* Slope Distribution Bar Progress */}
-            <div className="space-y-1.5 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+            <div className="space-y-1.5 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
               <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold mb-1">
                 <span>SLOPE LANDING HAZARD BREAKDOWN:</span>
                 <span className="text-emerald-400">Mean: {regionalStatistics.slope_mean_deg}°</span>
@@ -202,7 +202,7 @@ export const RegionalStatisticsPanel: React.FC = () => {
       </div>
 
       {/* SECTION 3: SCIENTIFIC DATA PROVENANCE (Collapsible) */}
-      <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 shadow-xl space-y-2">
+      <div className="bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3 shadow-xl space-y-2">
         <button
           onClick={() => setShowProvenance(!showProvenance)}
           className="w-full flex items-center justify-between text-slate-300 hover:text-emerald-400 font-bold uppercase text-[11px] transition-colors"
@@ -215,12 +215,12 @@ export const RegionalStatisticsPanel: React.FC = () => {
         </button>
 
         {showProvenance && (
-          <div className="space-y-1.5 text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+          <div className="space-y-1.5 text-[10px] text-slate-400 pt-1 border-t border-[#2b2d32]">
             <div><strong className="text-slate-300">Dataset:</strong> {regionalStatistics?.dataset_name || 'NASA LOLA South Pole DEM'}</div>
             <div><strong className="text-slate-300">Reference Frame:</strong> MOON_ME (DE421)</div>
             <div><strong className="text-slate-300">Projection:</strong> South Polar Stereographic (R = 1,737,400 m)</div>
             <div><strong className="text-slate-300">Citation:</strong> {regionalStatistics?.citation || 'Barker et al., 2021/2023'}</div>
-            <div className="p-2 rounded bg-[#070b12] border border-amber-900/40 text-amber-300/90 text-[9px] leading-relaxed">
+            <div className="p-2 rounded bg-[#0e1013] border border-amber-900/40 text-amber-300/90 text-[9px] leading-relaxed">
               <strong className="text-amber-200 block mb-0.5">Scientific Caveat:</strong>
               Pixel spacing reflects nominal interpolation raster mesh. ~90% of pixels between orbital tracks are mathematically interpolated.
             </div>

@@ -25,9 +25,9 @@ export const SearchExportModal: React.FC = () => {
 
   return (
     <DialogSurface label="Export mission windows" onClose={closeExportModal} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col">
+      <div className="bg-[#141619] border border-[#303238]/80 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800">
+        <div className="flex items-center justify-between p-5 border-b border-[#2b2d32]">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
               <Download className="w-5 h-5" />
@@ -62,7 +62,7 @@ export const SearchExportModal: React.FC = () => {
             <a
               href={jsonUrl}
               download={`lunavista_window_search_${activeSearch.id}.json`}
-              className="flex flex-col p-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 transition-all group"
+              className="flex flex-col p-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-[#2b2d32] hover:border-indigo-500/50 transition-all group"
             >
               <div className="flex items-center justify-between">
                 <FileJson className="w-6 h-6 text-indigo-400 group-hover:scale-110 transition-transform" />
@@ -80,7 +80,7 @@ export const SearchExportModal: React.FC = () => {
             <a
               href={csvUrl}
               download={`lunavista_windows_${activeSearch.id}.csv`}
-              className="flex flex-col p-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 transition-all group"
+              className="flex flex-col p-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-[#2b2d32] hover:border-emerald-500/50 transition-all group"
             >
               <div className="flex items-center justify-between">
                 <FileSpreadsheet className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
@@ -95,7 +95,7 @@ export const SearchExportModal: React.FC = () => {
             </a>
           </div>
 
-          <div className="p-3 bg-slate-900/40 rounded-lg border border-slate-800 text-[10px] font-mono text-slate-400 flex items-center gap-2">
+          <div className="p-3 bg-slate-900/40 rounded-lg border border-[#2b2d32] text-[10px] font-mono text-slate-400 flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>
               All exports preserve scientific disclaimers and coordinate/epoch provenance.

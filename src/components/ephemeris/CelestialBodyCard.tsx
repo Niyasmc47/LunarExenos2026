@@ -33,9 +33,9 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
   const isVisible = body ? body.elevation_deg >= 0 : false;
 
   return (
-    <div className="flex flex-col bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 text-xs font-mono shadow-md">
+    <div className="flex flex-col bg-[#141619] border border-[#2b2d32] rounded-xl p-3 text-xs font-mono shadow-md">
       {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
         <div className="flex items-center gap-2">
           {isSun ? (
             <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
@@ -81,7 +81,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
                 ? isSun
                   ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
                   : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                : 'bg-slate-900/80 border-slate-800 text-slate-400'
+                : 'bg-slate-900/80 border-[#2b2d32] text-slate-400'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 bg-[#070b12] p-2 rounded-lg border border-slate-800">
+          <div className="grid grid-cols-2 gap-2 bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
             <div>
               <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
                 WHERE TO LOOK (COMPASS)
@@ -140,7 +140,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
 
           {/* Distance & Angular Size */}
           <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+            <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
               <span className="text-[10px] text-slate-500 flex items-center gap-1 font-semibold">
                 <Orbit className="w-3 h-3 text-slate-400" />
                 DISTANCE FROM LANDER
@@ -155,7 +155,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
               </div>
             </div>
 
-            <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800">
+            <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32]">
               <span className="text-[10px] text-slate-500 flex items-center gap-1 font-semibold">
                 <Radio className="w-3 h-3 text-slate-400" />
                 APPARENT SIZE IN SKY
@@ -170,7 +170,7 @@ export const CelestialBodyCard: React.FC<CelestialBodyCardProps> = ({ body, type
           </div>
 
           {/* Light-time Travel */}
-          <div className="flex items-center justify-between bg-[#070b12] px-2.5 py-1.5 rounded-lg border border-slate-800 text-[10px]">
+          <div className="flex items-center justify-between bg-[#0e1013] px-2.5 py-1.5 rounded-lg border border-[#2b2d32] text-[10px]">
             <span className="text-slate-500 flex items-center gap-1 font-semibold">
               <Clock className="w-3 h-3 text-slate-400" />
               Radio / Light Speed Delay:

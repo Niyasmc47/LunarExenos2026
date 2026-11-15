@@ -54,9 +54,9 @@ export const ProfileListSidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-80 shrink-0 border-r border-slate-800 bg-[#080d18] flex flex-col h-full overflow-hidden">
+    <div className="w-80 shrink-0 border-r border-[#2b2d32] bg-[#080d18] flex flex-col h-full overflow-hidden">
       {/* Top Controls */}
-      <div className="p-3.5 border-b border-slate-800 space-y-3">
+      <div className="p-3.5 border-b border-[#2b2d32] space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
@@ -80,7 +80,7 @@ export const ProfileListSidebar: React.FC = () => {
           </button>
           <button
             onClick={() => setIsTemplateModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-mono text-xs border border-slate-700 transition-colors"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-mono text-xs border border-[#303238] transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Templates</span>
@@ -95,7 +95,7 @@ export const ProfileListSidebar: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search profiles..."
-            className="w-full bg-slate-950/80 border border-slate-800 text-xs font-mono text-slate-200 pl-8 pr-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#08090b]/80 border border-[#2b2d32] text-xs font-mono text-slate-200 pl-8 pr-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
           />
         </div>
 
@@ -160,7 +160,7 @@ export const ProfileListSidebar: React.FC = () => {
                 className={`group p-3 rounded-xl border text-left cursor-pointer transition-all ${
                   isSelected
                     ? 'bg-emerald-500/10 border-emerald-500/50 shadow-md shadow-emerald-950/20'
-                    : 'bg-[#0d1424] border-slate-800/80 hover:border-slate-700 hover:bg-[#111a30]'
+                    : 'bg-[#0d1424] border-[#202228] hover:border-[#303238] hover:bg-[#111a30]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-1.5 mb-1">

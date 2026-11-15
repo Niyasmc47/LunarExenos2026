@@ -37,7 +37,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
   ) || activeRun?.candidates[0] || null;
 
   return (
-    <div className="analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
+    <div className="analysis-page flex-1 flex flex-col h-full bg-[#0e1013] overflow-y-auto">
       {/* Top Configuration & Execution Controls */}
       <ScreeningControls />
 
@@ -46,7 +46,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
         <ResultIntro title="Which sites meet your requirements?" description="Select a candidate to inspect passed checks, failed limits, and missing evidence." />
         {/* Screening Run Header / History Selector */}
         {runs.length > 0 && activeRun && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#141619] border border-[#2b2d32] p-4 rounded-xl shadow-md">
             <div className="flex items-center gap-3">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
@@ -56,7 +56,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
                   <select
                     aria-label="Saved screenings" value={activeRun.id}
                     onChange={(e) => selectRun(e.target.value)}
-                    className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-2.5 py-1 rounded focus:outline-none focus:border-emerald-500"
+                    className="bg-[#08090b] border border-[#2b2d32] text-slate-200 text-xs font-mono px-2.5 py-1 rounded focus:outline-none focus:border-[#ffe3b0]"
                   >
                     {runs.map((r) => (
                       <option key={r.id} value={r.id}>
@@ -66,11 +66,11 @@ export const CandidateScreeningWorkspace: React.FC = () => {
                   </select>
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono mt-1 flex items-center gap-2">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-slate-400" />
+                  <span className="flex items-center gap-1 text-[#ffe3b0]">
+                    <Clock className="w-3 h-3 text-[#ffe3b0]" />
                     {activeRun.start_timestamp_iso} to {activeRun.end_timestamp_iso} ({activeRun.duration_days.toFixed(1)}d)
                   </span>
-                  <span>•</span>
+                  <span className="text-slate-600">•</span>
                   <span>Mast: {activeRun.observer_height_m}m</span>
                 </div>
               </div>
@@ -81,7 +81,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsExportOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/30 text-xs font-mono font-semibold transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#191b20] hover:bg-[#202228] text-[#7bd0ff] border border-[#2b2d32] text-xs font-mono font-semibold transition-all"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Run</span>
@@ -108,8 +108,8 @@ export const CandidateScreeningWorkspace: React.FC = () => {
             Loading saved screenings…
           </div>
         ) : !activeRun ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3 bg-[#0b101c] border border-slate-800 rounded-2xl p-8">
-            <div className="p-3 bg-slate-900 rounded-full text-slate-400">
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-3 bg-[#141619] border border-[#2b2d32] rounded-2xl p-8 shadow-md">
+            <div className="p-3 bg-[#191b20] border border-[#2b2d32] rounded-full text-[#ffe3b0]">
               <Inbox className="w-8 h-8" />
             </div>
             <h3 className="text-sm font-bold text-slate-200 font-mono">
@@ -117,7 +117,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
             </h3>
             <p className="text-xs text-slate-400 font-sans max-w-md leading-relaxed">
               Select a mission profile and one or more candidate scenarios above, then click{' '}
-              <strong className="text-emerald-400">Screen selected sites</strong> to see which requirements each site meets.
+              <strong className="text-[#ffe3b0]">Screen selected sites</strong> to see which requirements each site meets.
             </p>
           </div>
         ) : (
@@ -126,7 +126,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <Sparkles className="w-4 h-4 text-[#ffe3b0]" />
                   <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
                     Candidate summaries ({activeRun.candidates.length} candidates)
                   </h2>
@@ -161,7 +161,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
 
             {/* Detailed Inspection for Selected Candidate */}
             {selectedCandidate && (
-              <div className="space-y-6 pt-4 border-t border-slate-800">
+              <div className="space-y-6 pt-4 border-t border-[#202228]">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-bold text-slate-100 font-mono tracking-wide">
                     Requirement details: {selectedCandidate.candidate_name}

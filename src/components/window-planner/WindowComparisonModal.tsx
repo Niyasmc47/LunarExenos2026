@@ -23,9 +23,9 @@ export const WindowComparisonModal: React.FC = () => {
 
   return (
     <DialogSurface label="Compare mission windows" onClose={closeComparisonModal} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      <div className="bg-[#141619] border border-[#303238]/80 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-[#0b101c]/95 backdrop-blur z-10">
+        <div className="flex items-center justify-between p-5 border-b border-[#2b2d32] sticky top-0 bg-[#141619]/95 backdrop-blur z-10">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
               <GitCompare className="w-5 h-5" />
@@ -50,7 +50,7 @@ export const WindowComparisonModal: React.FC = () => {
 
         <div className="p-6 space-y-6">
           {/* Consistency Provenance */}
-          <div className="p-3.5 bg-slate-900/60 border border-slate-800 rounded-xl space-y-1.5">
+          <div className="p-3.5 bg-slate-900/60 border border-[#2b2d32] rounded-xl space-y-1.5">
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
               <span>Harmonized Scientific Baseline</span>
@@ -66,10 +66,10 @@ export const WindowComparisonModal: React.FC = () => {
           </div>
 
           {/* Comparison Grid */}
-          <div className="overflow-x-auto rounded-xl border border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-[#2b2d32]">
             <table className="w-full text-left border-collapse text-xs font-mono">
               <thead>
-                <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                <tr className="bg-slate-900/90 text-slate-400 border-b border-[#2b2d32]">
                   <th className="py-3 px-4 font-semibold">Metric / Attribute</th>
                   {res.compared_windows.map((w) => (
                     <th

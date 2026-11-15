@@ -48,9 +48,9 @@ export const CelestialSkyRadar: React.FC<CelestialSkyRadarProps> = ({
   }, [earth]);
 
   return (
-    <div className="flex flex-col h-full bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 select-none">
+    <div className="flex flex-col h-full bg-[#141619] border border-[#2b2d32] rounded-xl p-3 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-2">
+      <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32] mb-2">
         <div className="flex items-center gap-2">
           <Compass className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
@@ -239,7 +239,7 @@ export const CelestialSkyRadar: React.FC<CelestialSkyRadarProps> = ({
       </div>
 
       {/* Quick Visual Guide for Normal Users */}
-      <div className="shrink-0 flex items-center justify-between text-[10px] font-mono bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-400 mb-1.5 flex-wrap gap-1">
+      <div className="shrink-0 flex items-center justify-between text-[10px] font-mono bg-slate-900/60 px-2.5 py-1 rounded-lg border border-[#2b2d32] text-slate-400 mb-1.5 flex-wrap gap-1">
         <span className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full border border-dashed border-emerald-400"></span>
           Green Circle = Horizon (0°)
@@ -254,7 +254,7 @@ export const CelestialSkyRadar: React.FC<CelestialSkyRadarProps> = ({
       </div>
 
       {/* Footer Quick Telemetry */}
-      <div className="shrink-0 flex items-center justify-between text-[11px] font-mono bg-[#070b12] px-3 py-1.5 rounded-lg border border-slate-800">
+      <div className="shrink-0 flex items-center justify-between text-[11px] font-mono bg-[#0e1013] px-3 py-1.5 rounded-lg border border-[#2b2d32]">
         <div className="flex items-center gap-1.5 text-amber-300">
           <Sun className="w-3.5 h-3.5 text-amber-400" />
           <span>Az {sun?.azimuth_deg.toFixed(1)}°</span>

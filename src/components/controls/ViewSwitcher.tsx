@@ -14,7 +14,7 @@ export const ViewSwitcher: React.FC = () => {
   ];
 
   return (
-    <div role="group" aria-label="Explorer view" className="view-switcher flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 shadow-md">
+    <div role="group" aria-label="Explorer view" className="view-switcher flex items-center gap-1 bg-[#141619] backdrop-blur-md p-1 rounded-xl border border-[#2b2d32] shadow-md">
       {views.map((v) => {
         const isActive = activeView === v.id;
         return (

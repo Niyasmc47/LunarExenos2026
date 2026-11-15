@@ -100,9 +100,9 @@ export const HorizonCircularRadar: React.FC<HorizonCircularRadarProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 select-none">
+    <div className="flex flex-col h-full bg-[#141619] border border-[#2b2d32] rounded-xl p-3 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800/80 mb-2">
+      <div className="flex items-center justify-between pb-2 border-b border-[#202228] mb-2">
         <div className="flex items-center gap-2">
           <Compass className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
@@ -241,7 +241,7 @@ export const HorizonCircularRadar: React.FC<HorizonCircularRadarProps> = ({
 
         {/* Hover Inspector Floating Overlay */}
         {hoveredPoint && (
-          <div className="absolute top-2 right-2 bg-[#070b12]/95 border border-sky-500/40 px-2.5 py-1.5 rounded-lg shadow-xl text-left pointer-events-none text-xs font-mono">
+          <div className="absolute top-2 right-2 bg-[#0e1013]/95 border border-sky-500/40 px-2.5 py-1.5 rounded-lg shadow-xl text-left pointer-events-none text-xs font-mono">
             <div className="text-[10px] text-sky-400 font-bold uppercase tracking-wider flex items-center gap-1">
               <Eye className="w-3 h-3" />
               Azimuth {hoveredPoint.azimuth_deg.toFixed(1)}°
@@ -265,7 +265,7 @@ export const HorizonCircularRadar: React.FC<HorizonCircularRadarProps> = ({
 
       {/* Footer Quick Telemetry */}
       {data && (
-        <div className="shrink-0 flex items-center justify-between text-[11px] font-mono bg-[#070b12] px-3 py-1.5 rounded-lg border border-slate-800">
+        <div className="shrink-0 flex items-center justify-between text-[11px] font-mono bg-[#0e1013] px-3 py-1.5 rounded-lg border border-[#2b2d32]">
           <div className="text-slate-400">
             Max Skyline:{' '}
             <span className="text-emerald-400 font-bold">

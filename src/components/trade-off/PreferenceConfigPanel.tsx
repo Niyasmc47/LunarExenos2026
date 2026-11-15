@@ -80,9 +80,9 @@ export const PreferenceConfigPanel: React.FC = () => {
   const totalRawWeight = enabledCriteria.reduce((sum, c) => sum + c.weight, 0);
 
   return (
-    <div className="bg-[#0b101c] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-6 shadow-xl space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#2b2d32]">
         <div>
           <h3 className="text-sm font-mono font-bold text-white flex items-center gap-2">
             <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
@@ -96,7 +96,7 @@ export const PreferenceConfigPanel: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handleRestoreDefaults}
-            className="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-900 text-slate-300 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-[#303238] hover:border-slate-600 bg-slate-900 text-slate-300 hover:text-white text-xs font-mono flex items-center gap-1.5 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
             <span>Restore Defaults</span>
@@ -123,7 +123,7 @@ export const PreferenceConfigPanel: React.FC = () => {
           <span>Relative Weight Distribution (Sum: 100%)</span>
           <span>{enabledCriteria.length} criteria active</span>
         </div>
-        <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden flex border border-slate-800">
+        <div className="w-full bg-[#08090b] h-3 rounded-full overflow-hidden flex border border-[#2b2d32]">
           {enabledCriteria.map((c, idx) => {
             const pct = totalRawWeight > 0 ? (c.weight / totalRawWeight) * 100 : 0;
             const colors = [
@@ -159,8 +159,8 @@ export const PreferenceConfigPanel: React.FC = () => {
               key={c.id}
               className={`p-4 rounded-xl border transition-all ${
                 c.enabled
-                  ? 'bg-slate-900/60 border-slate-700/80 shadow-md'
-                  : 'bg-slate-950/40 border-slate-800/40 opacity-60'
+                  ? 'bg-slate-900/60 border-[#303238]/80 shadow-md'
+                  : 'bg-[#08090b] border-[#202228] opacity-60'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
@@ -169,7 +169,7 @@ export const PreferenceConfigPanel: React.FC = () => {
                     type="checkbox"
                     checked={c.enabled}
                     onChange={() => handleToggle(c.id)}
-                    className="w-4 h-4 rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 bg-slate-800"
+                    className="w-4 h-4 rounded border-[#303238] text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 bg-slate-800"
                   />
                   <div>
                     <h4 className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
@@ -232,7 +232,7 @@ export const PreferenceConfigPanel: React.FC = () => {
                         type="number"
                         value={c.reference_min ?? 0}
                         onChange={(e) => handleRangeChange(c.id, 'reference_min', parseFloat(e.target.value))}
-                        className="w-full mt-0.5 px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-emerald-500"
+                        className="w-full mt-0.5 px-2 py-1 rounded bg-[#08090b] border border-[#2b2d32] text-slate-200 text-xs font-mono focus:border-emerald-500"
                       />
                     </div>
                     <div>
@@ -241,7 +241,7 @@ export const PreferenceConfigPanel: React.FC = () => {
                         type="number"
                         value={c.reference_max ?? 100}
                         onChange={(e) => handleRangeChange(c.id, 'reference_max', parseFloat(e.target.value))}
-                        className="w-full mt-0.5 px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-200 text-xs font-mono focus:border-emerald-500"
+                        className="w-full mt-0.5 px-2 py-1 rounded bg-[#08090b] border border-[#2b2d32] text-slate-200 text-xs font-mono focus:border-emerald-500"
                       />
                     </div>
                   </div>

@@ -70,7 +70,7 @@ export const ExportToolbar: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono shadow-xl">
+    <div className="bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono shadow-xl">
       <div className="flex items-center gap-1.5 text-slate-300 font-bold">
         <Download className="w-4 h-4 text-emerald-400" />
         <span>SCIENTIFIC DATA EXPORTS:</span>
@@ -79,7 +79,7 @@ export const ExportToolbar: React.FC = () => {
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={handleExportProfileCsv}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
         >
           <FileText className="w-3.5 h-3.5" />
           <span>TRANSECT CSV</span>
@@ -87,7 +87,7 @@ export const ExportToolbar: React.FC = () => {
 
         <button
           onClick={handleExportStatisticsCsv}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
         >
           <FileText className="w-3.5 h-3.5" />
           <span>STATISTICS CSV</span>

@@ -13,9 +13,9 @@ export const SensitivityAnalysisView: React.FC = () => {
   const alternatives = activeStudy.alternatives;
 
   return (
-    <div className="bg-[#0b101c] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-6 shadow-xl space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2b2d32]">
         <div>
           <h3 className="text-sm font-mono font-bold text-white flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-purple-400" />
@@ -40,7 +40,7 @@ export const SensitivityAnalysisView: React.FC = () => {
         <div className="space-y-6">
           {/* Stability Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-1">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
                 Leading Eligible Alternative
               </span>
@@ -56,7 +56,7 @@ export const SensitivityAnalysisView: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-1">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
                 Robust Eligible Alternatives (Top-2 in ≥ 60%)
               </span>
@@ -72,7 +72,7 @@ export const SensitivityAnalysisView: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-1">
               <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">
                 Tested Scenarios
               </span>
@@ -86,10 +86,10 @@ export const SensitivityAnalysisView: React.FC = () => {
           </div>
 
           {/* Scenarios Table */}
-          <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40">
+          <div className="overflow-x-auto rounded-xl border border-[#2b2d32] bg-[#08090b]">
             <table className="w-full text-left border-collapse text-xs font-mono">
               <thead>
-                <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[11px]">
+                <tr className="bg-slate-900/90 text-slate-400 border-b border-[#2b2d32] text-[11px]">
                   <th className="py-2.5 px-3">Sensitivity Scenario</th>
                   <th className="py-2.5 px-3">Priority Focus</th>
                   <th className="py-2.5 px-3 text-center">Leading Alternative</th>
@@ -118,7 +118,7 @@ export const SensitivityAnalysisView: React.FC = () => {
                       <span className={`inline-block px-2 py-0.5 rounded font-bold text-[10px] ${
                         scen.leading_alternative_id
                           ? 'bg-purple-500/15 border border-purple-500/40 text-purple-300'
-                          : 'bg-slate-800 border border-slate-700 text-slate-400'
+                          : 'bg-slate-800 border border-[#303238] text-slate-400'
                       }`}>
                         {scen.leading_alternative_name || 'No eligible leader'}
                       </span>

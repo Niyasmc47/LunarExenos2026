@@ -50,7 +50,7 @@ export const TerrainExplorer: React.FC = () => {
   const [showTransect, setShowTransect] = useState(false);
 
   return (
-    <div className="terrain-workspace relative flex-1 flex flex-col xl:flex-row h-full min-h-0 overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
+    <div className="terrain-workspace relative flex-1 flex flex-col xl:flex-row h-full min-h-0 overflow-hidden bg-[#0e1013] p-2 md:p-3 gap-2 md:gap-3">
       {/* Main Workspace Area */}
       <div className="flex-1 flex flex-col gap-2 min-h-0 min-w-0 overflow-hidden">
         {/* Workspace Top Header & Mode Sub-Navigation Strip (Stitch Screen b18f9e37a9a44954bf57dfd812343ab9) */}

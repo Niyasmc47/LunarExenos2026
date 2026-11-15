@@ -218,7 +218,7 @@ export const SouthPoleDualMaps: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-hidden">
       {/* Top Controls Strip */}
-      <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+      <div className="shrink-0 flex items-center justify-between bg-[#141619] border border-[#2b2d32] px-3 py-1.5 rounded-xl text-xs font-mono">
         <div className="flex items-center gap-2">
           <Mountain className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200 uppercase tracking-wider">
@@ -247,18 +247,18 @@ export const SouthPoleDualMaps: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-1 border-l border-slate-800 pl-2">
+          <div className="flex items-center gap-1 border-l border-[#2b2d32] pl-2">
             <button
               onClick={handleZoomIn}
               title="Zoom In"
-              className="p-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+              className="p-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleZoomOut}
               title="Zoom Out"
-              className="p-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+              className="p-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
             >
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
@@ -267,7 +267,7 @@ export const SouthPoleDualMaps: React.FC = () => {
           <button
             onClick={handleResetBoth}
             title="Recenter both maps to Connecting Ridge"
-            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>RECENTER</span>
@@ -278,8 +278,8 @@ export const SouthPoleDualMaps: React.FC = () => {
       {/* Side-by-side Dual Map Viewports */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2 min-h-0 overflow-hidden">
         {/* LEFT: ELEVATION MAP */}
-        <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group">
-          <div className="absolute top-2.5 left-3 z-20 flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 pointer-events-none">
+        <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group">
+          <div className="absolute top-2.5 left-3 z-20 flex items-center gap-2 bg-[#141619] backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2b2d32] pointer-events-none">
             <span className="text-xs font-mono font-bold text-emerald-400">ELEVATION MAP (LOLA)</span>
             <span className="text-[10px] font-mono text-slate-400">DATUM: 1737.4 KM</span>
           </div>
@@ -287,7 +287,7 @@ export const SouthPoleDualMaps: React.FC = () => {
           <div ref={elevElementRef} className="flex-1 w-full h-full min-h-0 bg-[#020408]" />
 
           {/* Elevation Color Legend */}
-          <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800">
+          <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none bg-[#141619] backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#2b2d32]">
             <div className="text-[10px] font-mono text-slate-400 flex justify-between mb-1">
               <span>-520 m (Deep Basins)</span>
               <span>+1,140 m (Mean)</span>
@@ -303,8 +303,8 @@ export const SouthPoleDualMaps: React.FC = () => {
         </div>
 
         {/* RIGHT: SLOPE MAP */}
-        <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group">
-          <div className="absolute top-2.5 left-3 z-20 flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 pointer-events-none">
+        <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group">
+          <div className="absolute top-2.5 left-3 z-20 flex items-center gap-2 bg-[#141619] backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2b2d32] pointer-events-none">
             <span className="text-xs font-mono font-bold text-amber-400">SLOPE MAP (LANDING HAZARDS)</span>
             <span className="text-[10px] font-mono text-slate-400">7-TIER CLASSIFICATION</span>
           </div>
@@ -312,7 +312,7 @@ export const SouthPoleDualMaps: React.FC = () => {
           <div ref={slopeElementRef} className="flex-1 w-full h-full min-h-0 bg-[#020408]" />
 
           {/* Slope Legend */}
-          <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-slate-800">
+          <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none bg-[#141619] backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-[#2b2d32]">
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 text-[9px] font-mono text-center">
               <div className="bg-emerald-500 text-black px-1 py-0.5 rounded font-bold">0–5° Safe</div>
               <div className="bg-emerald-400 text-black px-1 py-0.5 rounded font-bold">5–10° Fav</div>
@@ -327,7 +327,7 @@ export const SouthPoleDualMaps: React.FC = () => {
       </div>
 
       {/* Bottom Telemetry Readout Bar */}
-      <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/95 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+      <div className="shrink-0 flex items-center justify-between bg-[#141619] border border-[#2b2d32] px-3 py-1.5 rounded-xl text-xs font-mono">
         <div className="flex items-center gap-2">
           <MapPin className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-slate-400 text-[11px]">SELECTED:</span>
@@ -335,7 +335,7 @@ export const SouthPoleDualMaps: React.FC = () => {
             {formatCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude }, 3)}
           </span>
           {currentPointTelemetry?.in_bounds && typeof currentPointTelemetry.elevation_m === 'number' && (
-            <span className="text-slate-200 border-l border-slate-700 pl-2">
+            <span className="text-slate-200 border-l border-[#303238] pl-2">
               ELEV: <strong className="text-emerald-400">{currentPointTelemetry.elevation_m > 0 ? '+' : ''}{currentPointTelemetry.elevation_m} m</strong>
               {currentPointTelemetry.slope_deg !== null && currentPointTelemetry.slope_deg !== undefined && (
                 <span className="ml-2 text-amber-400 font-semibold">({currentPointTelemetry.slope_deg}° slope)</span>

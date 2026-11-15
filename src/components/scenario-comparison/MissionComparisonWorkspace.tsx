@@ -35,7 +35,7 @@ export const MissionComparisonWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="comparison-page flex-1 flex flex-col h-full min-h-0 overflow-y-auto bg-[#070b12] p-2 md:p-3 gap-2.5 font-mono text-xs">
+    <div className="comparison-page flex-1 flex flex-col h-full min-h-0 overflow-y-auto bg-[#0e1013] p-2 md:p-3 gap-2.5 font-mono text-xs">
       {/* Top Scenario Management Bar */}
       <ScenarioManagementBar onOpenCreateModal={() => setCreateModalOpen(true)} />
 
@@ -43,8 +43,8 @@ export const MissionComparisonWorkspace: React.FC = () => {
       <MissionConstraintsPanel />
 
       {/* Sub-View Navigation Bar */}
-      <div className="flex items-center justify-between bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono shrink-0">
-        <div className="flex items-center gap-1.5 bg-[#070b12] p-1 rounded-lg border border-slate-800">
+      <div className="flex items-center justify-between bg-[#141619] border border-[#2b2d32] px-3 py-1.5 rounded-xl text-xs font-mono shrink-0">
+        <div className="flex items-center gap-1.5 bg-[#0e1013] p-1 rounded-lg border border-[#2b2d32]">
           <button
             aria-pressed={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')}
             className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${

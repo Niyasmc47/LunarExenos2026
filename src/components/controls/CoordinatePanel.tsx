@@ -20,7 +20,7 @@ export function CoordinatePanel() {
     <div className="selection-card" aria-live="polite" aria-atomic="true">
       <div className="flex items-center justify-between mb-1">
         <p className="eyebrow mb-0">SELECTED LOCATION</p>
-        <span className={`px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 ${covered ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
+        <span className={`px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 ${covered ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-[#303238]'}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${covered ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
           {covered ? 'LOLA Active' : 'Imagery Only'}
         </span>

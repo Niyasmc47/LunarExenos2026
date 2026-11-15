@@ -112,9 +112,9 @@ export const CreateReportModal: React.FC = () => {
 
   return (
     <DialogSurface label="Create a decision report" onClose={closeCreateModal} className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#0b101c] border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl font-mono text-xs">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl font-mono text-xs">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 border-b border-[#2b2d32] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
               <FileText className="w-5 h-5" />
@@ -150,7 +150,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
                 placeholder="e.g. Artemis Polar Landing Decision Synthesis"
                 required
               />
@@ -162,7 +162,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={missionName}
                 onChange={(e) => setMissionName(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
                 placeholder="e.g. Artemis Polar Scout-1"
                 required
               />
@@ -176,7 +176,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={authorOrg}
                 onChange={(e) => setAuthorOrg(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
                 placeholder="e.g. LUNAVISTA Mission Planning Directorate"
               />
             </div>
@@ -186,7 +186,7 @@ export const CreateReportModal: React.FC = () => {
               <select
                 value={selectedProfileId}
                 onChange={(e) => setSelectedProfileId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
                 required
               >
                 {profiles.map((p) => (
@@ -204,13 +204,13 @@ export const CreateReportModal: React.FC = () => {
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
               placeholder="Brief summary of mission goals..."
             />
           </div>
 
           {/* Source Analysis Integrations */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+          <div className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-3">
             <span className="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">
               Integrate Analysis Snapshots (Reuses Stored Results)
             </span>
@@ -221,7 +221,7 @@ export const CreateReportModal: React.FC = () => {
                 <select
                   value={selectedStudyId}
                   onChange={(e) => setSelectedStudyId(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-300 font-mono text-xs"
                 >
                   <option value="">None / Manual Candidate Set</option>
                   {studies.map((s) => (
@@ -237,7 +237,7 @@ export const CreateReportModal: React.FC = () => {
                 <select
                   value={selectedScreeningId}
                   onChange={(e) => setSelectedScreeningId(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-300 font-mono text-xs"
                 >
                   <option value="">None</option>
                   {screenings.map((s) => (
@@ -253,7 +253,7 @@ export const CreateReportModal: React.FC = () => {
                 <select
                   value={selectedWindowId}
                   onChange={(e) => setSelectedWindowId(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-300 font-mono text-xs"
                 >
                   <option value="">None</option>
                   {windows.map((w) => (
@@ -269,7 +269,7 @@ export const CreateReportModal: React.FC = () => {
                 <select
                   value={selectedTerrainId}
                   onChange={(e) => setSelectedTerrainId(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-300 font-mono text-xs"
                 >
                   <option value="">None</option>
                   {terrains.map((t) => (
@@ -288,13 +288,13 @@ export const CreateReportModal: React.FC = () => {
               rows={3}
               value={executiveNotes}
               onChange={(e) => setExecutiveNotes(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
               placeholder="Custom executive observations, programmatic context, or special mission considerations..."
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-[#2b2d32] flex items-center justify-end gap-3">
             <button
               type="button"
               aria-label="Close dialog" onClick={closeCreateModal}

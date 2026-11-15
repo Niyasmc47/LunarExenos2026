@@ -27,8 +27,8 @@ export const ConstraintEvaluationResults: React.FC = () => {
   return (
     <div className="space-y-3 font-mono text-xs">
       {/* 1. Transparent Ranking & Trade-Off Summary */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-2.5">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-2.5">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-amber-400" />
             <span className="font-bold text-slate-100">
@@ -51,8 +51,8 @@ export const ConstraintEvaluationResults: React.FC = () => {
                 onClick={() => setActiveScenarioId(rk.scenario_id)}
                 className={`p-2.5 rounded-lg border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-[#070b12] border-cyan-500 shadow-lg'
-                    : 'bg-[#070b12]/60 border-slate-800 hover:border-slate-700'
+                    ? 'bg-[#0e1013] border-cyan-500 shadow-lg'
+                    : 'bg-[#0e1013]/60 border-[#2b2d32] hover:border-[#303238]'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -60,7 +60,7 @@ export const ConstraintEvaluationResults: React.FC = () => {
                     className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       isTop
                         ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                        : 'bg-slate-800 text-slate-300 border border-slate-700'
+                        : 'bg-slate-800 text-slate-300 border border-[#303238]'
                     }`}
                   >
                     COMPLIANCE #{rk.rank}
@@ -74,7 +74,7 @@ export const ConstraintEvaluationResults: React.FC = () => {
                   {rk.scenario_name}
                 </div>
 
-                <div className="mt-2 text-[10px] text-slate-400 border-t border-slate-800/80 pt-1.5 space-y-0.5">
+                <div className="mt-2 text-[10px] text-slate-400 border-t border-[#202228] pt-1.5 space-y-0.5">
                   <div className="text-slate-500 font-bold uppercase text-[9px]">Dominant Mission Trade-Off:</div>
                   <div className="text-slate-300 text-[10px] leading-tight">
                     {rk.dominant_tradeoff}
@@ -88,8 +88,8 @@ export const ConstraintEvaluationResults: React.FC = () => {
 
       {/* 2. Detailed Constraint Evaluation Matrix */}
       {constraintList.length > 0 && (
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-2.5 overflow-x-auto">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-2.5 overflow-x-auto">
+          <div className="flex items-center gap-2 pb-2 border-b border-[#2b2d32]">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-100">
               USER MISSION CONSTRAINTS VERIFICATION MATRIX
@@ -98,7 +98,7 @@ export const ConstraintEvaluationResults: React.FC = () => {
 
           <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 text-[10px] uppercase">
+              <tr className="border-b border-[#2b2d32] text-slate-400 text-[10px] uppercase">
                 <th className="py-2 pr-3">Constraint Criterion</th>
                 <th className="py-2 px-3">Required Target</th>
                 {scenarios.map((scRes) => (
@@ -163,7 +163,7 @@ export const ConstraintEvaluationResults: React.FC = () => {
 
       {/* 3. Mandatory Scientific Caveats */}
       {caveats.length > 0 && (
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-1.5 text-[10px]">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-1.5 text-[10px]">
           <div className="flex items-center gap-1.5 text-amber-400 font-bold uppercase">
             <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
             <span>MANDATORY SCIENTIFIC CAVEATS & TRACEABILITY</span>

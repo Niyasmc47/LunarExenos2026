@@ -74,7 +74,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
   }, [activeSearch, filterClassification, sortBy, sortOrder]);
 
   return (
-    <div className="analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
+    <div className="analysis-page flex-1 flex flex-col h-full bg-[#0e1013] overflow-y-auto">
       {/* Top Search Controls */}
       <SearchControls />
 
@@ -83,7 +83,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
         <ResultIntro title="Review your mission windows" description="Filter the results, inspect a timeline, or select windows to compare." />
         {/* Active Search Selector & Summary Bar */}
         {searches.length > 0 && activeSearch && (
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#141619] border border-[#2b2d32] p-4 rounded-xl">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs font-mono font-bold text-slate-300">
                 Search Run:
@@ -91,7 +91,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
               <select
                 aria-label="Saved window searches" value={activeSearch.id}
                 onChange={(e) => selectSearch(e.target.value)}
-                className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500 max-w-xs truncate"
+                className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500 max-w-xs truncate"
               >
                 {searches.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -112,7 +112,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
             <div className="flex items-center gap-2 self-end md:self-auto">
               <button
                 onClick={openExportModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded-lg transition-colors border border-slate-700"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded-lg transition-colors border border-[#303238]"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Data</span>
@@ -123,7 +123,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                     deleteSearch(activeSearch.id);
                   }
                 }}
-                className="p-1.5 bg-slate-900 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-slate-800 rounded-lg transition-colors"
+                className="p-1.5 bg-slate-900 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-[#2b2d32] rounded-lg transition-colors"
                 title="Delete Search Run"
               >
                 <Trash2 className="w-4 h-4" />
@@ -136,7 +136,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
         {activeSearch && (
           <div className="space-y-4">
             {/* Filter and Sort Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-xl border border-slate-800">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-xl border border-[#2b2d32]">
               {/* Filter Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
                 <button
@@ -193,7 +193,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                 <select
                   aria-label="Sort mission windows" value={sortBy}
                   onChange={(e: any) => setSortBy(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono px-2 py-1 rounded focus:outline-none"
+                  className="bg-slate-900 border border-[#303238] text-slate-200 text-xs font-mono px-2 py-1 rounded focus:outline-none"
                 >
                   <option value="chronological">Start Epoch</option>
                   <option value="sunlight">Total Sunlight</option>
@@ -202,7 +202,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                 </select>
                 <button
                   onClick={toggleSortOrder}
-                  className="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:text-white"
+                  className="px-2 py-1 rounded bg-slate-800 border border-[#303238] text-slate-300 hover:text-white"
                   title="Toggle Ascending / Descending"
                 >
                   {sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}
@@ -257,7 +257,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
 
             {/* List of Window Cards */}
             {displayedWindows.length === 0 ? (
-              <div className="text-center py-12 bg-slate-900/20 border border-slate-800/80 rounded-xl space-y-2">
+              <div className="text-center py-12 bg-slate-900/20 border border-[#202228] rounded-xl space-y-2">
                 <Inbox className="w-8 h-8 text-slate-600 mx-auto" />
                 <p className="text-xs font-mono text-slate-400">
                   No mission windows found matching classification filter '{filterClassification}'.

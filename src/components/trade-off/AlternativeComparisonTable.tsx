@@ -28,10 +28,10 @@ export const AlternativeComparisonTable: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Table Container */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[#090d16]/80 shadow-xl">
+      <div className="overflow-x-auto rounded-xl border border-[#2b2d32] bg-[#141619] shadow-xl">
         <table className="w-full text-left border-collapse text-xs font-mono">
           <thead>
-            <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[11px]">
+            <tr className="bg-slate-900/90 text-slate-400 border-b border-[#2b2d32] text-[11px]">
               <th className="py-3 px-3 min-w-[200px]">Alternative & Location</th>
               <th className="py-3 px-3 min-w-[150px]">Mission Epochs</th>
               <th className="py-3 px-3 text-center min-w-[130px]">Hard Constraints</th>
@@ -45,7 +45,7 @@ export const AlternativeComparisonTable: React.FC = () => {
               <th className="py-3 px-3 text-center min-w-[100px]">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 bg-slate-950/40">
+          <tbody className="divide-y divide-slate-800/60 bg-[#08090b]">
             {alternatives.map((alt) => {
               const score = scores[alt.id];
               const pareto = pareto_results[alt.id];
@@ -149,7 +149,7 @@ export const AlternativeComparisonTable: React.FC = () => {
                           </span>
                         )}
                         {pareto.status === 'DOMINATED' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-400 text-[10px]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800/80 border border-[#303238] text-slate-400 text-[10px]">
                             <span>Dominated ({pareto.dominated_by.length})</span>
                           </span>
                         )}
