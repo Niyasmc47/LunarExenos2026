@@ -1326,5 +1326,337 @@
     "is_template": false,
     "created_at_iso": "2026-11-15T05:09:04.311733+00:00",
     "updated_at_iso": "2026-11-15T05:09:04.311733+00:00"
+  },
+  {
+    "id": "profile-5e38eafa",
+    "name": "Robotic Exploration Rover (Custom)",
+    "description": "Custom lunar mission profile defining operational constraints and scientific thresholds.",
+    "mission_type": "custom",
+    "duration_days": 30.0,
+    "start_timestamp_iso": "2026-10-04T12:00:00Z",
+    "end_timestamp_iso": "2026-11-03T12:00:00Z",
+    "observer_height_m": 1.5,
+    "time_display_preference": "UTC",
+    "requirements": {
+      "solar": {
+        "min_total_sunlight_hours": {
+          "id": "min_total_sunlight_hours",
+          "name": "Minimum Total Geometric Sunlight Duration",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 128.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Minimum cumulative sunlight hours required to maintain rover traverse battery charge.",
+          "scientific_disclaimer": "Geometric illumination does not model photovoltaic panel dust coating or cosine efficiency."
+        },
+        "min_full_sunlight_hours": {
+          "id": "min_full_sunlight_hours",
+          "name": "Minimum Full Sunlight Duration",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": false,
+          "value": 48.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+          "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+        },
+        "max_continuous_darkness_hours": {
+          "id": "max_continuous_darkness_hours",
+          "name": "Maximum Continuous Darkness Duration",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 48.0,
+          "unit": "hours",
+          "operator": "le",
+          "description": "Maximum survivable continuous darkness for rover secondary battery sleep mode.",
+          "scientific_disclaimer": "Evaluates uninterrupted zero-illumination intervals."
+        },
+        "min_sunlight_percentage": {
+          "id": "min_sunlight_percentage",
+          "name": "Minimum Sunlight Percentage",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": true,
+          "value": 45.0,
+          "unit": "%",
+          "operator": "ge",
+          "description": "Desirable illumination percentage over the 14-day traverse envelope.",
+          "scientific_disclaimer": "Expressed relative to total 336-hour duration."
+        },
+        "min_daily_sunlight_hours": {
+          "id": "min_daily_sunlight_hours",
+          "name": "Minimum Daily Sunlight Duration",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": false,
+          "value": 6.0,
+          "unit": "hours/day",
+          "operator": "ge",
+          "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+          "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+        }
+      },
+      "earth": {
+        "min_total_earth_visible_hours": {
+          "id": "min_total_earth_visible_hours",
+          "name": "Minimum Total Geometric Earth Visibility",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 200.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Direct-to-Earth line-of-sight required for telemetry and teleoperation uplinks.",
+          "scientific_disclaimer": "Does not model RF ground station elevation masks or Deep Space Network scheduling."
+        },
+        "max_continuous_earth_blackout_hours": {
+          "id": "max_continuous_earth_blackout_hours",
+          "name": "Maximum Continuous Earth LOS Blackout",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": true,
+          "value": 24.0,
+          "unit": "hours",
+          "operator": "le",
+          "description": "Desirable threshold for maximum autonomous rover drive between ground contacts.",
+          "scientific_disclaimer": "Continuous periods where terrain completely obstructs Earth disk."
+        },
+        "min_daily_earth_visible_hours": {
+          "id": "min_daily_earth_visible_hours",
+          "name": "Minimum Daily Earth Visibility",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": false,
+          "value": 4.0,
+          "unit": "hours/day",
+          "operator": "ge",
+          "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+          "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+        },
+        "min_full_disk_earth_visible_hours": {
+          "id": "min_full_disk_earth_visible_hours",
+          "name": "Minimum Full-Disk Earth Visibility",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 24.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+          "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+        }
+      },
+      "terrain": {
+        "max_local_slope_deg": {
+          "id": "max_local_slope_deg",
+          "name": "Maximum Allowable Landing Site Slope",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 15.0,
+          "unit": "deg",
+          "operator": "le",
+          "description": "Maximum wheel slip / tip-over grade limit for robotic rover traverse.",
+          "scientific_disclaimer": "Derived from LOLA 5 m DEM slopes. Does not model rock hazards smaller than DEM pixel."
+        },
+        "min_elevation_m": {
+          "id": "min_elevation_m",
+          "name": "Minimum Surface Elevation",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 0.0,
+          "unit": "m",
+          "operator": "ge",
+          "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+          "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+        },
+        "max_elevation_m": {
+          "id": "max_elevation_m",
+          "name": "Maximum Surface Elevation",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 2500.0,
+          "unit": "m",
+          "operator": "le",
+          "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+          "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+        },
+        "max_roughness_factor": {
+          "id": "max_roughness_factor",
+          "name": "Maximum Local Terrain Roughness Factor",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 5.0,
+          "unit": "deg_std",
+          "operator": "le",
+          "description": "Local standard deviation of slope within the landing area footprint.",
+          "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+        }
+      }
+    },
+    "version": 1,
+    "is_template": false,
+    "created_at_iso": "2026-11-15T05:50:42.113751+00:00",
+    "updated_at_iso": "2026-11-15T05:50:42.113751+00:00"
+  },
+  {
+    "id": "profile-983395db",
+    "name": "Test Profile  72hr",
+    "description": "Test mission ",
+    "mission_type": "robotic_lander",
+    "duration_days": 3.0,
+    "start_timestamp_iso": "2026-10-04T12:00:00Z",
+    "end_timestamp_iso": "2026-10-07T12:00:00Z",
+    "observer_height_m": 2.0,
+    "time_display_preference": "UTC",
+    "requirements": {
+      "solar": {
+        "min_total_sunlight_hours": {
+          "id": "min_total_sunlight_hours",
+          "name": "Minimum Total Geometric Sunlight Duration",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 40.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Minimum cumulative sunlight hours required to maintain rover traverse battery charge.",
+          "scientific_disclaimer": "Geometric illumination does not model photovoltaic panel dust coating or cosine efficiency."
+        },
+        "min_full_sunlight_hours": {
+          "id": "min_full_sunlight_hours",
+          "name": "Minimum Full Sunlight Duration",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": true,
+          "value": 10.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+          "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+        },
+        "max_continuous_darkness_hours": {
+          "id": "max_continuous_darkness_hours",
+          "name": "Maximum Continuous Darkness Duration",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 24.0,
+          "unit": "hours",
+          "operator": "le",
+          "description": "Maximum survivable continuous darkness for rover secondary battery sleep mode.",
+          "scientific_disclaimer": "Evaluates uninterrupted zero-illumination intervals."
+        },
+        "min_sunlight_percentage": {
+          "id": "min_sunlight_percentage",
+          "name": "Minimum Sunlight Percentage",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": true,
+          "value": 50.0,
+          "unit": "%",
+          "operator": "ge",
+          "description": "Desirable illumination percentage over the 14-day traverse envelope.",
+          "scientific_disclaimer": "Expressed relative to total 336-hour duration."
+        },
+        "min_daily_sunlight_hours": {
+          "id": "min_daily_sunlight_hours",
+          "name": "Minimum Daily Sunlight Duration",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": false,
+          "value": 6.0,
+          "unit": "hours/day",
+          "operator": "ge",
+          "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+          "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+        }
+      },
+      "earth": {
+        "min_total_earth_visible_hours": {
+          "id": "min_total_earth_visible_hours",
+          "name": "Minimum Total Geometric Earth Visibility",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 50.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Direct-to-Earth line-of-sight required for telemetry and teleoperation uplinks.",
+          "scientific_disclaimer": "Does not model RF ground station elevation masks or Deep Space Network scheduling."
+        },
+        "max_continuous_earth_blackout_hours": {
+          "id": "max_continuous_earth_blackout_hours",
+          "name": "Maximum Continuous Earth LOS Blackout",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": true,
+          "value": 15.0,
+          "unit": "hours",
+          "operator": "le",
+          "description": "Desirable threshold for maximum autonomous rover drive between ground contacts.",
+          "scientific_disclaimer": "Continuous periods where terrain completely obstructs Earth disk."
+        },
+        "min_daily_earth_visible_hours": {
+          "id": "min_daily_earth_visible_hours",
+          "name": "Minimum Daily Earth Visibility",
+          "classification": "SOFT_PREFERENCE",
+          "enabled": false,
+          "value": 4.0,
+          "unit": "hours/day",
+          "operator": "ge",
+          "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+          "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+        },
+        "min_full_disk_earth_visible_hours": {
+          "id": "min_full_disk_earth_visible_hours",
+          "name": "Minimum Full-Disk Earth Visibility",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 24.0,
+          "unit": "hours",
+          "operator": "ge",
+          "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+          "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+        }
+      },
+      "terrain": {
+        "max_local_slope_deg": {
+          "id": "max_local_slope_deg",
+          "name": "Maximum Allowable Landing Site Slope",
+          "classification": "HARD_CONSTRAINT",
+          "enabled": true,
+          "value": 10.0,
+          "unit": "deg",
+          "operator": "le",
+          "description": "Maximum wheel slip / tip-over grade limit for robotic rover traverse.",
+          "scientific_disclaimer": "Derived from LOLA 5 m DEM slopes. Does not model rock hazards smaller than DEM pixel."
+        },
+        "min_elevation_m": {
+          "id": "min_elevation_m",
+          "name": "Minimum Surface Elevation",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 0.0,
+          "unit": "m",
+          "operator": "ge",
+          "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+          "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+        },
+        "max_elevation_m": {
+          "id": "max_elevation_m",
+          "name": "Maximum Surface Elevation",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 2500.0,
+          "unit": "m",
+          "operator": "le",
+          "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+          "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+        },
+        "max_roughness_factor": {
+          "id": "max_roughness_factor",
+          "name": "Maximum Local Terrain Roughness Factor",
+          "classification": "INFORMATIONAL_METRIC",
+          "enabled": false,
+          "value": 5.0,
+          "unit": "deg_std",
+          "operator": "le",
+          "description": "Local standard deviation of slope within the landing area footprint.",
+          "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+        }
+      }
+    },
+    "version": 1,
+    "is_template": false,
+    "created_at_iso": "2026-11-15T06:18:39.032526+00:00",
+    "updated_at_iso": "2026-11-15T06:18:39.032526+00:00"
   }
 ]
