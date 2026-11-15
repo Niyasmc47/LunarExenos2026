@@ -51,8 +51,8 @@ DATASET_REGISTRY: Dict[str, DatasetRecord] = {
         file_size_mb=40.98,
         access_method="local",
         is_local_available=True,
-        local_surf_path=os.path.join(DATA_DIR, "site01/Site01_final_adj_5mpp_surf.tif"),
-        local_slp_path=os.path.join(DATA_DIR, "site01/Site01_final_adj_5mpp_slp.tif"),
+        local_surf_path=os.path.join(DATA_DIR, "sites/site01/Site01_final_adj_5mpp_surf.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site01/Site01_final_adj_5mpp_surf.tif")) else os.path.join(DATA_DIR, "site01/Site01_final_adj_5mpp_surf.tif"),
+        local_slp_path=os.path.join(DATA_DIR, "sites/site01/Site01_final_adj_5mpp_slp.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site01/Site01_final_adj_5mpp_slp.tif")) else os.path.join(DATA_DIR, "site01/Site01_final_adj_5mpp_slp.tif"),
         remote_surf_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/Site01_final_adj_5mpp_surf.tif",
         remote_slp_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/Site01_final_adj_5mpp_slp.tif",
         companion_layers=["surface", "slope", "count", "toterr", "slperr"],
@@ -73,18 +73,23 @@ DATASET_REGISTRY: Dict[str, DatasetRecord] = {
         projection_crs="+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs",
         nominal_pixel_spacing_m=5.0,
         effective_resolution_note="LOLA laser ground track spacing ~10-20 m; interpolated raster grid.",
-        bounds_projected={"left": -10000.0, "bottom": -10000.0, "right": 10000.0, "top": 10000.0},
-        bounds_geographic={"min_lat": -89.99, "max_lat": -89.34, "min_lon": -180.0, "max_lon": 180.0},
+        bounds_projected={"left": -9000.0, "bottom": -15000.0, "right": 7000.0, "top": 1000.0},
+        bounds_geographic={"min_lat": -89.99, "max_lat": -89.4231, "min_lon": -180.0, "max_lon": 180.0},
         elevation_datum="Sphere R = 1,737,400 m",
         elevation_units="meters",
         nodata_value=-32767.0,
-        file_size_mb=39.1,
-        access_method="cog_range",
-        is_local_available=False,
+        file_size_mb=39.08,
+        access_method="local",
+        is_local_available=True,
+        local_surf_path=os.path.join(DATA_DIR, "sites/site04/Site04_final_adj_5mpp_surf.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site04/Site04_final_adj_5mpp_surf.tif")) else os.path.join(DATA_DIR, "site04/Site04_final_adj_5mpp_surf.tif"),
+        local_slp_path=os.path.join(DATA_DIR, "sites/site04/Site04_final_adj_5mpp_slp.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site04/Site04_final_adj_5mpp_slp.tif")) else os.path.join(DATA_DIR, "site04/Site04_final_adj_5mpp_slp.tif"),
         remote_surf_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site04/Site04_final_adj_5mpp_surf.tif",
         remote_slp_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site04/Site04_final_adj_5mpp_slp.tif",
-        companion_layers=["surface", "slope"],
-        quality_notes=["NASA PGDA Product 78 site product accessible via HTTP range requests."],
+        companion_layers=["surface", "slope", "count", "toterr", "slperr"],
+        quality_notes=[
+            "Verified NASA PGDA Product 78 product.",
+            "Includes co-registered NASA 5 m/pixel slope and ROI polygons.",
+        ],
     ),
     "site11": DatasetRecord(
         dataset_id="site11",
@@ -98,18 +103,23 @@ DATASET_REGISTRY: Dict[str, DatasetRecord] = {
         projection_crs="+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs",
         nominal_pixel_spacing_m=5.0,
         effective_resolution_note="5 m pixel spacing; ~90% interpolated between ground tracks.",
-        bounds_projected={"left": -45000.0, "bottom": -5000.0, "right": -25000.0, "top": 15000.0},
-        bounds_geographic={"min_lat": -88.95, "max_lat": -88.10, "min_lon": -105.0, "max_lon": -75.0},
+        bounds_projected={"left": -45000.0, "bottom": 7000.0, "right": -29000.0, "top": 23000.0},
+        bounds_geographic={"min_lat": -88.7794, "max_lat": -88.4982, "min_lon": -81.1582, "max_lon": -51.5819},
         elevation_datum="Sphere R = 1,737,400 m",
         elevation_units="meters",
         nodata_value=-32767.0,
-        file_size_mb=39.1,
-        access_method="cog_range",
-        is_local_available=False,
+        file_size_mb=39.08,
+        access_method="local",
+        is_local_available=True,
+        local_surf_path=os.path.join(DATA_DIR, "sites/site11/Site11_final_adj_5mpp_surf.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site11/Site11_final_adj_5mpp_surf.tif")) else os.path.join(DATA_DIR, "site11/Site11_final_adj_5mpp_surf.tif"),
+        local_slp_path=os.path.join(DATA_DIR, "sites/site11/Site11_final_adj_5mpp_slp.tif") if os.path.exists(os.path.join(DATA_DIR, "sites/site11/Site11_final_adj_5mpp_slp.tif")) else os.path.join(DATA_DIR, "site11/Site11_final_adj_5mpp_slp.tif"),
         remote_surf_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site11/Site11_final_adj_5mpp_surf.tif",
         remote_slp_url="https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site11/Site11_final_adj_5mpp_slp.tif",
-        companion_layers=["surface", "slope"],
-        quality_notes=["NASA PGDA Product 78 site product accessible via HTTP range requests."],
+        companion_layers=["surface", "slope", "count", "toterr", "slperr"],
+        quality_notes=[
+            "Verified NASA PGDA Product 78 product.",
+            "Includes co-registered NASA 5 m/pixel slope and ROI polygons.",
+        ],
     ),
     "site23": DatasetRecord(
         dataset_id="site23",
@@ -220,6 +230,20 @@ class DatasetCatalogueService:
 
     def get_by_id(self, dataset_id: str) -> Optional[DatasetRecord]:
         self._check_local_availability()
-        return self._catalogue.get(dataset_id)
+        return self._catalogue.get(dataset_id.lower().strip() if dataset_id else "")
+
+    def find_site_for_coordinates(self, lat: float, lon: float) -> Optional[DatasetRecord]:
+        """Resolves the most specific local lunar regional dataset covering given lat/lon."""
+        self._check_local_availability()
+        from app.services.coordinate_transform import transformer
+        x, y = transformer.lat_lon_to_xy(lat, lon)
+        # Check high-res regional sites first (site01, site04, site11)
+        for sid in ["site01", "site04", "site11", "site23"]:
+            ds = self._catalogue.get(sid)
+            if ds and ds.is_local_available and ds.bounds_projected:
+                b = ds.bounds_projected
+                if b["left"] <= x <= b["right"] and b["bottom"] <= y <= b["top"]:
+                    return ds
+        return None
 
 catalogue_service = DatasetCatalogueService()

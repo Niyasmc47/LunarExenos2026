@@ -36,6 +36,7 @@ interface ScenarioState {
   // Actions
   loadScenarios: () => Promise<void>;
   toggleScenarioSelection: (id: string) => void;
+  clearSelection: () => void;
   setActiveScenarioId: (id: string | null) => void;
   setConstraints: (constraints: Partial<MissionConstraints>) => void;
   setEnforceHarmonizedTime: (enforce: boolean) => void;
@@ -52,8 +53,8 @@ interface ScenarioState {
 
 export const useScenarioStore = create<ScenarioState>((set, get) => ({
   scenarios: [],
-  selectedScenarioIds: ['scenario-cr-crest', 'scenario-cr-alpha'],
-  activeScenarioId: 'scenario-cr-crest',
+  selectedScenarioIds: [],
+  activeScenarioId: null,
 
   comparisonResult: null,
   constraints: {
@@ -77,14 +78,6 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
     try {
       const list = await fetchScenarios();
       set({ scenarios: list, isLoadingScenarios: false });
-      // If none selected, default select up to 2
-      const current = get().selectedScenarioIds;
-      if (current.length === 0 && list.length >= 2) {
-        set({
-          selectedScenarioIds: [list[0].id, list[1].id],
-          activeScenarioId: list[0].id,
-        });
-      }
     } catch (err: any) {
       set({
         isLoadingScenarios: false,
@@ -96,20 +89,19 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
   toggleScenarioSelection: (id: string) => {
     const { selectedScenarioIds } = get();
     if (selectedScenarioIds.includes(id)) {
-      if (selectedScenarioIds.length <= 2) {
-        // Minimum 2 required
-        return;
-      }
       set({
         selectedScenarioIds: selectedScenarioIds.filter((sid) => sid !== id),
       });
     } else {
       if (selectedScenarioIds.length >= 4) {
-        // Maximum 4 allowed
         return;
       }
       set({ selectedScenarioIds: [...selectedScenarioIds, id] });
     }
+  },
+
+  clearSelection: () => {
+    set({ selectedScenarioIds: [], comparisonResult: null });
   },
 
   setActiveScenarioId: (id) => set({ activeScenarioId: id }),
@@ -131,8 +123,12 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
       constraints,
     } = get();
 
-    if (selectedScenarioIds.length < 2 || selectedScenarioIds.length > 4) {
-      set({ error: 'Please select between 2 and 4 scenarios for comparison.' });
+    if (selectedScenarioIds.length < 2) {
+      set({ error: 'Select at least 2 candidates to compare.' });
+      return;
+    }
+    if (selectedScenarioIds.length > 4) {
+      set({ error: 'Maximum 4 candidates can be compared at once.' });
       return;
     }
 
@@ -166,11 +162,6 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
       const created = await createScenario(req);
       if (created) {
         await get().loadScenarios();
-        // If room, select it
-        const cur = get().selectedScenarioIds;
-        if (cur.length < 4) {
-          set({ selectedScenarioIds: [...cur, created.id] });
-        }
         return true;
       }
       return false;
@@ -185,7 +176,6 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
       const updated = await updateScenario(id, req);
       if (updated) {
         await get().loadScenarios();
-        await get().runComparison();
         return true;
       }
       return false;
@@ -215,10 +205,10 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
       if (ok) {
         const cur = get().selectedScenarioIds.filter((sid) => sid !== id);
         set({ selectedScenarioIds: cur });
-        await get().loadScenarios();
-        if (cur.length >= 2) {
-          await get().runComparison();
+        if (get().activeScenarioId === id) {
+          set({ activeScenarioId: cur.length > 0 ? cur[0] : null });
         }
+        await get().loadScenarios();
         return true;
       }
       return false;

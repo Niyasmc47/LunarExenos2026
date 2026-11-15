@@ -1,13 +1,61 @@
 import { DialogSurface } from '../ui/DialogSurface';
 import React, { useState } from 'react';
-import { X, Plus, AlertCircle } from 'lucide-react';
+import { X, Plus, AlertCircle, MapPin, CheckCircle2 } from 'lucide-react';
 import { useScenarioStore } from '../../stores/scenarioStore';
-import { PREDEFINED_SITES } from '../../stores/dynamicAnalysisStore';
+import { PlainLanguageExplainer } from '../ui/PlainLanguageExplainer';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
+
+interface SitePreset {
+  id: string;
+  name: string;
+  detail: string;
+  latRange: { min: number; max: number };
+  lonRange: { min: number; max: number };
+  rois: { name: string; lat: number; lon: number; note: string }[];
+}
+
+const SITE_PRESETS: SitePreset[] = [
+  {
+    id: 'site01',
+    name: 'Site 01 — Connecting Ridge',
+    detail: 'Connecting Ridge between Shackleton and de Gerlache (5 m/px LOLA DEM)',
+    latRange: { min: -89.8351, max: -89.0903 },
+    lonRange: { min: -171.4692, max: -101.8887 },
+    rois: [
+      { name: 'NASA ROI #1 (Peak)', lat: -89.4387, lon: -137.0865, note: 'Elev ~1140m, slope 3.1°' },
+      { name: 'NASA ROI #2 (Saddle)', lat: -89.4388, lon: -137.5471, note: 'Elev ~1150m, slope 2.8°' },
+      { name: 'NASA ROI #4 (Plateau)', lat: -89.4527, lon: -137.1487, note: 'Elev ~1200m, slope 4.5°' },
+    ],
+  },
+  {
+    id: 'site04',
+    name: 'Site 04 — Shackleton Rim',
+    detail: 'South Pole / Shackleton Crater Rim Crest (5 m/px LOLA DEM)',
+    latRange: { min: -89.7668, max: -89.4231 },
+    lonRange: { min: -180.0, max: 180.0 },
+    rois: [
+      { name: 'NASA ROI #1 (Rim Crest)', lat: -89.7614, lon: -157.1156, note: 'Elev 1728m, slope 2.3°' },
+      { name: 'NASA ROI #2 (South Ridge)', lat: -89.7717, lon: -156.5151, note: 'Elev 1733m, slope 4.7°' },
+      { name: 'NASA ROI #3 (High Knoll)', lat: -89.7801, lon: -156.3202, note: 'Elev 1750m, slope 3.1°' },
+    ],
+  },
+  {
+    id: 'site11',
+    name: 'Site 11 — de Gerlache Rim',
+    detail: 'de Gerlache Crater Rim with high Earth line-of-sight (5 m/px LOLA DEM)',
+    latRange: { min: -89.0162, max: -88.3335 },
+    lonRange: { min: -81.1582, max: -51.5819 },
+    rois: [
+      { name: 'NASA ROI #1 (High Point)', lat: -88.6682, lon: -68.3820, note: 'Elev 1814m, slope 1.7°' },
+      { name: 'NASA ROI #3 (Shoulder)', lat: -88.7031, lon: -68.4055, note: 'Elev 1781m, slope 2.4°' },
+      { name: 'Center Crest', lat: -88.6834, lon: -67.9321, note: 'Elev 1650m, slope 3.2°' },
+    ],
+  },
+];
 
 export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const addScenario = useScenarioStore((state) => state.addScenario);
@@ -23,6 +71,8 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [stepHours, setStepHours] = useState(2.0);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const currentPreset = SITE_PRESETS.find((s) => s.id === siteId) || SITE_PRESETS[0];
 
   if (!isOpen) return null;
 
@@ -58,24 +108,42 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   const handleSiteSelect = (id: string) => {
     setSiteId(id);
-    const site = PREDEFINED_SITES.find((s) => s.id === id);
-    if (site) {
-      setLatitude(site.center.lat);
-      setLongitude(site.center.lon);
+    const preset = SITE_PRESETS.find((s) => s.id === id);
+    if (preset && preset.rois.length > 0) {
+      setLatitude(preset.rois[0].lat);
+      setLongitude(preset.rois[0].lon);
+      if (!name || name.includes('—')) {
+        setName(`${preset.name.split('—')[1]?.trim()} — Candidate`);
+      }
+    }
+  };
+
+  const handleApplyRoi = (roi: { name: string; lat: number; lon: number }) => {
+    setLatitude(roi.lat);
+    setLongitude(roi.lon);
+    if (!name || name.includes('—')) {
+      setName(`${currentPreset.name.split('—')[1]?.trim()} — ${roi.name}`);
     }
   };
 
   return (
-    <DialogSurface label="Create a scenario" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs">
+    <DialogSurface
+      label="Create a scenario"
+      onClose={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs"
+    >
       <div className="bg-[#0c121e] border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <Plus className="w-4 h-4 text-emerald-400" />
-            <span className="font-bold text-slate-100 text-sm">CREATE CANDIDATE MISSION SCENARIO</span>
+            <span className="font-bold text-slate-100 text-sm">
+              CREATE CANDIDATE MISSION SCENARIO
+            </span>
           </div>
           <button
-            aria-label="Close dialog" onClick={onClose}
+            aria-label="Close dialog"
+            onClick={onClose}
             className="text-slate-400 hover:text-slate-100 p-1 rounded-lg hover:bg-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -99,73 +167,119 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Connecting Ridge — Outpost Echo"
+              placeholder="e.g. Shackleton Rim — Artemis Outpost"
               className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-slate-400 text-[10px] uppercase font-bold">Description / Mission Context</label>
+            <label className="text-slate-400 text-[10px] uppercase font-bold">
+              Description / Mission Context
+            </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Primary rover habitat zone with high solar illumination"
+              placeholder="e.g. Primary habitat site on high ridge crest with persistent sunlight"
               className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* Candidate DEM Site */}
           <div className="space-y-1">
-            <label className="text-slate-400 text-[10px] uppercase font-bold">Verified NASA LOLA DEM Dataset</label>
+            <div className="flex items-center justify-between">
+              <label className="text-slate-400 text-[10px] uppercase font-bold">
+                Authentic NASA LOLA DEM Dataset (Product 78)
+              </label>
+              <PlainLanguageExplainer topic="coverage" compact />
+            </div>
             <select
               value={siteId}
               onChange={(e) => handleSiteSelect(e.target.value)}
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-2 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
-              <option value="site01">Site 01 — Connecting Ridge (5 m/pixel LOLA DEM - Locally Available)</option>
+              {SITE_PRESETS.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} — {p.detail}
+                </option>
+              ))}
             </select>
-            <div className="text-[10px] text-slate-500">
-              * Candidate locations must reside within the actual coverage extent of real NASA LOLA DEMs.
+            <div className="text-[10px] text-slate-400 mt-1">
+              {currentPreset.detail}
+            </div>
+          </div>
+
+          {/* Quick NASA ROI presets */}
+          <div className="bg-[#070b14] border border-slate-800 p-2.5 rounded-lg space-y-1.5">
+            <div className="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-between">
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-400" />
+                NASA ROI Shapefile Landmarks (Quick Fill):
+              </span>
+              <span className="text-emerald-400 text-[9px]">Authentic Centroids</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {currentPreset.rois.map((roi) => (
+                <button
+                  type="button"
+                  key={roi.name}
+                  onClick={() => handleApplyRoi(roi)}
+                  className="px-2.5 py-1 bg-slate-900 hover:bg-emerald-500/20 hover:border-emerald-500/50 border border-slate-700 rounded text-[11px] text-slate-200 hover:text-emerald-300 transition-colors flex items-center gap-1"
+                >
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                  <span>{roi.name}</span>
+                  <span className="text-[9px] text-slate-500">({roi.note})</span>
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Lat / Lon */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-slate-400 text-[10px] uppercase font-bold">Observer Latitude (°)</label>
+              <label className="text-slate-400 text-[10px] uppercase font-bold">
+                Observer Latitude (°)
+              </label>
               <input
                 type="number"
                 step="0.0001"
-                min="-89.8351"
-                max="-89.0903"
+                min={currentPreset.latRange.min}
+                max={currentPreset.latRange.max}
                 required
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value))}
                 className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
-              <span className="text-[9px] text-slate-500">Bounds: -89.8351° to -89.0903°</span>
+              <span className="text-[9px] text-slate-500">
+                Coverage: {currentPreset.latRange.min}° to {currentPreset.latRange.max}°
+              </span>
             </div>
 
             <div className="space-y-1">
-              <label className="text-slate-400 text-[10px] uppercase font-bold">Observer Longitude (°)</label>
+              <label className="text-slate-400 text-[10px] uppercase font-bold">
+                Observer Longitude (°)
+              </label>
               <input
                 type="number"
                 step="0.0001"
-                min="-171.4692"
-                max="-101.8887"
+                min={currentPreset.lonRange.min}
+                max={currentPreset.lonRange.max}
                 required
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
                 className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
-              <span className="text-[9px] text-slate-500">Bounds: -171.4692° to -101.8887°</span>
+              <span className="text-[9px] text-slate-500">
+                Coverage: {currentPreset.lonRange.min}° to {currentPreset.lonRange.max}°
+              </span>
             </div>
           </div>
 
           {/* Eye Height */}
           <div className="space-y-1">
-            <label className="text-slate-400 text-[10px] uppercase font-bold">Observer Eye / Antenna Height (m)</label>
+            <label className="text-slate-400 text-[10px] uppercase font-bold">
+              Observer Eye / Antenna Height (m)
+            </label>
             <div className="flex items-center gap-2">
               {[0, 1.0, 2.0, 10.0].map((h) => (
                 <button
@@ -227,7 +341,8 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
             <button
               type="button"
-              aria-label="Close dialog" onClick={onClose}
+              aria-label="Close dialog"
+              onClick={onClose}
               className="px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 font-bold"
             >
               CANCEL

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
 import { formatCoordinates, LUNAR_PRESETS, validateCoordinates } from '../../utils/lunarCoordinates';
-import { insideSite01 } from '../../utils/explorerCoverage';
+import { findCoveringSite } from '../../utils/explorerCoverage';
 
 export function CoordinatePanel() {
   const { selectedLatitude: latitude, selectedLongitude: longitude, setSelectedCoordinates, resetToDefault, setAppScreen } = useLocationStore();
@@ -14,7 +14,7 @@ export function CoordinatePanel() {
   useEffect(() => { setLat(String(latitude)); setLon(String(longitude)); setError(''); setNotice(''); }, [latitude, longitude]);
   const selected = LUNAR_PRESETS.find(p => Math.abs(p.latitude - latitude) < 1e-6 && Math.abs(p.longitude - longitude) < 1e-6);
   const places = LUNAR_PRESETS.filter(p => (kind === 'All places' || p.kind === kind) && (p.name + ' ' + p.description + ' ' + p.category).toLowerCase().includes(query.trim().toLowerCase()));
-  const covered = insideSite01(latitude, longitude);
+  const coveredSite = findCoveringSite(latitude, longitude);
   return <section className="explorer-panel" aria-labelledby="location-heading">
     <div><p className="eyebrow">YOUR STARTING POINT</p><h2 id="location-heading">Choose a location</h2><p className="help-text">Pick a place, enter coordinates, or click the map or globe. Both views share one selection.</p></div>
     <div className="selection-card" aria-live="polite" aria-atomic="true">
@@ -51,10 +51,10 @@ export function CoordinatePanel() {
     </form>
     </details>
     <div className="coverage-card" data-testid="coverage">
-      <h3>{covered ? 'Inside Site01 terrain footprint' : 'Imagery exploration only here'}</h3>
-      <p className="help-text">{covered ? 'The local LOLA dataset covers this footprint. Pixel validity, backend availability and complete skyline coverage must be checked in Terrain Explorer.' : 'Global imagery is available; this location is outside the local Site01 terrain footprint. No elevation or terrain visibility is inferred.'}</p>
+      <h3>{coveredSite ? `Inside ${coveredSite.shortName} terrain footprint` : 'Imagery exploration only here'}</h3>
+      <p className="help-text">{coveredSite ? `The authentic NASA LOLA dataset for ${coveredSite.name} covers this footprint. Detailed 5 m elevation and complete skyline coverage can be inspected in Terrain & Visibility.` : 'Global imagery is available; this location is outside available local terrain footprints (Site 01, Site 04, Site 11). No elevation or terrain visibility is inferred.'}</p>
       <p className="help-text">Map/globe imagery is not elevation. The globe is a reference sphere; its lighting is illustrative.</p>
-      {covered && <button type="button" className="secondary-button" onClick={() => setAppScreen('terrain-explorer')}>Inspect terrain data</button>}
+      {coveredSite && <button type="button" className="secondary-button" onClick={() => setAppScreen('terrain-explorer')}>Inspect terrain data</button>}
     </div>
 
     <details className="learning-card"><summary>New to lunar exploration?</summary><ol><li>Start with a named site or enter latitude and longitude.</li><li>Use 2D Map for geography, 3D Globe for orientation, or Both views to compare them.</li><li>Try Connecting Ridge to locate the available terrain footprint.</li></ol>

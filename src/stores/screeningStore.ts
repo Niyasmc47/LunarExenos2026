@@ -50,7 +50,7 @@ export const useScreeningStore = create<ScreeningState>((set, get) => ({
   selectedCandidateId: null,
 
   selectedProfileId: 'template-robotic-rover',
-  selectedScenarioIds: ['scenario-cr-crest', 'scenario-cr-alpha', 'scenario-cr-south'],
+  selectedScenarioIds: [],
   overrideStartIso: '2026-10-04T12:00:00Z',
   overrideEndIso: '2026-10-07T12:00:00Z',
   overrideDurationDays: 3.0,

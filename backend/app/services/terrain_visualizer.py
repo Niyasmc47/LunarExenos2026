@@ -1,30 +1,34 @@
 import io
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 import numpy as np
 from PIL import Image
-from app.services.dem_loader import dem_loader
+from app.services.dem_loader import dem_loader, get_dem_loader
 
 class TerrainVisualizerService:
     def __init__(self):
-        self._elevation_png_cache: Optional[bytes] = None
-        self._slope_png_cache: Optional[bytes] = None
+        self._elevation_cache: Dict[str, bytes] = {}
+        self._slope_cache: Dict[str, bytes] = {}
 
-    def get_elevation_overlay_png(self, width: int = 512, height: int = 512) -> bytes:
-        if self._elevation_png_cache is not None:
-            return self._elevation_png_cache
+    def get_elevation_overlay_png(self, width: int = 512, height: int = 512, site_id: str = "site01") -> bytes:
+        cache_key = f"{site_id}_{width}_{height}"
+        if cache_key in self._elevation_cache:
+            return self._elevation_cache[cache_key]
 
-        dem_loader._ensure_open()
-        if dem_loader._surf_src is None:
-            raise FileNotFoundError("Site01 surface DEM is not loaded.")
+        loader = get_dem_loader(site_id)
+        loader._ensure_open()
+        if loader._surf_src is None:
+            raise FileNotFoundError(f"{site_id.capitalize()} surface DEM is not loaded.")
 
-        src = dem_loader._surf_src
+        src = loader._surf_src
         data = src.read(1, out_shape=(height, width))
         nodata = src.nodata
 
         valid_mask = np.ones_like(data, dtype=bool)
         if nodata is not None:
             valid_mask = (data != nodata) & (~np.isnan(data))
+        else:
+            valid_mask = ~np.isnan(data)
 
         valid_vals = data[valid_mask]
         if valid_vals.size == 0:
@@ -57,22 +61,26 @@ class TerrainVisualizerService:
         buf = io.BytesIO()
         img.save(buf, format="PNG", optimize=True)
         png_bytes = buf.getvalue()
-        self._elevation_png_cache = png_bytes
+        self._elevation_cache[cache_key] = png_bytes
         return png_bytes
 
-    def get_slope_overlay_png(self, width: int = 512, height: int = 512) -> bytes:
-        if self._slope_png_cache is not None:
-            return self._slope_png_cache
+    def get_slope_overlay_png(self, width: int = 512, height: int = 512, site_id: str = "site01") -> bytes:
+        cache_key = f"{site_id}_{width}_{height}"
+        if cache_key in self._slope_cache:
+            return self._slope_cache[cache_key]
 
-        dem_loader._ensure_open()
-        if dem_loader._slp_src is None:
+        loader = get_dem_loader(site_id)
+        loader._ensure_open()
+        if loader._slp_src is None:
+            if loader._surf_src is None:
+                raise FileNotFoundError(f"{site_id.capitalize()} DEM is not loaded.")
             # If slope file not downloaded, derive slope gradient from elevation
-            elev_data = dem_loader._surf_src.read(1, out_shape=(height, width))
+            elev_data = loader._surf_src.read(1, out_shape=(height, width))
             dy, dx = np.gradient(elev_data, 5.0)
             slope_rad = np.arctan(np.sqrt(dx**2 + dy**2))
             slope_deg = np.degrees(slope_rad)
         else:
-            slope_deg = dem_loader._slp_src.read(1, out_shape=(height, width))
+            slope_deg = loader._slp_src.read(1, out_shape=(height, width))
 
         # Landing hazard colormap:
         # 0° - 5°: Safe (Green)

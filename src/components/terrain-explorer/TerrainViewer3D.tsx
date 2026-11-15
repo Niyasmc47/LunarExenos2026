@@ -9,6 +9,7 @@ import { inspectTerrainPoint } from '../../services/dynamicAnalysisApi';
 import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { TerrainMeshData } from '../../types/terrain';
 import { RotateCcw, Mountain, Eye, Box, Compass, Navigation } from 'lucide-react';
+import { PlainLanguageExplainer } from '../ui/PlainLanguageExplainer';
 
 interface CardinalArrowMeshProps {
   origin: THREE.Vector3;
@@ -358,28 +359,30 @@ export const TerrainViewer3D: React.FC = () => {
   const setSelectedCoordinates = useLocationStore((state) => state.setSelectedCoordinates);
   const setCurrentElevationData = useLocationStore((state) => state.setCurrentElevationData);
   const setCurrentPointTelemetry = useDynamicAnalysisStore((state) => state.setCurrentPointTelemetry);
+  const activeDatasetId = useDynamicAnalysisStore((state) => state.activeDatasetId) || 'site01';
 
   const [meshData, setMeshData] = useState<TerrainMeshData | null>(null);
   const [loading, setLoading] = useState(false);
   const [cameraMode, setCameraMode] = useState<'orbit' | 'top' | 'north'>('orbit');
-  const [showCompass, setShowCompass] = useState(true);
+  const [showCompass, setShowCompass] = useState(false);
   const [clickPin, setClickPin] = useState<THREE.Vector3 | null>(null);
 
   useEffect(() => {
+    setClickPin(null);
     setLoading(true);
-    fetchTerrainMesh('site01', terrainLod, terrainExaggeration)
+    fetchTerrainMesh(activeDatasetId, terrainLod, terrainExaggeration)
       .then((data) => {
         if (data) setMeshData(data);
       })
       .finally(() => setLoading(false));
-  }, [terrainLod, terrainExaggeration]);
+  }, [activeDatasetId, terrainLod, terrainExaggeration]);
 
   const handlePointSelect = (lat: number, lon: number) => {
     setSelectedCoordinates(lat, lon, 'terrain');
-    fetchElevationPoint(lat, lon).then((data) => {
+    fetchElevationPoint(lat, lon, activeDatasetId).then((data) => {
       if (data) setCurrentElevationData(data);
     });
-    inspectTerrainPoint(lat, lon, 'site01').then((pt) => {
+    inspectTerrainPoint(lat, lon, activeDatasetId).then((pt) => {
       if (pt) setCurrentPointTelemetry(pt);
     });
   };
@@ -428,7 +431,7 @@ export const TerrainViewer3D: React.FC = () => {
         <div className="flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 shadow-lg pointer-events-auto">
           <Mountain className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-semibold tracking-wider text-slate-200 uppercase font-mono">
-            3D LUNAR TERRAIN — SITE 01
+            3D LUNAR TERRAIN — {activeDatasetId === 'site04' ? 'SITE 04 (SHACKLETON RIM)' : activeDatasetId === 'site11' ? 'SITE 11 (DE GERLACHE RIM)' : 'SITE 01 (CONNECTING RIDGE)'}
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
             NASA LOLA DEM
@@ -619,7 +622,7 @@ export const TerrainViewer3D: React.FC = () => {
         </div>
 
         {meshData && (
-          <div className="bg-[#070b12]/90 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-800 text-[10px] font-mono flex items-center gap-2 shadow-md">
+          <div className="bg-[#070b12]/90 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-800 text-[10px] font-mono flex items-center gap-2 shadow-md pointer-events-auto">
             <span className="text-blue-400 font-bold">{meshData.min_elevation.toFixed(0)} m</span>
             <div
               className="w-24 h-2 rounded"
@@ -628,6 +631,7 @@ export const TerrainViewer3D: React.FC = () => {
               }}
             />
             <span className="text-amber-200 font-bold">+{meshData.max_elevation.toFixed(0)} m</span>
+            <PlainLanguageExplainer topic="elevation" compact />
           </div>
         )}
       </div>

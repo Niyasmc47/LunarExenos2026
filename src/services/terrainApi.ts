@@ -15,9 +15,10 @@ export async function fetchTerrainMetadata(datasetId: string = 'site01'): Promis
   }
 }
 
-export async function fetchElevationPoint(lat: number, lon: number): Promise<ElevationPoint | null> {
+export async function fetchElevationPoint(lat: number, lon: number, siteId?: string): Promise<ElevationPoint | null> {
   try {
-    const res = await fetch(`${BACKEND_BASE}/api/terrain/elevation?latitude=${lat}&longitude=${lon}`);
+    const q = siteId ? `&site_id=${siteId}` : '';
+    const res = await fetch(`${BACKEND_BASE}/api/terrain/elevation?latitude=${lat}&longitude=${lon}${q}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (err) {
@@ -43,8 +44,8 @@ export async function fetchTerrainMesh(
   }
 }
 
-export function getOverlayImageUrl(type: 'elevation' | 'slope' = 'elevation'): string {
-  return `${BACKEND_BASE}/api/terrain/site01/overlay/${type}.png`;
+export function getOverlayImageUrl(type: 'elevation' | 'slope' = 'elevation', datasetId: string = 'site01'): string {
+  return `${BACKEND_BASE}/api/terrain/${datasetId}/overlay/${type}.png`;
 }
 
 export async function fetchElevationProfile(

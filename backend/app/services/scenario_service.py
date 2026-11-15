@@ -98,6 +98,74 @@ INITIAL_SCENARIOS: List[ScenarioRecord] = [
         created_at_iso="2026-10-01T00:00:00Z",
         updated_at_iso="2026-10-01T00:00:00Z",
     ),
+    ScenarioRecord(
+        id="scenario-sr-peak",
+        name="Shackleton Rim — Peak of Eternal Light (ROI #1)",
+        description="Authentic NASA Product 78 ROI #1 atop Shackleton crater rim crest. High solar illumination near lunar South Pole.",
+        site_id="site04",
+        latitude=-89.7614,
+        longitude=-157.1156,
+        observer_height_m=2.0,
+        start_timestamp_iso="2026-10-04T12:00:00Z",
+        end_timestamp_iso="2026-10-07T12:00:00Z",
+        step_interval_hours=2.0,
+        azimuth_resolution_deg=2.0,
+        max_search_distance_m=5000.0,
+        aberration_correction="LT+S",
+        created_at_iso="2026-10-01T00:00:00Z",
+        updated_at_iso="2026-10-01T00:00:00Z",
+    ),
+    ScenarioRecord(
+        id="scenario-sr-ridge",
+        name="Shackleton Rim — South Ridge Outpost (ROI #2)",
+        description="Authentic NASA Product 78 ROI #2 along Shackleton rim saddle overlooking permanently shadowed crater interior.",
+        site_id="site04",
+        latitude=-89.7717,
+        longitude=-156.5151,
+        observer_height_m=2.0,
+        start_timestamp_iso="2026-10-04T12:00:00Z",
+        end_timestamp_iso="2026-10-07T12:00:00Z",
+        step_interval_hours=2.0,
+        azimuth_resolution_deg=2.0,
+        max_search_distance_m=5000.0,
+        aberration_correction="LT+S",
+        created_at_iso="2026-10-01T00:00:00Z",
+        updated_at_iso="2026-10-01T00:00:00Z",
+    ),
+    ScenarioRecord(
+        id="scenario-dg-crest",
+        name="de Gerlache Rim — High Ridge Crest (ROI #1)",
+        description="Authentic NASA Product 78 ROI #1 atop de Gerlache rim with continuous line-of-sight to Earth and gentle slopes.",
+        site_id="site11",
+        latitude=-88.6682,
+        longitude=-68.3820,
+        observer_height_m=2.0,
+        start_timestamp_iso="2026-10-04T12:00:00Z",
+        end_timestamp_iso="2026-10-07T12:00:00Z",
+        step_interval_hours=2.0,
+        azimuth_resolution_deg=2.0,
+        max_search_distance_m=5000.0,
+        aberration_correction="LT+S",
+        created_at_iso="2026-10-01T00:00:00Z",
+        updated_at_iso="2026-10-01T00:00:00Z",
+    ),
+    ScenarioRecord(
+        id="scenario-dg-shoulder",
+        name="de Gerlache Rim — Southern Shoulder (ROI #3)",
+        description="Authentic NASA Product 78 ROI #3 offering stable landing terrain adjacent to de Gerlache shadowed interior.",
+        site_id="site11",
+        latitude=-88.7031,
+        longitude=-68.4055,
+        observer_height_m=2.0,
+        start_timestamp_iso="2026-10-04T12:00:00Z",
+        end_timestamp_iso="2026-10-07T12:00:00Z",
+        step_interval_hours=2.0,
+        azimuth_resolution_deg=2.0,
+        max_search_distance_m=5000.0,
+        aberration_correction="LT+S",
+        created_at_iso="2026-10-01T00:00:00Z",
+        updated_at_iso="2026-10-01T00:00:00Z",
+    ),
 ]
 
 from pathlib import Path
@@ -197,18 +265,21 @@ class ScenarioEngineService:
             errors.append(f"Site/Dataset '{site_id}' does not exist in NASA LOLA Registry.")
             return errors
 
-        # Check bounds
-        bg = dataset.bounds_geographic
-        if not (bg["min_lat"] <= latitude <= bg["max_lat"]):
-            errors.append(
-                f"Latitude {latitude}° is outside DEM '{site_id}' geographic bounds "
-                f"[{bg['min_lat']}°, {bg['max_lat']}°]."
-            )
-        if not (bg["min_lon"] <= longitude <= bg["max_lon"]):
-            errors.append(
-                f"Longitude {longitude}° is outside DEM '{site_id}' geographic bounds "
-                f"[{bg['min_lon']}°, {bg['max_lon']}°]."
-            )
+        # Check bounds: evaluate stereographic projected bounds for exact polar coverage
+        from app.services.coordinate_transform import transformer
+        proj_x, proj_y = transformer.lat_lon_to_xy(latitude, longitude)
+        bp = dataset.bounds_projected
+        if bp:
+            if not (bp["left"] <= proj_x <= bp["right"] and bp["bottom"] <= proj_y <= bp["top"]):
+                errors.append(
+                    f"Coordinates ({latitude:.4f}°, {longitude:.4f}°) lie outside DEM '{site_id}' geographic bounds and coverage."
+                )
+        else:
+            bg = dataset.bounds_geographic
+            if not (bg["min_lat"] <= latitude <= bg["max_lat"] and bg["min_lon"] <= longitude <= bg["max_lon"]):
+                errors.append(
+                    f"Coordinates ({latitude:.4f}°, {longitude:.4f}°) lie outside {dataset.name} geographic bounds."
+                )
 
         # Validate time
         try:

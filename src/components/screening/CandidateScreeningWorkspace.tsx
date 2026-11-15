@@ -122,27 +122,80 @@ export const CandidateScreeningWorkspace: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Overall Screening Results Matrix */}
+            {/* Executive Overview Banner */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <div className="bg-[#0c1220] border border-slate-800 p-4 rounded-xl flex flex-col justify-between shadow-lg">
+                <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
+                  Locations Evaluated
+                </span>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-slate-100">
+                    {activeRun.overall_summary.total_candidates}
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">sites</span>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 font-sans">
+                  Total candidate landing spots tested
+                </span>
+              </div>
+
+              <div className="bg-[#0a1818] border border-emerald-900/40 p-4 rounded-xl flex flex-col justify-between shadow-lg">
+                <span className="text-[11px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">
+                  Meets All Requirements
+                </span>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-emerald-400">
+                    {activeRun.overall_summary.compliant_candidates}
+                  </span>
+                  <span className="text-xs text-emerald-500/80 font-mono">passed</span>
+                </div>
+                <span className="text-[10px] text-emerald-400/60 mt-1 font-sans">
+                  Zero mandatory constraint violations
+                </span>
+              </div>
+
+              <div className="bg-[#1c0f16] border border-rose-900/40 p-4 rounded-xl flex flex-col justify-between shadow-lg">
+                <span className="text-[11px] font-mono text-rose-400 uppercase tracking-wider font-semibold">
+                  Fails Requirements
+                </span>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-rose-400">
+                    {activeRun.overall_summary.non_compliant_candidates}
+                  </span>
+                  <span className="text-xs text-rose-500/80 font-mono">failed</span>
+                </div>
+                <span className="text-[10px] text-rose-400/60 mt-1 font-sans">
+                  Violates terrain slope or resource limits
+                </span>
+              </div>
+
+              <div className="bg-[#1c160c] border border-amber-900/40 p-4 rounded-xl flex flex-col justify-between shadow-lg">
+                <span className="text-[11px] font-mono text-amber-400 uppercase tracking-wider font-semibold">
+                  Cannot Be Fully Evaluated
+                </span>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="text-2xl font-bold font-mono text-amber-400">
+                    {activeRun.overall_summary.indeterminate_candidates}
+                  </span>
+                  <span className="text-xs text-amber-500/80 font-mono">unverified</span>
+                </div>
+                <span className="text-[10px] text-amber-400/60 mt-1 font-sans">
+                  Incomplete DEM coverage or horizon data
+                </span>
+              </div>
+            </div>
+
+            {/* Candidate Cards Grid */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
-                    Candidate summaries ({activeRun.candidates.length} candidates)
+                    Candidate summaries ({activeRun.candidates.length} candidates across regions)
                   </h2>
                 </div>
-                <div className="text-xs font-mono text-slate-300 flex items-center gap-2">
-                  <span className="text-emerald-400 font-semibold">
-                    {activeRun.overall_summary.compliant_candidates} Compliant
-                  </span>
-                  <span>•</span>
-                  <span className="text-rose-400 font-semibold">
-                    {activeRun.overall_summary.non_compliant_candidates} Non-Compliant
-                  </span>
-                  <span>•</span>
-                  <span className="text-amber-400 font-semibold">
-                    {activeRun.overall_summary.indeterminate_candidates} Indeterminate
-                  </span>
+                <div className="text-xs font-mono text-slate-400">
+                  Click a card to inspect full requirements matrix
                 </div>
               </div>
 

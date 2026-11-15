@@ -29,11 +29,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
 }) => {
   const {
     observerHeight,
-    azimuthResolution,
-    maxSearchDistance,
     setObserverHeight,
-    setAzimuthResolution,
-    setMaxSearchDistance,
     computeHorizon,
   } = useHorizonStore();
 
@@ -124,53 +120,6 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
         />
       </div>
 
-      {/* Configurable Azimuth & Distance Parameters */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-1">
-          <label className="text-[10px] text-slate-400">Azimuth Step (Δθ):</label>
-          <div className="flex gap-1">
-            {[1.0, 2.0, 5.0].map((res) => (
-              <button
-                key={res}
-                onClick={() => {
-                  setAzimuthResolution(res);
-                  computeHorizon(currentLat, currentLon);
-                }}
-                className={`flex-1 py-1 rounded text-[10px] transition-all ${
-                  azimuthResolution === res
-                    ? 'bg-emerald-500 text-black font-bold'
-                    : 'bg-[#070b12] text-slate-400 border border-slate-800'
-                }`}
-              >
-                {res}°
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-[10px] text-slate-400">Max Search Radius:</label>
-          <div className="flex gap-1">
-            {[5000, 15000, 30000].map((dist) => (
-              <button
-                key={dist}
-                onClick={() => {
-                  setMaxSearchDistance(dist);
-                  computeHorizon(currentLat, currentLon);
-                }}
-                className={`flex-1 py-1 rounded text-[10px] transition-all ${
-                  maxSearchDistance === dist
-                    ? 'bg-emerald-500 text-black font-bold'
-                    : 'bg-[#070b12] text-slate-400 border border-slate-800'
-                }`}
-              >
-                {dist / 1000}km
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Summary Statistics */}
       {data && (
         <div className="space-y-2 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
@@ -245,12 +194,24 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
 
       {/* Provenance Footer */}
       <div className="border-t border-slate-800/80 pt-2 text-[10px] text-slate-500 space-y-1">
-        <div className="flex items-center gap-1 text-slate-400 font-bold">
-          <Database className="w-3 h-3 text-emerald-400" />
-          <span>{data?.dataset_name || 'NASA LOLA 5m DEM'}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 text-slate-400 font-bold">
+            <Database className="w-3 h-3 text-emerald-400" />
+            <span>{data?.dataset_name || 'NASA LOLA 5m DEM'}</span>
+          </div>
+          <a
+            href="https://pgda.gsfc.nasa.gov/products/78"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-400 hover:text-cyan-300 text-[9px] underline"
+          >
+            NASA Product 78 ↗
+          </a>
         </div>
-        <div>Datum: IAU Moon 2000 Sphere (R = 1,737,400 m)</div>
-        <div>Frame: {data?.reference_frame || 'MOON_ME (DE421)'}</div>
+        <div>Datum: IAU Moon 2000 Sphere (R = 1,737,400 m) • Frame: {data?.reference_frame || 'MOON_ME (DE421)'}</div>
+        <div className="text-[9px] text-slate-400 leading-tight">
+          Nominal 5m grid spacing; LOLA laser tracks spaced ~10–20m (interpolated).
+        </div>
         <div className="text-[9px] text-slate-600 truncate">{data?.citation}</div>
       </div>
     </div>

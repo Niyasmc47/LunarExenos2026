@@ -91,8 +91,29 @@ export const DataCompletenessProvenance: React.FC<DataCompletenessProvenanceProp
         </div>
       </div>
 
-      {/* Mandatory Scientific Disclaimers */}
-      <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 space-y-1 font-sans">
+      {/* Mandatory Scientific Disclaimers & NASA Provenance */}
+      <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 space-y-2 font-sans">
+        <div className="bg-slate-900/80 border border-slate-800 p-2.5 rounded-lg space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] text-emerald-400 uppercase font-bold">
+              NASA Product 78 (PGDA) Provenance & LOLA Track Disclosure
+            </span>
+            <a
+              href="https://pgda.gsfc.nasa.gov/products/78"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 underline"
+            >
+              pgda.gsfc.nasa.gov/products/78 ↗
+            </a>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">
+            Data sourced from NASA Planetary Geology, Geophysics and Geochemistry Laboratory LOLA 5 mpp products (Barker et al., 2021).
+            <strong> Notice:</strong> While rasters have a nominal 5 m/pixel grid spacing, the Lunar Reconnaissance Orbiter (LRO) LOLA laser altimeter ground tracks were spaced 10–20+ metres apart near the pole.
+            Approximately 85–90% of raster cell values represent along-track interpolation between laser observations. Refer to companion observation count (LDEC) and uncertainty (toterr/slperr) layers for localized accuracy.
+          </p>
+        </div>
+
         <span className="font-mono text-[10px] text-slate-400 uppercase font-semibold block">
           Mandatory Scientific Disclaimers:
         </span>

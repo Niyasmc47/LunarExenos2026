@@ -1,0 +1,1196 @@
+{
+  "site01": {
+    "site_id": "site01",
+    "nasa_name": "Site01",
+    "display_name": "Site 01 \u2014 Connecting Ridge",
+    "region_name": "Connecting Ridge (Shackleton-de Gerlache)",
+    "source_url": "https://pgda.gsfc.nasa.gov/products/78",
+    "source_directory": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/",
+    "citation": "Barker, M. K., et al. (2021). Improved LOLA Elevation Maps for South Pole Landing Sites. PSS, 203, 105119.",
+    "reference_frame": "MOON_ME (DE421)",
+    "vertical_datum": "IAU Moon 2000 Reference Sphere (R = 1,737,400 m)",
+    "projection_crs": "+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs",
+    "download_timestamp": "2026-11-15T02:17:52Z",
+    "files": {
+      "Site01_final_adj_5mpp_surf.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site01_final_adj_5mpp_surf.tif",
+          "file_size_bytes": 40980810,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -19000.0,
+            0.0,
+            -5.0,
+            -4000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -19000.0,
+            "bottom": -20000.0,
+            "right": -3000.0,
+            "top": -4000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.83511,
+            "max_lat": -89.09028,
+            "min_lon": -171.46923,
+            "max_lon": -101.88866
+          },
+          "center_geographic": {
+            "latitude": -89.46316,
+            "longitude": -137.48955
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": -517.48,
+            "max": 1958.53,
+            "mean": 1139.11
+          }
+        }
+      },
+      "Site01_final_adj_5mpp_slp.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site01_final_adj_5mpp_slp.tif",
+          "file_size_bytes": 40980776,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -19000.0,
+            0.0,
+            -5.0,
+            -4000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -19000.0,
+            "bottom": -20000.0,
+            "right": -3000.0,
+            "top": -4000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.83511,
+            "max_lat": -89.09028,
+            "min_lon": -171.46923,
+            "max_lon": -101.88866
+          },
+          "center_geographic": {
+            "latitude": -89.46316,
+            "longitude": -137.48955
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.03,
+            "max": 51.87,
+            "mean": 12.6
+          }
+        }
+      },
+      "Site01_final_adj_5mpp_ldec.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site01_final_adj_5mpp_ldec.tif",
+          "file_size_bytes": 40980744,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -19000.0,
+            0.0,
+            -5.0,
+            -4000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -19000.0,
+            "bottom": -20000.0,
+            "right": -3000.0,
+            "top": -4000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.83511,
+            "max_lat": -89.09028,
+            "min_lon": -171.46923,
+            "max_lon": -101.88866
+          },
+          "center_geographic": {
+            "latitude": -89.46316,
+            "longitude": -137.48955
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.0,
+            "max": 4.0,
+            "mean": 0.1
+          }
+        }
+      },
+      "Site01_final_adj_5mpp_toterr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site01_final_adj_5mpp_toterr.tif",
+          "file_size_bytes": 40980810,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -19000.0,
+            0.0,
+            -5.0,
+            -4000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -19000.0,
+            "bottom": -20000.0,
+            "right": -3000.0,
+            "top": -4000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.83511,
+            "max_lat": -89.09028,
+            "min_lon": -171.46923,
+            "max_lon": -101.88866
+          },
+          "center_geographic": {
+            "latitude": -89.46316,
+            "longitude": -137.48955
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.07,
+            "max": 4.96,
+            "mean": 0.4
+          }
+        }
+      },
+      "Site01_final_adj_5mpp_slperr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site01_final_adj_5mpp_slperr.tif",
+          "file_size_bytes": 40980810,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -19000.0,
+            0.0,
+            -5.0,
+            -4000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -19000.0,
+            "bottom": -20000.0,
+            "right": -3000.0,
+            "top": -4000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.83511,
+            "max_lat": -89.09028,
+            "min_lon": -171.46923,
+            "max_lon": -101.88866
+          },
+          "center_geographic": {
+            "latitude": -89.46316,
+            "longitude": -137.48955
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.76,
+            "max": 15.52,
+            "mean": 2.0
+          }
+        }
+      }
+    },
+    "rois": [
+      {
+        "roi_index": 1,
+        "projected_box": {
+          "min_x": -11657.5,
+          "min_y": -12517.5,
+          "max_x": -11522.5,
+          "max_y": -12407.5
+        },
+        "geographic_box": {
+          "min_lat": -89.44160197331242,
+          "max_lat": -89.43591387230869,
+          "min_lon": -137.11799691014141,
+          "max_lon": -137.03737747640776
+        },
+        "centroid_projected": {
+          "x": -11589.93,
+          "y": -12466.35
+        },
+        "centroid_geographic": {
+          "latitude": -89.43867,
+          "longitude": -137.08648
+        },
+        "num_vertices": 74
+      },
+      {
+        "roi_index": 2,
+        "projected_box": {
+          "min_x": -11537.5,
+          "min_y": -12637.5,
+          "max_x": -11447.5,
+          "max_y": -12477.5
+        },
+        "geographic_box": {
+          "min_lat": -89.44158327717173,
+          "max_lat": -89.43568719594133,
+          "min_lon": -137.60524987392637,
+          "max_lon": -137.46512994856323
+        },
+        "centroid_projected": {
+          "x": -11487.19,
+          "y": -12556.76
+        },
+        "centroid_geographic": {
+          "latitude": -89.43877,
+          "longitude": -137.54706
+        },
+        "num_vertices": 81
+      },
+      {
+        "roi_index": 3,
+        "projected_box": {
+          "min_x": -11392.5,
+          "min_y": -12542.5,
+          "max_x": -11297.5,
+          "max_y": -12467.5
+        },
+        "geographic_box": {
+          "min_lat": -89.44515979186195,
+          "max_lat": -89.44122301183891,
+          "min_lon": -137.8185137839822,
+          "max_lon": -137.75076307534465
+        },
+        "centroid_projected": {
+          "x": -11352.78,
+          "y": -12503.98
+        },
+        "centroid_geographic": {
+          "latitude": -89.44304,
+          "longitude": -137.76265
+        },
+        "num_vertices": 54
+      },
+      {
+        "roi_index": 4,
+        "projected_box": {
+          "min_x": -11372.5,
+          "min_y": -12267.5,
+          "max_x": -11212.5,
+          "max_y": -12052.5
+        },
+        "geographic_box": {
+          "min_lat": -89.45713665372674,
+          "max_lat": -89.4483508428076,
+          "min_lon": -137.1681574949206,
+          "max_lon": -137.06780818077618
+        },
+        "centroid_projected": {
+          "x": -11286.64,
+          "y": -12166.6
+        },
+        "centroid_geographic": {
+          "latitude": -89.45272,
+          "longitude": -137.1487
+        },
+        "num_vertices": 111
+      },
+      {
+        "roi_index": 5,
+        "projected_box": {
+          "min_x": -11177.5,
+          "min_y": -12052.5,
+          "max_x": -11002.5,
+          "max_y": -11857.5
+        },
+        "geographic_box": {
+          "min_lat": -89.46656137765372,
+          "max_lat": -89.45792215807701,
+          "min_lon": -137.1571294653129,
+          "max_lon": -137.14195397838046
+        },
+        "centroid_projected": {
+          "x": -11101.06,
+          "y": -11945.47
+        },
+        "centroid_geographic": {
+          "latitude": -89.46222,
+          "longitude": -137.09833
+        },
+        "num_vertices": 118
+      },
+      {
+        "roi_index": 6,
+        "projected_box": {
+          "min_x": -10887.5,
+          "min_y": -11787.5,
+          "max_x": -10727.5,
+          "max_y": -11682.5
+        },
+        "geographic_box": {
+          "min_lat": -89.47695308351952,
+          "max_lat": -89.4708316627572,
+          "min_lon": -137.4401777163448,
+          "max_lon": -137.27295029873073
+        },
+        "centroid_projected": {
+          "x": -10798.25,
+          "y": -11735.32
+        },
+        "centroid_geographic": {
+          "latitude": -89.47409,
+          "longitude": -137.3813
+        },
+        "num_vertices": 87
+      },
+      {
+        "roi_index": 7,
+        "projected_box": {
+          "min_x": -10277.5,
+          "min_y": -11607.5,
+          "max_x": -10167.5,
+          "max_y": -11492.5
+        },
+        "geographic_box": {
+          "min_lat": -89.49397203786373,
+          "max_lat": -89.48872802129638,
+          "min_lon": -138.5005735827367,
+          "max_lon": -138.4777144644089
+        },
+        "centroid_projected": {
+          "x": -10227.38,
+          "y": -11557.99
+        },
+        "centroid_geographic": {
+          "latitude": -89.49105,
+          "longitude": -138.49518
+        },
+        "num_vertices": 82
+      }
+    ],
+    "bounds_projected": {
+      "left": -19000.0,
+      "bottom": -20000.0,
+      "right": -3000.0,
+      "top": -4000.0
+    },
+    "bounds_geographic": {
+      "min_lat": -89.83511,
+      "max_lat": -89.09028,
+      "min_lon": -171.46923,
+      "max_lon": -101.88866
+    },
+    "center_geographic": {
+      "latitude": -89.46316,
+      "longitude": -137.48955
+    },
+    "elevation_stats": {
+      "min": -517.48,
+      "max": 1958.53,
+      "mean": 1139.11
+    }
+  },
+  "site04": {
+    "site_id": "site04",
+    "nasa_name": "Site04",
+    "display_name": "Site 04 \u2014 Shackleton Rim",
+    "region_name": "Shackleton Crater Rim",
+    "source_url": "https://pgda.gsfc.nasa.gov/products/78",
+    "source_directory": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site04/",
+    "citation": "Barker, M. K., et al. (2021). Improved LOLA Elevation Maps for South Pole Landing Sites. PSS, 203, 105119.",
+    "reference_frame": "MOON_ME (DE421)",
+    "vertical_datum": "IAU Moon 2000 Reference Sphere (R = 1,737,400 m)",
+    "projection_crs": "+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs",
+    "download_timestamp": "2026-11-15T02:17:52Z",
+    "files": {
+      "Site04_final_adj_5mpp_surf.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site04_final_adj_5mpp_surf.tif",
+          "file_size_bytes": 40980806,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -9000.0,
+            0.0,
+            -5.0,
+            1000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -9000.0,
+            "bottom": -15000.0,
+            "right": 7000.0,
+            "top": 1000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.76681,
+            "max_lat": -89.42313,
+            "min_lon": -149.03624,
+            "max_lon": 154.98311
+          },
+          "center_geographic": {
+            "latitude": -89.76681,
+            "longitude": -171.8699
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": -2846.52,
+            "max": 1803.33,
+            "mean": 245.01
+          }
+        }
+      },
+      "Site04_final_adj_5mpp_slp.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site04_final_adj_5mpp_slp.tif",
+          "file_size_bytes": 40980772,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -9000.0,
+            0.0,
+            -5.0,
+            1000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -9000.0,
+            "bottom": -15000.0,
+            "right": 7000.0,
+            "top": 1000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.76681,
+            "max_lat": -89.42313,
+            "min_lon": -149.03624,
+            "max_lon": 154.98311
+          },
+          "center_geographic": {
+            "latitude": -89.76681,
+            "longitude": -171.8699
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.02,
+            "max": 59.11,
+            "mean": 20.66
+          }
+        }
+      },
+      "Site04_final_adj_5mpp_ldec.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site04_final_adj_5mpp_ldec.tif",
+          "file_size_bytes": 40980740,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -9000.0,
+            0.0,
+            -5.0,
+            1000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -9000.0,
+            "bottom": -15000.0,
+            "right": 7000.0,
+            "top": 1000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.76681,
+            "max_lat": -89.42313,
+            "min_lon": -149.03624,
+            "max_lon": 154.98311
+          },
+          "center_geographic": {
+            "latitude": -89.76681,
+            "longitude": -171.8699
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.0,
+            "max": 4.0,
+            "mean": 0.09
+          }
+        }
+      },
+      "Site04_final_adj_5mpp_toterr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site04_final_adj_5mpp_toterr.tif",
+          "file_size_bytes": 40980808,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -9000.0,
+            0.0,
+            -5.0,
+            1000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -9000.0,
+            "bottom": -15000.0,
+            "right": 7000.0,
+            "top": 1000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.76681,
+            "max_lat": -89.42313,
+            "min_lon": -149.03624,
+            "max_lon": 154.98311
+          },
+          "center_geographic": {
+            "latitude": -89.76681,
+            "longitude": -171.8699
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.07,
+            "max": 7.64,
+            "mean": 0.41
+          }
+        }
+      },
+      "Site04_final_adj_5mpp_slperr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site04_final_adj_5mpp_slperr.tif",
+          "file_size_bytes": 40980806,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -9000.0,
+            0.0,
+            -5.0,
+            1000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -9000.0,
+            "bottom": -15000.0,
+            "right": 7000.0,
+            "top": 1000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.76681,
+            "max_lat": -89.42313,
+            "min_lon": -149.03624,
+            "max_lon": 154.98311
+          },
+          "center_geographic": {
+            "latitude": -89.76681,
+            "longitude": -171.8699
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.54,
+            "max": 19.53,
+            "mean": 1.77
+          }
+        }
+      }
+    },
+    "rois": [
+      {
+        "roi_index": 1,
+        "projected_box": {
+          "min_x": -2842.5,
+          "min_y": -6802.5,
+          "max_x": -2782.5,
+          "max_y": -6522.5
+        },
+        "geographic_box": {
+          "min_lat": -89.76614708433337,
+          "max_lat": -89.75687077288684,
+          "min_lon": -157.3218484194589,
+          "max_lon": -156.89689352268954
+        },
+        "centroid_projected": {
+          "x": -2813.37,
+          "y": -6665.23
+        },
+        "centroid_geographic": {
+          "latitude": -89.76142,
+          "longitude": -157.11557
+        },
+        "num_vertices": 121
+      },
+      {
+        "roi_index": 2,
+        "projected_box": {
+          "min_x": -2792.5,
+          "min_y": -6432.5,
+          "max_x": -2712.5,
+          "max_y": -6262.5
+        },
+        "geographic_box": {
+          "min_lat": -89.77493603102708,
+          "max_lat": -89.76874298972571,
+          "min_lon": -156.58093619449932,
+          "max_lon": -156.53319789100829
+        },
+        "centroid_projected": {
+          "x": -2758.53,
+          "y": -6348.76
+        },
+        "centroid_geographic": {
+          "latitude": -89.77172,
+          "longitude": -156.51508
+        },
+        "num_vertices": 87
+      },
+      {
+        "roi_index": 3,
+        "projected_box": {
+          "min_x": -2702.5,
+          "min_y": -6167.5,
+          "max_x": -2642.5,
+          "max_y": -6052.5
+        },
+        "geographic_box": {
+          "min_lat": -89.78220744428197,
+          "max_lat": -89.77793990940094,
+          "min_lon": -156.4140893095131,
+          "max_lon": -156.33773496568114
+        },
+        "centroid_projected": {
+          "x": -2677.84,
+          "y": -6106.14
+        },
+        "centroid_geographic": {
+          "latitude": -89.78012,
+          "longitude": -156.32023
+        },
+        "num_vertices": 59
+      },
+      {
+        "roi_index": 4,
+        "projected_box": {
+          "min_x": -2687.5,
+          "min_y": -6027.5,
+          "max_x": -2627.5,
+          "max_y": -5902.5
+        },
+        "geographic_box": {
+          "min_lat": -89.78693333450025,
+          "max_lat": -89.78236267098764,
+          "min_lon": -156.00374539491844,
+          "max_lon": -155.9691942315768
+        },
+        "centroid_projected": {
+          "x": -2659.83,
+          "y": -5958.97
+        },
+        "centroid_geographic": {
+          "latitude": -89.7848,
+          "longitude": -155.94606
+        },
+        "num_vertices": 58
+      }
+    ],
+    "bounds_projected": {
+      "left": -9000.0,
+      "bottom": -15000.0,
+      "right": 7000.0,
+      "top": 1000.0
+    },
+    "bounds_geographic": {
+      "min_lat": -89.76681,
+      "max_lat": -89.42313,
+      "min_lon": -149.03624,
+      "max_lon": 154.98311
+    },
+    "center_geographic": {
+      "latitude": -89.76681,
+      "longitude": -171.8699
+    },
+    "elevation_stats": {
+      "min": -2846.52,
+      "max": 1803.33,
+      "mean": 245.01
+    }
+  },
+  "site11": {
+    "site_id": "site11",
+    "nasa_name": "Site11",
+    "display_name": "Site 11 \u2014 de Gerlache Rim",
+    "region_name": "de Gerlache Crater Rim",
+    "source_url": "https://pgda.gsfc.nasa.gov/products/78",
+    "source_directory": "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site11/",
+    "citation": "Barker, M. K., et al. (2021). Improved LOLA Elevation Maps for South Pole Landing Sites. PSS, 203, 105119.",
+    "reference_frame": "MOON_ME (DE421)",
+    "vertical_datum": "IAU Moon 2000 Reference Sphere (R = 1,737,400 m)",
+    "projection_crs": "+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs",
+    "download_timestamp": "2026-11-15T02:17:52Z",
+    "files": {
+      "Site11_final_adj_5mpp_surf.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site11_final_adj_5mpp_surf.tif",
+          "file_size_bytes": 40980806,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -45000.0,
+            0.0,
+            -5.0,
+            23000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -45000.0,
+            "bottom": 7000.0,
+            "right": -29000.0,
+            "top": 23000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.0162,
+            "max_lat": -88.33351,
+            "min_lon": -81.15819,
+            "max_lon": -51.58194
+          },
+          "center_geographic": {
+            "latitude": -88.68342,
+            "longitude": -67.9321
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": -804.27,
+            "max": 1814.73,
+            "mean": 639.19
+          }
+        }
+      },
+      "Site11_final_adj_5mpp_slp.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site11_final_adj_5mpp_slp.tif",
+          "file_size_bytes": 40980774,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -45000.0,
+            0.0,
+            -5.0,
+            23000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -45000.0,
+            "bottom": 7000.0,
+            "right": -29000.0,
+            "top": 23000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.0162,
+            "max_lat": -88.33351,
+            "min_lon": -81.15819,
+            "max_lon": -51.58194
+          },
+          "center_geographic": {
+            "latitude": -88.68342,
+            "longitude": -67.9321
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.05,
+            "max": 41.1,
+            "mean": 14.39
+          }
+        }
+      },
+      "Site11_final_adj_5mpp_ldec.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site11_final_adj_5mpp_ldec.tif",
+          "file_size_bytes": 40980742,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -45000.0,
+            0.0,
+            -5.0,
+            23000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -45000.0,
+            "bottom": 7000.0,
+            "right": -29000.0,
+            "top": 23000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.0162,
+            "max_lat": -88.33351,
+            "min_lon": -81.15819,
+            "max_lon": -51.58194
+          },
+          "center_geographic": {
+            "latitude": -88.68342,
+            "longitude": -67.9321
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.0,
+            "max": 4.0,
+            "mean": 0.09
+          }
+        }
+      },
+      "Site11_final_adj_5mpp_toterr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site11_final_adj_5mpp_toterr.tif",
+          "file_size_bytes": 40980810,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -45000.0,
+            0.0,
+            -5.0,
+            23000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -45000.0,
+            "bottom": 7000.0,
+            "right": -29000.0,
+            "top": 23000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.0162,
+            "max_lat": -88.33351,
+            "min_lon": -81.15819,
+            "max_lon": -51.58194
+          },
+          "center_geographic": {
+            "latitude": -88.68342,
+            "longitude": -67.9321
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.07,
+            "max": 3.39,
+            "mean": 0.4
+          }
+        }
+      },
+      "Site11_final_adj_5mpp_slperr.tif": {
+        "available": true,
+        "info": {
+          "file_name": "Site11_final_adj_5mpp_slperr.tif",
+          "file_size_bytes": 40980808,
+          "width": 3200,
+          "height": 3200,
+          "count": 1,
+          "crs": "PROJCS[\"unnamed\",GEOGCS[\"unnamed ellipse\",DATUM[\"unknown\",SPHEROID[\"unnamed\",1737400,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-90],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1],AXIS[\"Easting\",NORTH],AXIS[\"Northing\",NORTH]]",
+          "transform": [
+            5.0,
+            0.0,
+            -45000.0,
+            0.0,
+            -5.0,
+            23000.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "bounds_projected": {
+            "left": -45000.0,
+            "bottom": 7000.0,
+            "right": -29000.0,
+            "top": 23000.0
+          },
+          "bounds_geographic": {
+            "min_lat": -89.0162,
+            "max_lat": -88.33351,
+            "min_lon": -81.15819,
+            "max_lon": -51.58194
+          },
+          "center_geographic": {
+            "latitude": -88.68342,
+            "longitude": -67.9321
+          },
+          "resolution_m": [
+            5.0,
+            5.0
+          ],
+          "nodata": NaN,
+          "stats": {
+            "min": 0.71,
+            "max": 14.06,
+            "mean": 1.82
+          }
+        }
+      }
+    },
+    "rois": [
+      {
+        "roi_index": 1,
+        "projected_box": {
+          "min_x": -37672.5,
+          "min_y": 14802.5,
+          "max_x": -37442.5,
+          "max_y": 14927.5
+        },
+        "geographic_box": {
+          "min_lat": -88.67077217503503,
+          "max_lat": -88.6652373891729,
+          "min_lon": -68.54885225054494,
+          "max_lon": -68.26391903719167
+        },
+        "centroid_projected": {
+          "x": -37545.38,
+          "y": 14878.92
+        },
+        "centroid_geographic": {
+          "latitude": -88.66821,
+          "longitude": -68.38199
+        },
+        "num_vertices": 120
+      },
+      {
+        "roi_index": 2,
+        "projected_box": {
+          "min_x": -37437.5,
+          "min_y": 14727.5,
+          "max_x": -37352.5,
+          "max_y": 14792.5
+        },
+        "geographic_box": {
+          "min_lat": -88.67517381087005,
+          "max_lat": -88.67335368031056,
+          "min_lon": -68.5258705071551,
+          "max_lon": -68.39522763338624
+        },
+        "centroid_projected": {
+          "x": -37390.0,
+          "y": 14760.19
+        },
+        "centroid_geographic": {
+          "latitude": -88.67442,
+          "longitude": -68.45772
+        },
+        "num_vertices": 52
+      },
+      {
+        "roi_index": 3,
+        "projected_box": {
+          "min_x": -36617.5,
+          "min_y": 14422.5,
+          "max_x": -36512.5,
+          "max_y": 14522.5
+        },
+        "geographic_box": {
+          "min_lat": -88.70420235558721,
+          "max_lat": -88.70219662273053,
+          "min_lon": -68.50205464072144,
+          "max_lon": -68.31028069056543
+        },
+        "centroid_projected": {
+          "x": -36567.9,
+          "y": 14474.19
+        },
+        "centroid_geographic": {
+          "latitude": -88.70309,
+          "longitude": -68.4055
+        },
+        "num_vertices": 62
+      },
+      {
+        "roi_index": 4,
+        "projected_box": {
+          "min_x": -36552.5,
+          "min_y": 14312.5,
+          "max_x": -36477.5,
+          "max_y": 14412.5
+        },
+        "geographic_box": {
+          "min_lat": -88.7066118793283,
+          "max_lat": -88.70551743097558,
+          "min_lon": -68.61667186343038,
+          "max_lon": -68.44069824334798
+        },
+        "centroid_projected": {
+          "x": -36515.46,
+          "y": 14361.79
+        },
+        "centroid_geographic": {
+          "latitude": -88.70606,
+          "longitude": -68.52994
+        },
+        "num_vertices": 49
+      }
+    ],
+    "bounds_projected": {
+      "left": -45000.0,
+      "bottom": 7000.0,
+      "right": -29000.0,
+      "top": 23000.0
+    },
+    "bounds_geographic": {
+      "min_lat": -89.0162,
+      "max_lat": -88.33351,
+      "min_lon": -81.15819,
+      "max_lon": -51.58194
+    },
+    "center_geographic": {
+      "latitude": -88.68342,
+      "longitude": -67.9321
+    },
+    "elevation_stats": {
+      "min": -804.27,
+      "max": 1814.73,
+      "mean": 639.19
+    }
+  }
+}

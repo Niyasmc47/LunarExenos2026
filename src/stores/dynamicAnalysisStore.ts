@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useLocationStore } from './locationStore';
 import {
   DatasetDiscoveryResponse,
   RegionalStatistics,
@@ -31,29 +32,20 @@ export const PREDEFINED_SITES = [
   {
     id: 'site04',
     name: 'Site 04 — Shackleton Rim',
-    region: 'South Pole / Shackleton Crater',
-    bbox: { minLat: -89.98, maxLat: -89.45, minLon: -180.0, maxLon: 180.0 },
-    center: { lat: -89.67, lon: 0.0 },
-    description: 'Exact lunar South Pole on the rim crest of Shackleton crater overlooking permanently shadowed interior.',
+    region: 'South Pole / Shackleton Crater Rim',
+    bbox: { minLat: -89.7668, maxLat: -89.4231, minLon: -180.0, maxLon: 180.0 },
+    center: { lat: -89.7614, lon: -157.1156 },
+    description: 'South Pole rim crest of Shackleton crater with authentic NASA ROI landmarks and high relief.',
     datasetId: 'site04',
   },
   {
     id: 'site11',
     name: 'Site 11 — de Gerlache Rim',
     region: 'de Gerlache Crater Rim',
-    bbox: { minLat: -88.95, maxLat: -88.10, minLon: -105.0, maxLon: -75.0 },
-    center: { lat: -88.52, lon: -88.35 },
-    description: 'High-elevation rim candidate for Artemis missions with direct Earth communication line-of-sight.',
+    bbox: { minLat: -89.0162, maxLat: -88.3335, minLon: -81.1582, maxLon: -51.5819 },
+    center: { lat: -88.6682, lon: -68.3820 },
+    description: 'High-elevation rim candidate with persistent Earth line-of-sight and gentle shoulder terrain.',
     datasetId: 'site11',
-  },
-  {
-    id: 'site23',
-    name: 'Site 23 — Malapert Massif',
-    region: 'Malapert Mountain',
-    bbox: { minLat: -86.50, maxLat: -85.10, minLon: -5.0, maxLon: 25.0 },
-    center: { lat: -85.80, lon: 3.0 },
-    description: '5,000 m massif with continuous line-of-sight Earth communication and flat landing tableland.',
-    datasetId: 'site23',
   },
 ];
 
@@ -153,5 +145,10 @@ export const useDynamicAnalysisStore = create<DynamicAnalysisState>((set) => ({
       transectStart: { lat: site.center.lat - 0.05, lon: site.center.lon - 1.0 },
       transectEnd: { lat: site.center.lat + 0.05, lon: site.center.lon + 1.0 },
     });
+    try {
+      useLocationStore.getState().setSelectedCoordinates(site.center.lat, site.center.lon, 'preset');
+    } catch {
+      // ignore
+    }
   },
 }));

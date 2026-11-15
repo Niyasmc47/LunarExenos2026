@@ -1,7 +1,10 @@
 from typing import Dict, Any, List, Optional
 import numpy as np
-from app.services.dem_loader import dem_loader
+from app.services.dem_loader import dem_loader, get_dem_loader
 from app.services.coordinate_transform import transformer
+
+def math_hypot(x: float, y: float, z: float) -> float:
+    return float(np.sqrt(x*x + y*y + z*z))
 
 class TerrainMeshService:
     def __init__(self):
@@ -11,11 +14,12 @@ class TerrainMeshService:
         self,
         lod: str = "medium",
         vertical_exaggeration: float = 1.0,
-        max_dim: Optional[int] = None
+        max_dim: Optional[int] = None,
+        site_id: str = "site01",
     ) -> Dict[str, Any]:
         """
         Generates 3D terrain patch mesh data directly conforming to the
-        spherical lunar surface in Three.js coordinates.
+        spherical lunar surface in Three.js coordinates for any requested site.
 
         Returns BufferGeometry-ready typed arrays:
         - positions: [x0, y0, z0, x1, y1, z1, ...]
@@ -24,7 +28,8 @@ class TerrainMeshService:
         - indices: [i0, i1, i2, ...]
         - raw_elevations: [h0, h1, ...]
         """
-        grid_data = dem_loader.get_downsampled_grid(lod=lod, max_dim=max_dim)
+        loader = get_dem_loader(site_id)
+        grid_data = loader.get_downsampled_grid(lod=lod, max_dim=max_dim)
         elevations = grid_data["elevations"]
         h = grid_data["grid_height"]
         w = grid_data["grid_width"]
@@ -98,6 +103,8 @@ class TerrainMeshService:
 
         return {
             "dataset_id": grid_data["dataset_id"],
+            "site_id": site_id,
+            "site_name": loader.cfg["name"],
             "lod": lod,
             "vertical_exaggeration": vertical_exaggeration,
             "vertex_count": v_idx,

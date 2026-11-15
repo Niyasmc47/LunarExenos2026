@@ -43,11 +43,11 @@ export const RegionSelectionToolbar: React.FC = () => {
   }, [selectedRegionBbox]);
 
   // Run discovery on mount or when bounding box changes
-  const handleTriggerDiscovery = () => {
-    const lat1 = parseFloat(minLat);
-    const lat2 = parseFloat(maxLat);
-    const lon1 = parseFloat(minLon);
-    const lon2 = parseFloat(maxLon);
+  const handleTriggerDiscovery = (overrideBbox?: { minLat: number; maxLat: number; minLon: number; maxLon: number }) => {
+    const lat1 = overrideBbox ? overrideBbox.minLat : parseFloat(minLat);
+    const lat2 = overrideBbox ? overrideBbox.maxLat : parseFloat(maxLat);
+    const lon1 = overrideBbox ? overrideBbox.minLon : parseFloat(minLon);
+    const lon2 = overrideBbox ? overrideBbox.maxLon : parseFloat(maxLon);
 
     if (isNaN(lat1) || isNaN(lat2) || isNaN(lon1) || isNaN(lon2)) return;
 
@@ -86,22 +86,25 @@ export const RegionSelectionToolbar: React.FC = () => {
             <span className="text-[11px] uppercase">Terrain region</span>
           </div>
 
-          {PREDEFINED_SITES.map((site) => (
-            <button
-              key={site.id}
-              onClick={() => {
-                selectPredefinedSite(site.id);
-                setTimeout(() => handleTriggerDiscovery(), 50);
-              }}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
-                selectedRegionBbox.minLat === site.bbox.minLat
-                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
-                  : 'bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-slate-700'
-              }`}
-            >
-              {site.name}
-            </button>
-          ))}
+          {PREDEFINED_SITES.map((site) => {
+            const isSelected = activeDatasetId === site.id;
+            return (
+              <button
+                key={site.id}
+                onClick={() => {
+                  selectPredefinedSite(site.id);
+                  handleTriggerDiscovery(site.bbox);
+                }}
+                className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+                  isSelected
+                    ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                    : 'bg-[#070b12] text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                {site.name}
+              </button>
+            );
+          })}
         </div>
 
         <button
@@ -160,7 +163,7 @@ export const RegionSelectionToolbar: React.FC = () => {
           </div>
 
           <button
-            onClick={handleTriggerDiscovery}
+            onClick={() => handleTriggerDiscovery()}
             disabled={isDiscovering}
             className="flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-bold transition-all shadow-md disabled:opacity-50"
           >

@@ -275,16 +275,16 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
 
         {/* Empty State when no searches exist */}
         {searches.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4">
-            <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-indigo-400">
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3 bg-[#0b101c] border border-slate-800 rounded-2xl p-8">
+            <div className="p-3 bg-slate-900 rounded-full text-slate-400">
               <Sparkles className="w-8 h-8" />
             </div>
-            <div className="max-w-md space-y-1.5">
-              <h3 className="text-base font-mono font-bold text-slate-200">
-                No Mission Window Searches Yet
+            <div className="max-w-md space-y-1">
+              <h3 className="text-sm font-mono font-bold text-slate-200">
+                No window searches yet
               </h3>
-              <p className="text-xs font-mono text-slate-400">
-                Select a mission profile, target candidate site, and desired date range above to search for compliant lunar landing and operation start windows.
+              <p className="text-xs font-sans text-slate-400">
+                Select a candidate and mission profile above to search for compliant lunar mission windows.
               </p>
             </div>
           </div>

@@ -45,7 +45,9 @@ export function LunarGlobe() {
     </div>
     <div className="map-actions" role="group" aria-label="Globe navigation">
       <button onClick={() => focus(latitude, longitude)}>Focus selection</button><button onClick={() => focus(-90, 0)}>South pole</button><button onClick={() => focus(90, 0)}>North pole</button><button onClick={() => focus(0, 0)}>Prime meridian</button>
-      <button onClick={() => setSelectedCoordinates(-89.4632, -137.4896, 'preset')}>Site01</button>
+      <button onClick={() => setSelectedCoordinates(-89.4632, -137.4896, 'preset')}>Site 01</button>
+      <button onClick={() => setSelectedCoordinates(-89.7614, -157.1156, 'preset')}>Site 04</button>
+      <button onClick={() => setSelectedCoordinates(-88.6682, -68.3820, 'preset')}>Site 11</button>
     </div>
     <div className="map-state" role="status">{globeError ? <><span>{globeError}</span><button className="text-button" onClick={() => setRetry(v => v + 1)}>Retry globe imagery</button></> : globeLoading ? 'Loading lunar imagery…' : 'Drag to orbit · Scroll to zoom · Click to select'}</div>
     <footer className="visualization-footer"><span data-testid="globe-coordinates">{formatCoordinates({ latitude, longitude }, 5)}</span><span>Illustrative lighting · No global elevation model</span><a href="https://trek.nasa.gov/moon/" target="_blank" rel="noreferrer">Imagery: NASA / GSFC / ASU · Moon Trek ↗</a></footer>

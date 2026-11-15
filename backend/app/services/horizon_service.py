@@ -48,7 +48,16 @@ class HorizonEngineService:
         reference_frame = record.reference_frame if record else "MOON_ME (DE421)"
 
         surf_path = None
-        if record and record.is_local_available and record.local_surf_path:
+        dataset_id = request.dataset_id
+        # Check if coordinates fall inside another available local regional site
+        alt_site = self.catalogue.find_site_for_coordinates(request.latitude, request.longitude)
+        if alt_site and alt_site.local_surf_path and Path(alt_site.local_surf_path).exists():
+            surf_path = alt_site.local_surf_path
+            dataset_name = alt_site.name
+            citation = alt_site.citation or citation
+            reference_frame = alt_site.reference_frame
+            dataset_id = alt_site.dataset_id
+        elif record and record.is_local_available and record.local_surf_path:
             surf_path = record.local_surf_path
         elif self.default_loader.is_available():
             surf_path = str(self.default_loader.surf_path)
@@ -66,7 +75,7 @@ class HorizonEngineService:
                 azimuth_resolution_deg=request.azimuth_resolution_deg,
                 max_search_distance_m=request.max_search_distance_m,
                 sampling_interval_m=request.sampling_interval_m,
-                dataset_id=request.dataset_id,
+                dataset_id=dataset_id,
                 dataset_name=dataset_name,
                 reference_frame=reference_frame,
                 citation=citation,

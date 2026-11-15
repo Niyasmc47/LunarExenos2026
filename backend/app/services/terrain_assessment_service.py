@@ -223,14 +223,19 @@ class TerrainAssessmentService:
         # Coordinate transformation
         proj_x, proj_y = transformer.lat_lon_to_xy(lat, lon)
 
-        # 1. Point sample
-        point_sample = self.dem_loader_svc.sample_point(lat, lon)
+        # 1. Resolve site-specific DEM loader for this candidate
+        target_site = scen.site_id or self.dem_loader_svc.dataset_id
+        from app.services.dem_loader import get_dem_loader
+        candidate_loader = get_dem_loader(target_site)
+
+        # Point sample
+        point_sample = candidate_loader.sample_point(lat, lon)
         in_bounds = point_sample.get("in_bounds", False)
         point_elev = point_sample.get("elevation_m")
         point_slope = point_sample.get("slope_deg")
 
         if not in_bounds:
-            warnings.append(f"Candidate coordinate ({lat:.4f}°, {lon:.4f}°) is outside DEM raster extent.")
+            warnings.append(f"Candidate coordinate ({lat:.4f}°, {lon:.4f}°) is outside {candidate_loader.cfg['name']} DEM raster extent.")
 
         # 2. Footprint sampling
         slope_req = getattr(profile.requirements.terrain, "max_local_slope_deg", None) or getattr(profile.requirements.terrain, "max_slope_deg", None)
@@ -246,6 +251,7 @@ class TerrainAssessmentService:
             point_slope=point_slope,
             in_bounds=in_bounds,
             configured_max_slope=configured_max_slope,
+            loader=candidate_loader,
         )
 
         # 3. Roughness metrics
@@ -374,6 +380,7 @@ class TerrainAssessmentService:
         point_slope: Optional[float],
         in_bounds: bool,
         configured_max_slope: float,
+        loader: Optional[DemLoaderService] = None,
     ) -> Tuple[ElevationAssessmentMetrics, SlopeAssessmentMetrics, FootprintDataQuality]:
         """
         Samples rasters within a circular footprint around (proj_x, proj_y).
@@ -451,9 +458,10 @@ class TerrainAssessmentService:
             return elev_m, slope_m, dq
 
         # Circular footprint (radius > 0)
-        self.dem_loader_svc._ensure_open()
-        surf_src = self.dem_loader_svc._surf_src
-        slp_src = self.dem_loader_svc._slp_src
+        active_loader = loader or self.dem_loader_svc
+        active_loader._ensure_open()
+        surf_src = active_loader._surf_src
+        slp_src = active_loader._slp_src
 
         if surf_src is None:
             dq = FootprintDataQuality(
@@ -661,6 +669,7 @@ class TerrainAssessmentService:
             std_slope_deg=std_s,
             slope_distribution=slope_dist,
             exceedance_percentage=exceedance_pct,
+            slope_source=f"NASA LOLA 5 m/pixel co-registered slope product ({active_loader.slp_path.name})",
         )
 
         return elev_m, slope_m, dq

@@ -168,16 +168,16 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
 
         {/* Empty State */}
         {assessments.length === 0 && !loading && (
-          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-4">
-            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400">
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3 bg-[#0b101c] border border-slate-800 rounded-2xl p-8">
+            <div className="p-3 bg-slate-900 rounded-full text-slate-400">
               <Sparkles className="w-8 h-8" />
             </div>
-            <div className="max-w-md space-y-1.5">
-              <h3 className="text-base font-mono font-bold text-slate-200">
-                Ready to inspect your landing sites?
+            <div className="max-w-md space-y-1">
+              <h3 className="text-sm font-mono font-bold text-slate-200">
+                No assessments yet
               </h3>
-              <p className="text-xs font-mono text-slate-400">
-                Configure a mission profile, select candidate lunar landing locations, and specify the assessment footprint radius above to evaluate elevation, slope, and data coverage.
+              <p className="text-xs font-sans text-slate-400">
+                Select a candidate and mission profile to begin.
               </p>
             </div>
           </div>

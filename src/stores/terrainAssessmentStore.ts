@@ -57,7 +57,7 @@ export const useTerrainAssessmentStore = create<TerrainAssessmentState>((set, ge
   selectedCandidateId: null,
 
   selectedProfileId: 'template-robotic-rover',
-  selectedScenarioIds: ['scenario-cr-crest', 'scenario-cr-alpha', 'scenario-cr-south'],
+  selectedScenarioIds: [],
   assessmentRadiusM: 50.0,
   customName: '',
 

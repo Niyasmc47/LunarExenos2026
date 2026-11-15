@@ -50,7 +50,7 @@ export const ReportHistoryList: React.FC = () => {
         {reports.length === 0 ? (
           <div className="text-center p-8 text-slate-500 space-y-2">
             <FileText className="w-8 h-8 mx-auto opacity-30 text-purple-400" />
-            <p className="text-xs">No mission decision reports generated yet.</p>
+            <p className="text-xs">No reports yet. Generate a report from completed analyses.</p>
             <button
               onClick={openCreateModal}
               className="text-purple-400 hover:text-purple-300 underline text-xs"

@@ -22,6 +22,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
   const isComparing = useScenarioStore((state) => state.isComparing);
   const downloadExport = useScenarioStore((state) => state.downloadExport);
   const isExporting = useScenarioStore((state) => state.isExporting);
+  const comparisonResult = useScenarioStore((state) => state.comparisonResult);
 
   const enforceHarmonizedTime = useScenarioStore((state) => state.enforceHarmonizedTime);
   const setEnforceHarmonizedTime = useScenarioStore((state) => state.setEnforceHarmonizedTime);
@@ -77,8 +78,12 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
           <div className="relative">
             <button
               onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-              disabled={isExporting}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold bg-[#070b12] hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700 transition-colors"
+              disabled={isExporting || !comparisonResult}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-colors ${
+                !comparisonResult
+                  ? 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
+                  : 'bg-[#070b12] hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700'
+              }`}
             >
               <Download className="w-3.5 h-3.5 text-cyan-400" />
               <span>Export results</span>

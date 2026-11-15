@@ -28,10 +28,9 @@ export const ReportGeneratorWorkspace: React.FC = () => {
             <FileText className="w-12 h-12 stroke-[1.2]" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-white">Tell the story behind your decision</h3>
+            <h3 className="text-base font-bold text-white">No reports yet</h3>
             <p className="text-xs text-slate-400 max-w-md">
-              Select an existing report from the left sidebar or generate a new technical report
-              from your saved trade-off studies and analysis runs.
+              Generate a report from completed analyses.
             </p>
           </div>
           <button
@@ -39,7 +38,7 @@ export const ReportGeneratorWorkspace: React.FC = () => {
             className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center gap-2 transition-all shadow-lg shadow-purple-900/40"
           >
             <Plus className="w-4 h-4" />
-            <span>Create a decision report</span>
+            <span>Generate mission report</span>
           </button>
         </div>
       )}

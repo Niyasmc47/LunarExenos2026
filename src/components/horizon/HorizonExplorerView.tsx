@@ -1,4 +1,3 @@
-import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect, useState } from 'react';
 import { useHorizonStore } from '../../stores/horizonStore';
 import { useLocationStore } from '../../stores/locationStore';
@@ -6,7 +5,7 @@ import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { HorizonCircularRadar } from './HorizonCircularRadar';
 import { HorizonElevationGraph } from './HorizonElevationGraph';
 import { TerrainViewer3D } from '../terrain-explorer/TerrainViewer3D';
-import { Box, Compass, MousePointerClick, Maximize2 } from 'lucide-react';
+import { Box, Compass, Maximize2, MapPin } from 'lucide-react';
 
 export const HorizonExplorerView: React.FC = () => {
   const {
@@ -36,16 +35,12 @@ export const HorizonExplorerView: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto gap-2">
-      <ResultIntro title="Your local skyline" description="Click the terrain to move the observer. The skyline shows where nearby ground blocks the sky." />
       {/* View Layout Controls & Quick Help */}
       <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
-            <MousePointerClick className="w-3.5 h-3.5" />
-            <span className="font-bold">Click terrain to move the observer</span>
-          </div>
-          <span className="text-slate-400 hidden md:inline text-[11px]">
-            Selected: <span className="text-slate-200 font-bold">{observerLat.toFixed(4)}°, {observerLon.toFixed(4)}°</span>
+          <span className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+            Observer: <span className="text-slate-200 font-bold">{observerLat.toFixed(4)}°, {observerLon.toFixed(4)}°</span>
           </span>
         </div>
 
