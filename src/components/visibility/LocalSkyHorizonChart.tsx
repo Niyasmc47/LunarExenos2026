@@ -127,7 +127,7 @@ export const LocalSkyHorizonChart: React.FC = () => {
             onClick={() => setViewMode('panoramic')}
             className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all ${
               viewMode === 'panoramic'
-                ? 'bg-emerald-500 text-black'
+                ? 'bg-[#ffe3b0] text-[#141619]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -137,7 +137,7 @@ export const LocalSkyHorizonChart: React.FC = () => {
             onClick={() => setViewMode('polar')}
             className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all ${
               viewMode === 'polar'
-                ? 'bg-emerald-500 text-black'
+                ? 'bg-[#ffe3b0] text-[#141619]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >

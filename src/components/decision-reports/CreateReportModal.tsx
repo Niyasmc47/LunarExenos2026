@@ -116,7 +116,7 @@ export const CreateReportModal: React.FC = () => {
         {/* Header */}
         <div className="p-5 border-b border-[#2b2d32] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
+            <div className="p-2 rounded-xl bg-[#ffe3b0]/10 border border-[#ffe3b0]/30 text-[#ffe3b0]">
               <FileText className="w-5 h-5" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
                 placeholder="e.g. Artemis Polar Landing Decision Synthesis"
                 required
               />
@@ -162,7 +162,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={missionName}
                 onChange={(e) => setMissionName(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
                 placeholder="e.g. Artemis Polar Scout-1"
                 required
               />
@@ -176,7 +176,7 @@ export const CreateReportModal: React.FC = () => {
                 type="text"
                 value={authorOrg}
                 onChange={(e) => setAuthorOrg(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
                 placeholder="e.g. LUNAVISTA Mission Planning Directorate"
               />
             </div>
@@ -186,7 +186,7 @@ export const CreateReportModal: React.FC = () => {
               <select
                 value={selectedProfileId}
                 onChange={(e) => setSelectedProfileId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
                 required
               >
                 {profiles.map((p) => (
@@ -204,14 +204,14 @@ export const CreateReportModal: React.FC = () => {
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
               placeholder="Brief summary of mission goals..."
             />
           </div>
 
           {/* Source Analysis Integrations */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-3">
-            <span className="text-[10px] text-purple-400 font-bold uppercase tracking-wider block">
+          <div className="p-4 rounded-xl bg-[#0e1013] border border-[#2b2d32] space-y-3">
+            <span className="text-[10px] text-[#ffe3b0] font-bold uppercase tracking-wider block">
               Integrate Analysis Snapshots (Reuses Stored Results)
             </span>
 
@@ -288,7 +288,7 @@ export const CreateReportModal: React.FC = () => {
               rows={3}
               value={executiveNotes}
               onChange={(e) => setExecutiveNotes(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
               placeholder="Custom executive observations, programmatic context, or special mission considerations..."
             />
           </div>
@@ -298,14 +298,14 @@ export const CreateReportModal: React.FC = () => {
             <button
               type="button"
               aria-label="Close dialog" onClick={closeCreateModal}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl bg-[#191b20] hover:bg-[#202228] text-slate-300 font-semibold border border-[#2b2d32] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold flex items-center gap-2 transition-all shadow-lg shadow-purple-900/40"
+              className="px-5 py-2 rounded-xl bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#ffe3b0]/20"
             >
               <Sparkles className="w-4 h-4" />
               <span>{isLoading ? 'Synthesizing Report...' : 'Compile & Publish Report'}</span>

@@ -30,7 +30,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
     <div
       className={`border rounded-xl p-5 transition-all ${
         isActive
-          ? 'bg-slate-900/95 border-emerald-500/80 shadow-lg shadow-emerald-950/30'
+          ? 'bg-[#191b20] border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-md shadow-[#ffe3b0]/10'
           : 'bg-[#141619] hover:bg-[#191b20] border-[#2b2d32]'
       }`}
     >
@@ -46,7 +46,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs font-mono text-slate-400 mt-0.5">
-            <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+            <MapPin className="w-3.5 h-3.5 text-[#ffe3b0] shrink-0" />
             <span>Lat: {c.latitude.toFixed(4)}° • Lon: {c.longitude.toFixed(4)}°</span>
             {c.projected_x !== null && c.projected_y !== null && (
               <span className="text-slate-500 hidden md:inline">
@@ -98,9 +98,9 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       {/* Primary Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3.5">
         {/* Elevation Metrics Panel */}
-        <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32]/50 space-y-2">
+        <div className="bg-[#0e1013] rounded-xl p-3 border border-[#2b2d32] space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+            <span className="text-[#ffe3b0] font-semibold flex items-center gap-1.5">
               <Mountain className="w-3.5 h-3.5" />
               <span>Surface Elevation (IAU Datum)</span>
             </span>
@@ -134,9 +134,9 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         </div>
 
         {/* Slope Metrics Panel */}
-        <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32]/50 space-y-2">
+        <div className="bg-[#0e1013] rounded-xl p-3 border border-[#2b2d32] space-y-2">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-sky-400 font-semibold flex items-center gap-1.5">
+            <span className="text-[#7bd0ff] font-semibold flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Topographic Slope (NASA LOLA)</span>
             </span>
@@ -173,14 +173,14 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
                 <span>Slope Distribution (0° to 30°+)</span>
                 <span className="text-slate-500">Lander Tilt Hazard</span>
               </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden flex">
+              <div className="w-full bg-[#202228] h-1.5 rounded-full overflow-hidden flex border border-[#2b2d32]">
                 <div
-                  className="bg-emerald-400 h-full"
+                  className="bg-[#ffe3b0] h-full"
                   style={{ width: `${slope.slope_distribution['0° – 5°: Safe Landing (Low Tilt Risk)'] || 0}%` }}
                   title={`0-5°: ${slope.slope_distribution['0° – 5°: Safe Landing (Low Tilt Risk)'] || 0}%`}
                 />
                 <div
-                  className="bg-teal-400 h-full"
+                  className="bg-[#e5c68d] h-full"
                   style={{ width: `${slope.slope_distribution['5° – 10°: Favorable Terrain'] || 0}%` }}
                   title={`5-10°: ${slope.slope_distribution['5° – 10°: Favorable Terrain'] || 0}%`}
                 />
@@ -208,7 +208,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
       {/* Roughness & Data Quality Callout */}
       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Roughness Status */}
-        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
+        <div className="p-2.5 bg-[#0e1013] rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
           <div className="flex items-center justify-between text-slate-400">
             <span className="font-semibold text-amber-400/90 flex items-center gap-1">
               <Layers className="w-3 h-3 text-amber-400" />
@@ -222,11 +222,11 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         </div>
 
         {/* Spatial Coverage */}
-        <div className="p-2.5 bg-slate-900/40 rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
+        <div className="p-2.5 bg-[#0e1013] rounded-lg border border-[#2b2d32] text-[10px] font-mono space-y-1">
           <div className="flex items-center justify-between text-slate-400">
             <span>
               {dq.requested_radius_m === 0 ? (
-                <strong className="text-sky-300">Point Assessment (Single Pixel)</strong>
+                <strong className="text-[#7bd0ff]">Point Assessment (Single Pixel)</strong>
               ) : (
                 <>Footprint Radius: <strong className="text-white">{dq.requested_radius_m} m</strong></>
               )}
@@ -250,7 +250,7 @@ export const CandidateTerrainCard: React.FC<Props> = ({ candidate: c }) => {
         </span>
         <button
           onClick={() => openDetailDrawer(c)}
-          className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+          className="flex items-center gap-1 text-[#ffe3b0] hover:text-[#ffdea3] font-medium transition-colors"
         >
           <span>Inspect Requirements Matrix</span>
           <ChevronRight className="w-3.5 h-3.5" />

@@ -63,7 +63,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
               type="checkbox"
               checked={requirement.enabled}
               onChange={(e) => onUpdate({ enabled: e.target.checked })}
-              className="w-4 h-4 rounded bg-[#08090b] border-[#303238] text-emerald-500 focus:ring-0 cursor-pointer"
+              className="w-4 h-4 rounded bg-[#08090b] border-[#303238] accent-[#ffe3b0] focus:ring-0 cursor-pointer"
             />
           )}
           <span
@@ -85,7 +85,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
                   classification: e.target.value as RequirementClassification,
                 })
               }
-              className="text-[10px] font-mono bg-[#08090b] border border-[#303238] text-slate-200 px-2 py-1 rounded focus:outline-none focus:border-emerald-500"
+              className="text-[10px] font-mono bg-[#08090b] border border-[#303238] text-slate-200 px-2 py-1 rounded focus:outline-none focus:border-[#ffe3b0]"
             >
               <option value="HARD_CONSTRAINT">HARD CONSTRAINT (Mandatory)</option>
               <option value="SOFT_PREFERENCE">SOFT PREFERENCE (Trade-off)</option>

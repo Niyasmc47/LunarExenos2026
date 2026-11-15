@@ -29,17 +29,17 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
     report.sections.find((s) => s.section_id === activeSectionId) || report.sections[0];
 
   return (
-    <div className="report-reader flex-1 flex flex-col h-full bg-[#080d19] overflow-hidden text-xs font-mono">
+    <div className="report-reader flex-1 flex flex-col h-full bg-[#0e1013] overflow-hidden text-xs font-mono">
       {/* Top Action Bar */}
-      <div className="p-4 bg-slate-900/90 border-b border-[#2b2d32] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 bg-[#141619] border-b border-[#2b2d32] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400">
+          <div className="p-2 rounded-xl bg-[#ffe3b0]/10 border border-[#ffe3b0]/30 text-[#ffe3b0]">
             <FileText className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-base font-bold text-white tracking-tight">{report.title}</h2>
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] border border-[#303238]">
+              <span className="px-2 py-0.5 rounded bg-[#191b20] text-slate-400 text-[10px] border border-[#2b2d32]">
                 {report.id}
               </span>
             </div>
@@ -58,7 +58,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <a
             href={getReportPdfExportUrl(report.id)}
             download={`${report.id}.pdf`}
-            className="report-pdf px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-red-950/40 text-xs"
+            className="report-pdf px-3 py-1.5 rounded-lg bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-bold flex items-center gap-1.5 transition-all shadow-md shadow-[#ffe3b0]/20 text-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export PDF</span>
@@ -67,7 +67,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <a
             href={getReportJsonExportUrl(report.id)}
             download={`${report.id}.json`}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-[#303238] font-semibold flex items-center gap-1.5 transition-all text-xs"
+            className="px-3 py-1.5 rounded-lg bg-[#191b20] hover:bg-[#202228] text-slate-200 border border-[#2b2d32] font-semibold flex items-center gap-1.5 transition-all text-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>JSON</span>
@@ -76,7 +76,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <a
             href={getReportCsvExportUrl(report.id)}
             download={`${report.id}_comparison.csv`}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-[#303238] font-semibold flex items-center gap-1.5 transition-all text-xs"
+            className="px-3 py-1.5 rounded-lg bg-[#191b20] hover:bg-[#202228] text-slate-200 border border-[#2b2d32] font-semibold flex items-center gap-1.5 transition-all text-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>CSV Matrix</span>
@@ -85,8 +85,8 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
       </div>
 
       {/* Executive KPI Banner */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-[#0a1020] border-b border-[#202228]">
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-[#2b2d32]">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-[#141619] border-b border-[#202228]">
+        <div className="p-3 rounded-xl bg-[#191b20] border border-[#2b2d32]">
           <span className="text-[10px] text-slate-500 uppercase block">Candidates Evaluated</span>
           <span className="text-lg font-bold text-white block mt-0.5">
             {report.total_candidates_evaluated} Alternatives
@@ -94,7 +94,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <span className="text-[10px] text-slate-400">Candidates included in this report</span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-[#2b2d32]">
+        <div className="p-3 rounded-xl bg-[#191b20] border border-[#2b2d32]">
           <span className="text-[10px] text-slate-500 uppercase block">Fully Compliant</span>
           <span className="text-lg font-bold text-emerald-400 block mt-0.5 flex items-center gap-1">
             <ShieldCheck className="w-4 h-4 inline" />
@@ -103,7 +103,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <span className="text-[10px] text-slate-400">100% hard constraints satisfied</span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-[#2b2d32]">
+        <div className="p-3 rounded-xl bg-[#191b20] border border-[#2b2d32]">
           <span className="text-[10px] text-slate-500 uppercase block">Non-Compliant</span>
           <span className="text-lg font-bold text-rose-400 block mt-0.5 flex items-center gap-1">
             <ShieldAlert className="w-4 h-4 inline" />
@@ -112,7 +112,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <span className="text-[10px] text-slate-400">Failed ≥ 1 hard constraint</span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-[#2b2d32]">
+        <div className="p-3 rounded-xl bg-[#191b20] border border-[#2b2d32]">
           <span className="text-[10px] text-slate-500 uppercase block">Indeterminate</span>
           <span className="text-lg font-bold text-amber-400 block mt-0.5 flex items-center gap-1">
             <AlertTriangle className="w-4 h-4 inline" />
@@ -121,9 +121,9 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <span className="text-[10px] text-slate-400">Partial DEM / unverified layers</span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-900/60 border border-[#2b2d32]">
+        <div className="p-3 rounded-xl bg-[#191b20] border border-[#2b2d32]">
           <span className="text-[10px] text-slate-500 uppercase block">Automated Recommendation</span>
-          <span className="text-xs font-bold text-cyan-300 block mt-1">
+          <span className="text-xs font-bold text-[#7bd0ff] block mt-1">
             Final decision: mission team
           </span>
           <span className="text-[9px] text-slate-400 mt-0.5 block">
@@ -135,7 +135,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
       {/* Main Content Area: Split Navigation + Active Section */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Section Navigation */}
-        <div className="report-section-nav w-64 border-r border-[#2b2d32] bg-[#08090b] p-3 overflow-y-auto space-y-1 shrink-0">
+        <div className="report-section-nav w-64 border-r border-[#2b2d32] bg-[#0e1013] p-3 overflow-y-auto space-y-1 shrink-0">
           <div className="px-2 py-1 text-[10px] text-slate-500 uppercase tracking-wider font-bold">
             Report sections ({report.sections.length})
           </div>
@@ -146,8 +146,8 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
               onClick={() => setActiveSectionId(s.section_id)}
               className={`w-full text-left px-3 py-2 rounded-lg text-xs font-mono transition-all flex items-center gap-2 ${
                 activeSectionId === s.section_id
-                  ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                  ? 'bg-[#ffe3b0]/15 text-[#ffe3b0] border border-[#ffe3b0]/40 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20]'
               }`}
             >
               <span className="text-[10px] text-slate-500 w-4 font-bold">{s.section_number}</span>
@@ -162,11 +162,11 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
             <div className="max-w-4xl space-y-6">
               {/* Section Header */}
               <div className="pb-3 border-b border-[#2b2d32]">
-                <div className="text-[10px] text-purple-400 font-bold uppercase tracking-wider">
+                <div className="text-[10px] text-[#ffe3b0] font-bold uppercase tracking-wider">
                   Section {activeSection.section_number}
                 </div>
                 <h3 className="text-lg font-bold text-white mt-0.5">{activeSection.title}</h3>
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed bg-slate-900/40 p-4 rounded-xl border border-[#202228]">
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed bg-[#141619] p-4 rounded-xl border border-[#202228]">
                   {activeSection.summary}
                 </p>
               </div>
@@ -193,7 +193,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
                     <div key={tIdx} className="space-y-2">
                       {tbl.title && (
                         <h4 className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                          <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                          <Layers className="w-3.5 h-3.5 text-[#7bd0ff]" />
                           <span>{tbl.title}</span>
                         </h4>
                       )}
@@ -201,7 +201,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
                       <div className="overflow-x-auto rounded-xl border border-[#2b2d32] bg-[#08090b]/80">
                         <table className="w-full text-left border-collapse text-xs">
                           <thead>
-                            <tr className="bg-slate-900 text-slate-400 border-b border-[#2b2d32] text-[11px]">
+                            <tr className="bg-[#191b20] text-slate-400 border-b border-[#2b2d32] text-[11px]">
                               {tbl.headers.map((h, hIdx) => (
                                 <th key={hIdx} className="py-2.5 px-3 whitespace-nowrap">
                                   {h}

@@ -67,7 +67,7 @@ export const ProfileEditor: React.FC = () => {
                     value={profile.name}
                     onChange={(e) => updateDraftField('name', e.target.value)}
                     aria-label="Mission profile name" placeholder="Name your mission profile"
-                    className="bg-[#08090b] border border-[#303238] text-slate-100 px-2.5 py-1 rounded text-sm font-mono focus:outline-none focus:border-emerald-500 w-full min-w-0"
+                    className="bg-[#08090b] border border-[#303238] text-slate-100 px-2.5 py-1 rounded text-sm font-mono focus:outline-none focus:border-[#ffe3b0] w-full min-w-0"
                   />
                 ) : (
                   profile.name
@@ -104,10 +104,10 @@ export const ProfileEditor: React.FC = () => {
               <button
                 onClick={() => saveDraft()}
                 disabled={Boolean(saving || (validation && !validation.is_valid))}
-                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
                   validation && !validation.is_valid
                     ? 'bg-slate-800 text-slate-400 border border-[#303238] cursor-not-allowed'
-                    : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-md shadow-emerald-500/20'
+                    : 'bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] shadow-md shadow-[#ffe3b0]/20'
                 }`}
               >
                 <Save className="w-3.5 h-3.5" />
@@ -118,14 +118,14 @@ export const ProfileEditor: React.FC = () => {
             <>
               <button
                 onClick={() => duplicateProfile(profile.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-mono border border-[#303238] transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#191b20] hover:bg-[#202228] text-slate-300 text-xs font-mono border border-[#2b2d32] transition-colors"
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>Duplicate</span>
               </button>
               <button
                 onClick={startEdit}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black text-xs font-mono font-semibold border border-emerald-500/30 hover:border-emerald-500 transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#ffe3b0]/15 hover:bg-[#ffe3b0] text-[#ffe3b0] hover:text-[#141619] text-xs font-mono font-bold border border-[#ffe3b0]/40 hover:border-[#ffe3b0] transition-all"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 <span>Edit Profile</span>
@@ -160,7 +160,7 @@ export const ProfileEditor: React.FC = () => {
         {/* Section 1: Mission Parameters & Time Horizon */}
         <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-[#202228]">
-            <Clock className="w-4 h-4 text-emerald-400" />
+            <Clock className="w-4 h-4 text-[#ffe3b0]" />
             <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
               1. Mission basics & schedule
             </h2>
@@ -176,7 +176,7 @@ export const ProfileEditor: React.FC = () => {
                 <select
                   value={profile.mission_type}
                   onChange={(e) => updateDraftField('mission_type', e.target.value as any)}
-                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
                 >
                   <option value="robotic_exploration">Robotic Exploration Rover</option>
                   <option value="robotic_lander">Robotic Static Lander</option>
@@ -204,10 +204,10 @@ export const ProfileEditor: React.FC = () => {
                   max="90"
                   value={profile.duration_days}
                   onChange={(e) => updateDraftField('duration_days', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#08090b] border border-[#303238] text-emerald-400 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500 font-semibold"
+                  className="w-full bg-[#08090b] border border-[#303238] text-[#ffe3b0] text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-[#ffe3b0] font-semibold"
                 />
               ) : (
-                <div className="text-xs font-mono text-emerald-400 bg-[#08090b] border border-[#202228] px-3 py-2 rounded-lg font-semibold">
+                <div className="text-xs font-mono text-[#ffe3b0] bg-[#08090b] border border-[#202228] px-3 py-2 rounded-lg font-semibold">
                   {profile.duration_days} days ({(profile.duration_days * 24).toFixed(0)} hours)
                 </div>
               )}
@@ -229,8 +229,9 @@ export const ProfileEditor: React.FC = () => {
                   max="100"
                   value={profile.observer_height_m}
                   onChange={(e) => updateDraftField('observer_height_m', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500"
-                />
+                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
+                >
+                </input>
               ) : (
                 <div className="text-xs font-mono text-slate-200 bg-[#08090b] border border-[#202228] px-3 py-2 rounded-lg">
                   {profile.observer_height_m} meters above terrain
@@ -251,7 +252,7 @@ export const ProfileEditor: React.FC = () => {
                   value={profile.start_timestamp_iso}
                   onChange={(e) => updateDraftField('start_timestamp_iso', e.target.value)}
                   placeholder="2026-10-04T12:00:00Z"
-                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
                 />
               ) : (
                 <div className="text-xs font-mono text-slate-300 bg-[#08090b] border border-[#202228] px-3 py-2 rounded-lg">
@@ -270,7 +271,7 @@ export const ProfileEditor: React.FC = () => {
                   value={profile.end_timestamp_iso}
                   onChange={(e) => updateDraftField('end_timestamp_iso', e.target.value)}
                   placeholder="2026-10-11T12:00:00Z"
-                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-2 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
                 />
               ) : (
                 <div className="text-xs font-mono text-slate-300 bg-[#08090b] border border-[#202228] px-3 py-2 rounded-lg">
@@ -291,7 +292,7 @@ export const ProfileEditor: React.FC = () => {
                 value={profile.description}
                 onChange={(e) => updateDraftField('description', e.target.value)}
                 placeholder="Describe mission operational scenario, goals, and constraints..."
-                className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-sans p-2.5 rounded-lg focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-sans p-2.5 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
               />
             ) : (
               <p className="text-xs text-slate-300 font-sans leading-relaxed bg-[#08090b] p-3 rounded-lg border border-[#202228]">
@@ -422,12 +423,12 @@ export const ProfileEditor: React.FC = () => {
         <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#202228] gap-2">
             <div className="flex items-center gap-2">
-              <Mountain className="w-4 h-4 text-emerald-400" />
+              <Mountain className="w-4 h-4 text-[#ffe3b0]" />
               <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
                 4. TERRAIN GEOMORPHOMETRIC LIMITS
               </h2>
             </div>
-            <div className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+            <div className="text-[10px] font-mono text-[#ffe3b0] bg-[#ffe3b0]/10 border border-[#ffe3b0]/20 px-2 py-0.5 rounded">
               NASA LOLA 5 m DEM criteria • Does not guarantee sub-pixel boulder clearance
             </div>
           </div>

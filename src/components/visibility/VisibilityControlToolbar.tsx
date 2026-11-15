@@ -125,7 +125,7 @@ export const VisibilityControlToolbar: React.FC = () => {
               className={`flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-bold transition-all ${
                 isPlaying
                   ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
-                  : 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                  : 'bg-[#ffe3b0]/15 text-[#ffe3b0] hover:bg-[#ffe3b0]/25 border border-[#ffe3b0]/30'
               }`}
               title={isPlaying ? 'Pause Simulation Animation' : 'Play Simulation (+1h/step)'}
             >
@@ -169,7 +169,7 @@ export const VisibilityControlToolbar: React.FC = () => {
               }}
               className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
                 observerHeight === h
-                  ? 'bg-emerald-500 text-black'
+                  ? 'bg-[#ffe3b0] text-[#141619]'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -185,8 +185,8 @@ export const VisibilityControlToolbar: React.FC = () => {
             disabled={isLoadingInstant}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold border transition-all ${
               isLoadingInstant
-                ? 'bg-slate-800 border-[#303238] text-slate-500 cursor-not-allowed'
-                : 'bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/40 text-emerald-300'
+                ? 'bg-[#191b20] border-[#2b2d32] text-slate-500 cursor-not-allowed'
+                : 'bg-[#191b20] hover:bg-[#202228] border-[#2b2d32] text-[#ffe3b0]'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -198,8 +198,8 @@ export const VisibilityControlToolbar: React.FC = () => {
             disabled={isLoadingAnalysis}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold transition-all ${
               isLoadingAnalysis
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20'
+                ? 'bg-[#191b20] text-slate-500 cursor-not-allowed border border-[#2b2d32]'
+                : 'bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] shadow-lg shadow-[#ffe3b0]/20'
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5" />

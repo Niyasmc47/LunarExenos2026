@@ -34,7 +34,7 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
     <div
       className={`border rounded-xl p-4 transition-all ${
         isActive
-          ? 'bg-slate-900/95 border-indigo-500/80 shadow-lg shadow-indigo-950/30'
+          ? 'bg-[#191b20] border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-md shadow-[#ffe3b0]/10'
           : 'bg-[#141619] hover:bg-[#191b20] border-[#2b2d32]'
       }`}
     >
@@ -44,10 +44,10 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
           <button
             onClick={() => toggleComparisonSelection(win.window_id)}
             title="Select window for side-by-side comparison (2 to 4 windows)"
-            className="text-slate-400 hover:text-indigo-400 transition-colors"
+            className="text-slate-400 hover:text-[#ffe3b0] transition-colors"
           >
             {isSelectedForComp ? (
-              <CheckSquare className="w-4 h-4 text-indigo-400" />
+              <CheckSquare className="w-4 h-4 text-[#ffe3b0]" />
             ) : (
               <Square className="w-4 h-4 text-slate-600" />
             )}
@@ -67,7 +67,7 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
               <span>{win.start_timestamp_iso.replace('T', ' ').replace('Z', '')}</span>
               <span className="text-slate-600">→</span>
               <span>{win.end_timestamp_iso.replace('T', ' ').replace('Z', '')}</span>
-              <span className="text-indigo-400 font-semibold ml-1">
+              <span className="text-[#ffe3b0] font-semibold ml-1">
                 ({win.duration_hours.toFixed(1)} h)
               </span>
             </div>
@@ -188,7 +188,7 @@ export const WindowTimelineCard: React.FC<Props> = ({ window: win }) => {
         </span>
         <button
           onClick={() => openDetailDrawer(win)}
-          className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+          className="flex items-center gap-1 text-[#ffe3b0] hover:text-[#ffdea3] font-medium transition-colors"
         >
           <span>Inspect Constraints Matrix</span>
           <ChevronRight className="w-3.5 h-3.5" />

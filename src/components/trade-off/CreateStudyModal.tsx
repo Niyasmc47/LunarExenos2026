@@ -197,7 +197,7 @@ export const CreateStudyModal: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Connecting Ridge vs Shackleton Trade-off"
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
                 required
               />
             </div>
@@ -209,7 +209,7 @@ export const CreateStudyModal: React.FC = () => {
               <select
                 value={selectedProfileId}
                 onChange={(e) => handleProfileChange(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0]"
               >
                 {profiles.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -228,7 +228,7 @@ export const CreateStudyModal: React.FC = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Document the landing site rationale, competing trade-off objectives, and constraints..."
-              className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-[#303238] text-white font-mono text-xs focus:outline-none focus:border-emerald-500 h-16"
+              className="w-full px-3 py-2 rounded-xl bg-[#08090b] border border-[#2b2d32] text-white font-mono text-xs focus:outline-none focus:border-[#ffe3b0] h-16"
             />
           </div>
 
@@ -242,7 +242,7 @@ export const CreateStudyModal: React.FC = () => {
                 type="button"
                 onClick={addAlternative}
                 disabled={alternatives.length >= 10}
-                className="px-2.5 py-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-mono flex items-center gap-1 transition-colors"
+                className="px-2.5 py-1 rounded-lg border border-[#ffe3b0]/40 bg-[#ffe3b0]/10 text-[#ffe3b0] hover:bg-[#ffe3b0]/20 text-xs font-mono flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Alternative</span>
@@ -253,10 +253,10 @@ export const CreateStudyModal: React.FC = () => {
               {alternatives.map((alt, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-slate-900/60 border border-[#2b2d32] space-y-3 relative group"
+                  className="p-4 rounded-xl bg-[#0e1013] border border-[#2b2d32] space-y-3 relative group"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-mono font-bold text-emerald-400">
+                    <span className="text-[11px] font-mono font-bold text-[#ffe3b0]">
                       Alternative #{idx + 1}
                     </span>
                     {alternatives.length > 2 && (
@@ -280,7 +280,7 @@ export const CreateStudyModal: React.FC = () => {
                         type="text"
                         value={alt.name}
                         onChange={(e) => handleAltChange(idx, 'name', e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#303238] text-slate-100 font-mono text-xs focus:border-emerald-500"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-100 font-mono text-xs focus:border-[#ffe3b0]"
                         required
                       />
                     </div>
@@ -292,7 +292,7 @@ export const CreateStudyModal: React.FC = () => {
                       <select
                         value={alt.scenario_id}
                         onChange={(e) => handleAltChange(idx, 'scenario_id', e.target.value)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#303238] text-slate-100 font-mono text-xs focus:border-emerald-500"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-100 font-mono text-xs focus:border-[#ffe3b0]"
                       >
                         {scenarios.map((s) => (
                           <option key={s.id} value={s.id}>
@@ -311,7 +311,7 @@ export const CreateStudyModal: React.FC = () => {
                       <select
                         value={alt.window_search_id || ''}
                         onChange={(e) => handleAltChange(idx, 'window_search_id', e.target.value || null)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#303238] text-slate-100 font-mono text-xs focus:border-emerald-500"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-100 font-mono text-xs focus:border-[#ffe3b0]"
                       >
                         <option value="">None (Use default scenario epochs)</option>
                         {windowSearches.map((ws: any) => (
@@ -329,7 +329,7 @@ export const CreateStudyModal: React.FC = () => {
                       <select
                         value={alt.terrain_assessment_id || ''}
                         onChange={(e) => handleAltChange(idx, 'terrain_assessment_id', e.target.value || null)}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#303238] text-slate-100 font-mono text-xs focus:border-emerald-500"
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-[#08090b] border border-[#2b2d32] text-slate-100 font-mono text-xs focus:border-[#ffe3b0]"
                       >
                         <option value="">None (Use point DEM elevation/slope)</option>
                         {terrainAssessments.map((ta: any) => (
@@ -360,14 +360,14 @@ export const CreateStudyModal: React.FC = () => {
             <button
               type="button"
               aria-label="Close dialog" onClick={closeCreateModal}
-              className="px-4 py-2 rounded-xl border border-[#303238] hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono font-medium transition-colors"
+              className="px-4 py-2 rounded-xl border border-[#2b2d32] hover:border-slate-600 bg-[#141619] text-slate-300 text-xs font-mono font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50"
+              className="px-5 py-2 rounded-xl bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-mono font-bold text-xs shadow-lg shadow-[#ffe3b0]/20 transition-all disabled:opacity-50"
             >
               {isLoading ? 'Creating & Analyzing...' : 'Create & Run Trade-off Study'}
             </button>

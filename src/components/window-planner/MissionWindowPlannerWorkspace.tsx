@@ -91,7 +91,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
               <select
                 aria-label="Saved window searches" value={activeSearch.id}
                 onChange={(e) => selectSearch(e.target.value)}
-                className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500 max-w-xs truncate"
+                className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-[#ffe3b0] max-w-xs truncate"
               >
                 {searches.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -105,14 +105,14 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                 <span>•</span>
                 <span>Profile: <strong className="text-white">{activeSearch.profile_name}</strong></span>
                 <span>•</span>
-                <span>Duration: <strong className="text-indigo-400">{activeSearch.mission_duration_hours.toFixed(1)}h</strong></span>
+                <span>Duration: <strong className="text-[#ffe3b0]">{activeSearch.mission_duration_hours.toFixed(1)}h</strong></span>
               </div>
             </div>
 
             <div className="flex items-center gap-2 self-end md:self-auto">
               <button
                 onClick={openExportModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded-lg transition-colors border border-[#303238]"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#191b20] hover:bg-[#202228] text-[#7bd0ff] text-xs font-mono rounded-lg transition-colors border border-[#2b2d32]"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Data</span>
@@ -123,7 +123,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                     deleteSearch(activeSearch.id);
                   }
                 }}
-                className="p-1.5 bg-slate-900 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-[#2b2d32] rounded-lg transition-colors"
+                className="p-1.5 bg-[#191b20] hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-[#2b2d32] rounded-lg transition-colors"
                 title="Delete Search Run"
               >
                 <Trash2 className="w-4 h-4" />
@@ -136,15 +136,15 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
         {activeSearch && (
           <div className="space-y-4">
             {/* Filter and Sort Toolbar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-900/40 p-3 rounded-xl border border-[#2b2d32]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#0e1013] p-3 rounded-xl border border-[#2b2d32]">
               {/* Filter Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
                 <button
                   aria-pressed={filterClassification === 'ALL'} onClick={() => setFilterClassification('ALL')}
                   className={`px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'ALL'
-                      ? 'bg-indigo-600 text-white font-semibold shadow-sm'
-                      : 'bg-slate-800/80 text-slate-400 hover:text-white'
+                      ? 'bg-[#ffe3b0] text-[#141619] font-bold shadow-sm'
+                      : 'bg-[#141619] text-slate-400 hover:text-white border border-[#2b2d32]'
                   }`}
                 >
                   All ({activeSearch.windows.length})
@@ -153,8 +153,8 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   aria-pressed={filterClassification === 'COMPLIANT'} onClick={() => setFilterClassification('COMPLIANT')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'COMPLIANT'
-                      ? 'bg-emerald-600 text-white font-semibold shadow-sm'
-                      : 'bg-slate-800/80 text-emerald-400 hover:bg-slate-800'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold shadow-sm'
+                      : 'bg-[#141619] text-emerald-400 hover:bg-[#191b20] border border-[#2b2d32]'
                   }`}
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
@@ -164,8 +164,8 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   aria-pressed={filterClassification === 'NON_COMPLIANT'} onClick={() => setFilterClassification('NON_COMPLIANT')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'NON_COMPLIANT'
-                      ? 'bg-rose-600 text-white font-semibold shadow-sm'
-                      : 'bg-slate-800/80 text-rose-400 hover:bg-slate-800'
+                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 font-bold shadow-sm'
+                      : 'bg-[#141619] text-rose-400 hover:bg-[#191b20] border border-[#2b2d32]'
                   }`}
                 >
                   <ShieldAlert className="w-3.5 h-3.5" />
@@ -175,8 +175,8 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   aria-pressed={filterClassification === 'INDETERMINATE'} onClick={() => setFilterClassification('INDETERMINATE')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'INDETERMINATE'
-                      ? 'bg-amber-600 text-white font-semibold shadow-sm'
-                      : 'bg-slate-800/80 text-amber-400 hover:bg-slate-800'
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold shadow-sm'
+                      : 'bg-[#141619] text-amber-400 hover:bg-[#191b20] border border-[#2b2d32]'
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
@@ -212,12 +212,12 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
 
             {/* Floating Selection & Comparison Bar */}
             {selectedForComparison.length > 0 && (
-              <div className="sticky top-2 z-20 bg-indigo-950/90 border border-indigo-500/50 backdrop-blur-md rounded-xl p-3 px-4 flex items-center justify-between shadow-xl animate-in slide-in-from-top-2">
+              <div className="sticky top-2 z-20 bg-[#191b20]/95 border border-[#ffe3b0]/50 backdrop-blur-md rounded-xl p-3 px-4 flex items-center justify-between shadow-xl animate-in slide-in-from-top-2">
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 bg-indigo-500/20 rounded text-indigo-300">
+                  <div className="p-1.5 bg-[#ffe3b0]/20 rounded text-[#ffe3b0]">
                     <GitCompare className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-mono text-indigo-200">
+                  <span className="text-xs font-mono text-[#ffe3b0]">
                     <strong>{selectedForComparison.length}</strong> window{selectedForComparison.length > 1 ? 's' : ''} selected for comparison (max 4)
                   </span>
                 </div>
@@ -233,15 +233,15 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   <button
                     onClick={runComparison}
                     disabled={selectedForComparison.length < 2 || comparing}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
                       selectedForComparison.length >= 2 && !comparing
-                        ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                        ? 'bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] shadow'
+                        : 'bg-[#202228] text-slate-500 cursor-not-allowed border border-[#2b2d32]'
                     }`}
                   >
                     {comparing ? (
                       <>
-                        <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        <div className="w-3 h-3 border-2 border-[#141619]/20 border-t-[#141619] rounded-full animate-spin" />
                         <span>Comparing...</span>
                       </>
                     ) : (

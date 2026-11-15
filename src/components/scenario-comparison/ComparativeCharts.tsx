@@ -166,7 +166,7 @@ export const ComparativeCharts: React.FC = () => {
                 <div className="h-5 w-full flex rounded overflow-hidden border border-[#2b2d32] bg-[#0e1013]">
                   {timeline.map((pt, idx) => {
                     const isHovered = hoveredEpochIndex === idx;
-                    let bg = '#090d16'; // Obstructed
+                    let bg = '#141619'; // Obstructed
                     if (pt.sun_visibility_state === 'FULLY_VISIBLE') bg = '#fbbf24';
                     else if (pt.sun_visibility_state === 'PARTIALLY_VISIBLE') bg = '#f59e0b';
 

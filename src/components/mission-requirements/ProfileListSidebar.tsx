@@ -54,17 +54,17 @@ export const ProfileListSidebar: React.FC = () => {
   };
 
   return (
-    <div className="w-80 shrink-0 border-r border-[#2b2d32] bg-[#080d18] flex flex-col h-full overflow-hidden">
+    <div className="w-80 shrink-0 border-r border-[#2b2d32] bg-[#0e1013] flex flex-col h-full overflow-hidden">
       {/* Top Controls */}
       <div className="p-3.5 border-b border-[#2b2d32] space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
+            <SlidersHorizontal className="w-4 h-4 text-[#ffe3b0]" />
             <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
               MISSION PROFILES
             </h2>
           </div>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#191b20] text-[#ffe3b0] border border-[#2b2d32]">
             {profiles.length}
           </span>
         </div>
@@ -73,14 +73,14 @@ export const ProfileListSidebar: React.FC = () => {
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => startCreate()}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-semibold text-xs transition-colors shadow-sm shadow-emerald-500/20"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-mono font-bold text-xs transition-colors shadow-sm shadow-[#ffe3b0]/20"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Profile</span>
           </button>
           <button
             onClick={() => setIsTemplateModalOpen(true)}
-            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-mono text-xs border border-[#303238] transition-colors"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-[#191b20] hover:bg-[#202228] text-slate-200 font-mono text-xs border border-[#2b2d32] transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Templates</span>
@@ -95,7 +95,7 @@ export const ProfileListSidebar: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search profiles..."
-            className="w-full bg-[#08090b]/80 border border-[#2b2d32] text-xs font-mono text-slate-200 pl-8 pr-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#08090b]/80 border border-[#2b2d32] text-xs font-mono text-slate-200 pl-8 pr-2.5 py-1.5 rounded-lg focus:outline-none focus:border-[#ffe3b0]"
           />
         </div>
 
@@ -103,40 +103,40 @@ export const ProfileListSidebar: React.FC = () => {
         <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[10px] font-mono scrollbar-none">
           <button
             onClick={() => setFilterType('ALL')}
-            className={`px-2 py-0.5 rounded ${
+            className={`px-2 py-0.5 rounded transition-colors ${
               filterType === 'ALL'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#ffe3b0] text-[#141619] font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20]'
             }`}
           >
             All
           </button>
           <button
             onClick={() => setFilterType('robotic_exploration')}
-            className={`px-2 py-0.5 rounded shrink-0 ${
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${
               filterType === 'robotic_exploration'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#ffe3b0] text-[#141619] font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20]'
             }`}
           >
             Rover
           </button>
           <button
             onClick={() => setFilterType('robotic_lander')}
-            className={`px-2 py-0.5 rounded shrink-0 ${
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${
               filterType === 'robotic_lander'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#ffe3b0] text-[#141619] font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20]'
             }`}
           >
             Lander
           </button>
           <button
             onClick={() => setFilterType('crewed_surface')}
-            className={`px-2 py-0.5 rounded shrink-0 ${
+            className={`px-2 py-0.5 rounded shrink-0 transition-colors ${
               filterType === 'crewed_surface'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#ffe3b0] text-[#141619] font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20]'
             }`}
           >
             Crewed
@@ -159,8 +159,8 @@ export const ProfileListSidebar: React.FC = () => {
                 onClick={() => selectProfile(p.id)}
                 className={`group p-3 rounded-xl border text-left cursor-pointer transition-all ${
                   isSelected
-                    ? 'bg-emerald-500/10 border-emerald-500/50 shadow-md shadow-emerald-950/20'
-                    : 'bg-[#0d1424] border-[#202228] hover:border-[#303238] hover:bg-[#111a30]'
+                    ? 'bg-[#191b20] border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-md shadow-[#ffe3b0]/10'
+                    : 'bg-[#141619] border-[#2b2d32] hover:border-slate-600 hover:bg-[#191b20]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-1.5 mb-1">
@@ -175,7 +175,7 @@ export const ProfileListSidebar: React.FC = () => {
                       Template
                     </span>
                   ) : (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#202228] text-slate-400 border border-[#2b2d32]">
                       v{p.version}
                     </span>
                   )}
@@ -183,7 +183,7 @@ export const ProfileListSidebar: React.FC = () => {
 
                 <h3
                   className={`text-xs font-semibold font-mono truncate mb-1 ${
-                    isSelected ? 'text-emerald-300' : 'text-slate-200'
+                    isSelected ? 'text-[#ffe3b0]' : 'text-slate-200 group-hover:text-white'
                   }`}
                 >
                   {p.name}

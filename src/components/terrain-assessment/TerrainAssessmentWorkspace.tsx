@@ -54,7 +54,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
               <select
                 aria-label="Saved terrain assessments" value={activeAssessment.id}
                 onChange={(e) => selectAssessment(e.target.value)}
-                className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500 max-w-xs truncate"
+                className="bg-[#08090b] border border-[#303238] text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-[#ffe3b0] max-w-xs truncate"
               >
                 {assessments.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -66,7 +66,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
               <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
                 <span>Profile: <strong className="text-white">{activeAssessment.profile_name}</strong></span>
                 <span>•</span>
-                <span>Radius: <strong className="text-emerald-400">{activeAssessment.assessment_radius_m} m</strong></span>
+                <span>Radius: <strong className="text-[#ffe3b0]">{activeAssessment.assessment_radius_m} m</strong></span>
                 <span>•</span>
                 <span>Candidates: <strong className="text-white">{activeAssessment.candidates.length}</strong></span>
               </div>
@@ -75,7 +75,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
             <div className="flex items-center gap-2 self-end md:self-auto">
               <button
                 onClick={openExportModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded-lg transition-colors border border-[#303238]"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#191b20] hover:bg-[#202228] text-[#7bd0ff] text-xs font-mono rounded-lg transition-colors border border-[#2b2d32]"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Export Assessment</span>
@@ -86,7 +86,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
                     deleteAssessment(activeAssessment.id);
                   }
                 }}
-                className="p-1.5 bg-slate-900 hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-[#2b2d32] rounded-lg transition-colors"
+                className="p-1.5 bg-[#191b20] hover:bg-rose-950/60 text-slate-400 hover:text-rose-400 border border-[#2b2d32] rounded-lg transition-colors"
                 title="Delete Assessment Run"
               >
                 <Trash2 className="w-4 h-4" />
@@ -99,13 +99,13 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
         {activeAssessment && (
           <div className="space-y-4">
             {/* Filter Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-slate-900/40 p-2.5 rounded-xl border border-[#2b2d32]">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-[#0e1013] p-2.5 rounded-xl border border-[#2b2d32]">
               <button
                 aria-pressed={filterStatus === 'ALL'} onClick={() => setFilterStatus('ALL')}
                 className={`px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'ALL'
-                    ? 'bg-emerald-600 text-white font-semibold shadow-sm'
-                    : 'bg-slate-800/80 text-slate-400 hover:text-white'
+                    ? 'bg-[#ffe3b0] text-[#141619] font-bold shadow-sm'
+                    : 'bg-[#141619] text-slate-400 hover:text-white border border-[#2b2d32]'
                 }`}
               >
                 All Candidates ({activeAssessment.candidates.length})
@@ -115,8 +115,8 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
                 aria-pressed={filterStatus === 'COMPLIANT'} onClick={() => setFilterStatus('COMPLIANT')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'COMPLIANT'
-                    ? 'bg-emerald-600 text-white font-semibold shadow-sm'
-                    : 'bg-slate-800/80 text-emerald-400 hover:bg-slate-800'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold shadow-sm'
+                    : 'bg-[#141619] text-emerald-400 hover:bg-[#191b20] border border-[#2b2d32]'
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -127,8 +127,8 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
                 aria-pressed={filterStatus === 'NON_COMPLIANT'} onClick={() => setFilterStatus('NON_COMPLIANT')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'NON_COMPLIANT'
-                    ? 'bg-rose-600 text-white font-semibold shadow-sm'
-                    : 'bg-slate-800/80 text-rose-400 hover:bg-slate-800'
+                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 font-bold shadow-sm'
+                    : 'bg-[#141619] text-rose-400 hover:bg-[#191b20] border border-[#2b2d32]'
                 }`}
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
@@ -139,8 +139,8 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
                 aria-pressed={filterStatus === 'INDETERMINATE'} onClick={() => setFilterStatus('INDETERMINATE')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'INDETERMINATE'
-                    ? 'bg-amber-600 text-white font-semibold shadow-sm'
-                    : 'bg-slate-800/80 text-amber-400 hover:bg-slate-800'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold shadow-sm'
+                    : 'bg-[#141619] text-amber-400 hover:bg-[#191b20] border border-[#2b2d32]'
                 }`}
               >
                 <AlertTriangle className="w-3.5 h-3.5" />

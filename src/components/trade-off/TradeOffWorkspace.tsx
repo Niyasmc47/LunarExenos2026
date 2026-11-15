@@ -125,7 +125,7 @@ export const TradeOffWorkspace: React.FC = () => {
 
           <button
             onClick={openCreateModal}
-            className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all"
+            className="px-4 py-1.5 rounded-lg bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-mono font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-[#ffe3b0]/20 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Study</span>
@@ -135,12 +135,12 @@ export const TradeOffWorkspace: React.FC = () => {
 
       {/* Tabs Navigation Bar */}
       {activeStudy && (
-        <div className="bg-[#0b1120] border-b border-[#202228] px-6 shrink-0 flex items-center gap-1 overflow-x-auto">
+        <div className="bg-[#0e1013] border-b border-[#202228] px-6 shrink-0 flex items-center gap-1 overflow-x-auto">
           <button
             aria-pressed={activeTab === 'comparison'} onClick={() => setActiveTab('comparison')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'comparison'
-                ? 'border-emerald-500 text-emerald-400 bg-slate-900/50'
+                ? 'border-[#ffe3b0] text-[#ffe3b0] bg-[#141619]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -152,7 +152,7 @@ export const TradeOffWorkspace: React.FC = () => {
             aria-pressed={activeTab === 'radar'} onClick={() => setActiveTab('radar')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'radar'
-                ? 'border-cyan-500 text-cyan-400 bg-slate-900/50'
+                ? 'border-[#7bd0ff] text-[#7bd0ff] bg-[#141619]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -164,7 +164,7 @@ export const TradeOffWorkspace: React.FC = () => {
             aria-pressed={activeTab === 'pareto'} onClick={() => setActiveTab('pareto')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'pareto'
-                ? 'border-emerald-500 text-emerald-400 bg-slate-900/50'
+                ? 'border-[#ffe3b0] text-[#ffe3b0] bg-[#141619]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -176,7 +176,7 @@ export const TradeOffWorkspace: React.FC = () => {
             aria-pressed={activeTab === 'sensitivity'} onClick={() => setActiveTab('sensitivity')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'sensitivity'
-                ? 'border-purple-500 text-purple-400 bg-slate-900/50'
+                ? 'border-[#ffe3b0] text-[#ffe3b0] bg-[#141619]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -188,7 +188,7 @@ export const TradeOffWorkspace: React.FC = () => {
             aria-pressed={activeTab === 'preferences'} onClick={() => setActiveTab('preferences')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'preferences'
-                ? 'border-indigo-500 text-indigo-400 bg-slate-900/50'
+                ? 'border-[#ffe3b0] text-[#ffe3b0] bg-[#141619]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >

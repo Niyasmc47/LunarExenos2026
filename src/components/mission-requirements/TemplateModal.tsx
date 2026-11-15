@@ -25,16 +25,16 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
     <DialogSurface label="Choose a mission template" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="relative w-full max-w-4xl bg-[#141619] border border-[#303238]/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#2b2d32] flex items-center justify-between bg-slate-900/50">
+        <div className="px-6 py-4 border-b border-[#2b2d32] flex items-center justify-between bg-[#191b20]">
           <div className="flex items-center gap-2.5">
-            <Sparkles className="w-5 h-5 text-emerald-400" />
+            <Sparkles className="w-5 h-5 text-[#ffe3b0]" />
             <h2 className="text-base font-bold text-slate-100 font-mono tracking-wide">
               Illustrative Mission Profile Templates
             </h2>
           </div>
           <button
             aria-label="Close dialog" onClick={onClose}
-            className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+            className="p-1 rounded-lg hover:bg-[#202228] text-slate-400 hover:text-slate-200 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -55,11 +55,11 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
           {templates.map((tpl) => (
             <div
               key={tpl.id}
-              className="p-4 rounded-xl border border-[#2b2d32] bg-[#0d1424] hover:border-emerald-500/50 hover:bg-[#111a30] transition-all flex flex-col justify-between"
+              className="p-4 rounded-xl border border-[#2b2d32] bg-[#141619] hover:border-[#ffe3b0]/60 hover:bg-[#191b20] transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-[#303238]">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#202228] text-slate-300 border border-[#2b2d32]">
                     {tpl.mission_type.replace('_', ' ')}
                   </span>
                   <div className="flex items-center gap-1 text-xs font-mono text-slate-400">
@@ -87,7 +87,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
                   </div>
                   <div className="flex flex-col">
                     <span className="text-slate-400 flex items-center gap-1">
-                      <Radio className="w-3 h-3 text-cyan-400" /> Min Earth
+                      <Radio className="w-3 h-3 text-[#7bd0ff]" /> Min Earth
                     </span>
                     <span className="text-slate-200 font-semibold mt-0.5">
                       {tpl.requirements.earth.min_total_earth_visible_hours.value} h
@@ -95,7 +95,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
                   </div>
                   <div className="flex flex-col">
                     <span className="text-slate-400 flex items-center gap-1">
-                      <Mountain className="w-3 h-3 text-emerald-400" /> Max Slope
+                      <Mountain className="w-3 h-3 text-[#ffe3b0]" /> Max Slope
                     </span>
                     <span className="text-slate-200 font-semibold mt-0.5">
                       ≤ {tpl.requirements.terrain.max_local_slope_deg.value}°
@@ -106,7 +106,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
 
               <button
                 onClick={() => handleSelectTemplate(tpl.id)}
-                className="w-full py-2 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/30 hover:border-emerald-500 text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5"
+                className="w-full py-2 px-3 rounded-lg bg-[#ffe3b0]/15 hover:bg-[#ffe3b0] text-[#ffe3b0] hover:text-[#141619] border border-[#ffe3b0]/40 hover:border-[#ffe3b0] text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Use This Template</span>
@@ -116,7 +116,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#2b2d32] bg-slate-900/40 flex items-center justify-between">
+        <div className="px-6 py-3 border-t border-[#2b2d32] bg-[#0e1013] flex items-center justify-between">
           <span className="text-xs text-slate-400 font-mono">
             {templates.length} templates available
           </span>
@@ -125,7 +125,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
               startCreate();
               onClose();
             }}
-            className="text-xs font-mono text-slate-300 hover:text-emerald-400 transition-colors"
+            className="text-xs font-mono text-slate-300 hover:text-[#ffe3b0] transition-colors"
           >
             Start with Blank Custom Profile →
           </button>
