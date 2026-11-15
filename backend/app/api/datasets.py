@@ -12,7 +12,7 @@ from app.schemas.dataset import (
 from app.services.dataset_catalogue import catalogue_service
 from app.services.dataset_discovery import discovery_engine
 
-router = APIRouter(prefix="/api/datasets", tags=["datasets"])
+router = APIRouter(prefix="/api/datasets", tags=["Datasets"])
 
 @router.get("/catalogue", response_model=DatasetCatalogueResponse)
 def get_dataset_catalogue():

@@ -13,7 +13,7 @@ from app.services.terrain_profile import extract_elevation_profile
 from app.services.terrain_quality import get_terrain_quality_report
 from app.services.dataset_catalogue import catalogue_service
 
-router = APIRouter(prefix="/api/terrain", tags=["terrain"])
+router = APIRouter(prefix="/api/terrain", tags=["Terrain"])
 
 @router.get("/datasets")
 def get_datasets():

@@ -27,7 +27,7 @@ from app.services.coordinate_transform import (
     transformer,
 )
 
-router = APIRouter(prefix="/api/regional", tags=["regional_analysis"])
+router = APIRouter(prefix="/api/regional", tags=["Regional Analysis"])
 
 @router.get("/elevation-map.png")
 def get_regional_elevation_map_get(

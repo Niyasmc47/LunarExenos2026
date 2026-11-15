@@ -189,18 +189,48 @@ class CandidateScreeningService:
         candidate_summaries: List[CandidateScreeningSummary] = []
 
         for sc in scenarios:
+            # Determine start and duration for this specific candidate scenario
+            if req.override_start_iso is not None:
+                cand_start_iso = req.override_start_iso
+            elif getattr(sc, "start_timestamp_iso", None):
+                cand_start_iso = sc.start_timestamp_iso
+            else:
+                cand_start_iso = profile_snapshot.start_timestamp_iso
+
+            st = datetime.fromisoformat(cand_start_iso.replace("Z", "+00:00"))
+
+            if req.override_duration_days is not None:
+                cand_dur_days = req.override_duration_days
+                et = datetime.fromtimestamp(st.timestamp() + cand_dur_days * 86400.0, tz=timezone.utc)
+                cand_end_iso = et.isoformat().replace("+00:00", "Z")
+            elif req.override_end_iso is not None:
+                cand_end_iso = req.override_end_iso
+                et = datetime.fromisoformat(cand_end_iso.replace("Z", "+00:00"))
+                cand_dur_days = (et - st).total_seconds() / 86400.0
+            elif getattr(sc, "start_timestamp_iso", None) and getattr(sc, "end_timestamp_iso", None):
+                cand_end_iso = sc.end_timestamp_iso
+                et = datetime.fromisoformat(cand_end_iso.replace("Z", "+00:00"))
+                cand_dur_days = (et - st).total_seconds() / 86400.0
+            else:
+                cand_dur_days = profile_snapshot.duration_days
+                et = datetime.fromtimestamp(st.timestamp() + cand_dur_days * 86400.0, tz=timezone.utc)
+                cand_end_iso = et.isoformat().replace("+00:00", "Z")
+
+            cand_total_duration_hours = cand_dur_days * 24.0
+            cand_analysis_period_str = f"{cand_start_iso} to {cand_end_iso} ({cand_dur_days:.2f} Earth days / {cand_total_duration_hours:.1f} h)"
+
             summary = self._evaluate_single_candidate(
                 scenario=sc,
                 profile=profile_snapshot,
-                start_iso=start_iso,
-                end_iso=end_iso,
-                dur_days=dur_days,
+                start_iso=cand_start_iso,
+                end_iso=cand_end_iso,
+                dur_days=cand_dur_days,
                 observer_height_m=observer_height_m,
                 step_hours=step_hours,
                 az_res_deg=az_res_deg,
                 max_dist_m=max_dist_m,
                 aberr_corr=aberr_corr,
-                analysis_period_str=analysis_period_str,
+                analysis_period_str=cand_analysis_period_str,
             )
             candidate_summaries.append(summary)
 
@@ -280,6 +310,18 @@ class CandidateScreeningService:
         vis_resp = self.vis_svc.compute_visibility_analysis(vis_req)
         warnings.extend(vis_resp.warnings)
 
+        # Analysis vs Profile Scope Determination
+        analysis_dur_hours = dur_days * 24.0
+        profile_dur_hours = profile.duration_days * 24.0
+        scope_mismatch = abs(analysis_dur_hours - profile_dur_hours) > 1.0
+
+        if scope_mismatch:
+            warnings.append(
+                f"Scope mismatch: Mission Profile is configured for {profile.duration_days:.1f} Earth days ({profile_dur_hours:.1f} h), "
+                f"while evaluated scenario analysis interval is {dur_days:.1f} Earth days ({analysis_dur_hours:.1f} h). "
+                f"Mission-wide cumulative requirements cannot be evaluated over this truncated window."
+            )
+
         # 2. Sample Terrain Point
         pt_sample = self.dem_loader_svc.sample_point(scenario.latitude, scenario.longitude)
         dem_meta = self.dem_loader_svc.get_metadata()
@@ -342,6 +384,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_requirement(
@@ -354,6 +399,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_requirement(
@@ -366,6 +414,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_requirement(
@@ -378,6 +429,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_daily_requirement(
@@ -403,6 +457,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_requirement(
@@ -415,6 +472,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         self._eval_daily_requirement(
@@ -439,6 +499,9 @@ class CandidateScreeningService:
             hard_results=hard_results,
             soft_results=soft_results,
             info_metrics=info_metrics,
+            analysis_duration_hours=analysis_dur_hours,
+            profile_duration_hours=profile_dur_hours,
+            scope_mismatch=scope_mismatch,
         )
 
         # --- Evaluate Terrain Requirements ---
@@ -609,11 +672,13 @@ class CandidateScreeningService:
         hard_passed = sum(1 for r in hard_results if r.verdict == ScreeningVerdict.PASS)
         hard_failed = sum(1 for r in hard_results if r.verdict == ScreeningVerdict.FAIL)
         hard_indet = sum(1 for r in hard_results if r.verdict == ScreeningVerdict.INDETERMINATE)
+        hard_scope_mismatch = sum(1 for r in hard_results if r.verdict == ScreeningVerdict.NOT_EVALUABLE_SCOPE_MISMATCH)
+        hard_impossible = sum(1 for r in hard_results if r.verdict == ScreeningVerdict.IMPOSSIBLE_THRESHOLD)
         total_hard = len(hard_results)
 
         if hard_failed > 0:
             overall_status = OverallCandidateStatus.NON_COMPLIANT
-        elif hard_indet > 0:
+        elif hard_scope_mismatch > 0 or hard_indet > 0 or hard_impossible > 0:
             overall_status = OverallCandidateStatus.INDETERMINATE
         else:
             overall_status = OverallCandidateStatus.COMPLIANT
@@ -650,7 +715,12 @@ class CandidateScreeningService:
             hard_constraints_passed=hard_passed,
             hard_constraints_failed=hard_failed,
             hard_constraints_indeterminate=hard_indet,
+            hard_constraints_scope_mismatch=hard_scope_mismatch,
+            hard_constraints_impossible=hard_impossible,
             total_hard_constraints=total_hard,
+            analysis_duration_hours=round(analysis_dur_hours, 2),
+            profile_duration_hours=round(profile_dur_hours, 2),
+            scope_mismatch_detected=scope_mismatch,
             hard_constraint_results=hard_results,
             soft_preference_results=soft_results,
             informational_metrics=info_metrics,
@@ -675,6 +745,9 @@ class CandidateScreeningService:
         hard_results: List[RequirementEvaluationResult],
         soft_results: List[SoftPreferenceItem],
         info_metrics: List[InformationalMetricItem],
+        analysis_duration_hours: float = 72.0,
+        profile_duration_hours: float = 72.0,
+        scope_mismatch: bool = False,
     ):
         if not req.enabled:
             return
@@ -696,6 +769,63 @@ class CandidateScreeningService:
                     f"Measured {measured:.1f} {unit}, but candidate has partial DEM coverage with target paths "
                     f"crossing unmodeled external sectors (INDETERMINATE_PARTIAL_DEM). Visibility cannot be certified."
                 )
+            elif req.id in ("min_total_sunlight_hours", "min_full_sunlight_hours", "min_total_earth_visible_hours", "min_full_disk_earth_visible_hours"):
+                actual_str = f"{measured:.1f} {unit}"
+                if threshold is not None and threshold > analysis_duration_hours:
+                    if scope_mismatch:
+                        verdict = ScreeningVerdict.NOT_EVALUABLE_SCOPE_MISMATCH
+                        expl = (
+                            f"Scope mismatch: Requirement specifies >= {threshold:.1f} {unit} across full mission "
+                            f"({profile_duration_hours:.1f} h), but evaluated analysis window is only {analysis_duration_hours:.1f} h. "
+                            f"A {analysis_duration_hours:.1f} h window cannot establish whether the candidate meets this mission-wide requirement. "
+                            f"This is an interval scope mismatch, not a candidate site failure."
+                        )
+                    else:
+                        verdict = ScreeningVerdict.IMPOSSIBLE_THRESHOLD
+                        expl = (
+                            f"Impossible threshold: Requirement threshold of {threshold:.1f} {unit} exceeds the entire "
+                            f"{analysis_duration_hours:.1f} h analysis duration. This threshold cannot be satisfied by any landing site."
+                        )
+                elif scope_mismatch and threshold is not None and measured < threshold:
+                    verdict = ScreeningVerdict.NOT_EVALUABLE_SCOPE_MISMATCH
+                    expl = (
+                        f"Scope mismatch: Candidate accumulated {measured:.1f} {unit} during evaluated {analysis_duration_hours:.1f} h window "
+                        f"(full mission profile: {profile_duration_hours:.1f} h). A truncated window cannot establish whether the candidate "
+                        f"satisfies the >= {threshold:.1f} {unit} mission-wide requirement."
+                    )
+                else:
+                    passed = self._compare_values(measured, op, threshold)
+                    if passed:
+                        verdict = ScreeningVerdict.PASS
+                        expl = f"Observed value of {actual_str} satisfies criterion of {crit_str} (evaluated over {analysis_duration_hours:.1f} h window)."
+                    else:
+                        verdict = ScreeningVerdict.FAIL
+                        expl = f"Observed value of {actual_str} violates mandatory criterion of {crit_str} across evaluated {analysis_duration_hours:.1f} h window."
+
+            elif req.id in ("max_continuous_darkness_hours", "max_continuous_earth_blackout_hours"):
+                actual_str = f"{measured:.1f} {unit}"
+                passed = self._compare_values(measured, op, threshold)
+                if passed:
+                    verdict = ScreeningVerdict.PASS
+                    expl = f"Longest continuous interval of {actual_str} satisfies maximum limit of {crit_str} over evaluated {analysis_duration_hours:.1f} h window."
+                else:
+                    verdict = ScreeningVerdict.FAIL
+                    expl = f"Longest continuous interval of {actual_str} violates maximum allowable limit of {crit_str} in evaluated window."
+
+            elif req.id == "min_sunlight_percentage":
+                actual_str = f"{measured:.1f} {unit}"
+                if threshold is not None and threshold > 100.0:
+                    verdict = ScreeningVerdict.IMPOSSIBLE_THRESHOLD
+                    expl = f"Impossible threshold: Required illumination percentage of {threshold:.1f}% exceeds 100%."
+                else:
+                    passed = self._compare_values(measured, op, threshold)
+                    if passed:
+                        verdict = ScreeningVerdict.PASS
+                        expl = f"Observed illumination fraction of {actual_str} satisfies criterion of {crit_str}."
+                    else:
+                        verdict = ScreeningVerdict.FAIL
+                        expl = f"Observed illumination fraction of {actual_str} violates criterion of {crit_str}."
+
             else:
                 actual_str = f"{measured:.1f} {unit}"
                 passed = self._compare_values(measured, op, threshold)
@@ -725,7 +855,10 @@ class CandidateScreeningService:
 
         elif req.classification == RequirementClassification.SOFT_PREFERENCE:
             actual_str = f"{measured:.1f} {unit}" if measured is not None else "Unavailable"
-            note = f"Observed: {actual_str}. Preference threshold: {crit_str}."
+            if req.id in ("min_total_sunlight_hours", "min_full_sunlight_hours", "min_total_earth_visible_hours", "min_full_disk_earth_visible_hours") and threshold is not None and threshold > analysis_duration_hours and scope_mismatch:
+                note = f"Observed: {actual_str} over {analysis_duration_hours:.1f} h. Preference threshold: {crit_str} across {profile_duration_hours:.1f} h [Scope mismatch: partial evaluation window]."
+            else:
+                note = f"Observed: {actual_str}. Preference threshold: {crit_str}."
             if is_coverage_indeterminate and category in ("solar", "earth"):
                 note += " [Partial DEM uncertainty present]"
 
@@ -776,8 +909,15 @@ class CandidateScreeningService:
         crit_str = f"{self._operator_symbol(op)} {threshold} {unit}" if threshold is not None else "Informational"
 
         min_observed_daily = daily_data.get("min_daily_hours")
-        all_passed = daily_data.get("all_days_passed", False)
         day_count = daily_data.get("day_count", 0)
+        complete_days_count = daily_data.get("complete_days_count", day_count)
+        has_partial_day = daily_data.get("has_partial_day", False)
+        complete_hours = daily_data.get("complete_daily_hours_list", daily_data.get("daily_hours_list", []))
+
+        worst_complete = min(complete_hours) if complete_hours else min_observed_daily
+        all_complete_passed = (
+            all(h >= threshold for h in complete_hours) if (complete_hours and threshold is not None) else True
+        )
 
         if req.classification == RequirementClassification.HARD_CONSTRAINT:
             if min_observed_daily is None or day_count == 0:
@@ -786,25 +926,26 @@ class CandidateScreeningService:
                 expl = "Daily time-series integration data unavailable."
             elif is_coverage_indeterminate:
                 verdict = ScreeningVerdict.INDETERMINATE
-                actual_str = f"{min_observed_daily:.1f} {unit}"
+                actual_str = f"{worst_complete:.1f} {unit}"
                 expl = (
-                    f"Minimum daily value was {min_observed_daily:.1f} {unit}, but unmodeled external terrain "
+                    f"Minimum daily value was {worst_complete:.1f} {unit}, but unmodeled external terrain "
                     f"creates indeterminate horizon sectors during solar/Earth tracking."
                 )
             else:
-                actual_str = f"{min_observed_daily:.1f} {unit} (worst day)"
-                if all_passed:
+                actual_str = f"{worst_complete:.1f} {unit} (worst complete day)"
+                if all_complete_passed:
                     verdict = ScreeningVerdict.PASS
+                    partial_note = f" Final partial day ({daily_data.get('partial_day_hours', 0.0):.1f} h) achieved {daily_data.get('partial_day_sun_hours', 0.0):.1f} h." if has_partial_day else ""
                     expl = (
-                        f"All {day_count} non-overlapping 24.0h Earth day intervals satisfied requirement "
-                        f"(worst observed: {actual_str} vs criterion {crit_str})."
+                        f"All {complete_days_count} complete 24.0h Earth day intervals satisfied requirement "
+                        f"(worst observed: {actual_str} vs criterion {crit_str}).{partial_note}"
                     )
                 else:
                     verdict = ScreeningVerdict.FAIL
-                    failed_day = daily_data.get("first_failing_day_index", 1)
-                    failed_val = daily_data.get("first_failing_day_hours", 0.0)
+                    first_fail_idx = next((i + 1 for i, h in enumerate(complete_hours) if threshold is not None and h < threshold), 1)
+                    first_fail_h = complete_hours[first_fail_idx - 1] if complete_hours else 0.0
                     expl = (
-                        f"Day {failed_day} failed daily requirement with only {failed_val:.1f} h "
+                        f"Day {first_fail_idx} failed daily requirement with only {first_fail_h:.1f} h "
                         f"(required: {crit_str})."
                     )
 
@@ -816,7 +957,7 @@ class CandidateScreeningService:
                 operator=op,
                 threshold_value=threshold,
                 threshold_str=crit_str,
-                actual_value=min_observed_daily,
+                actual_value=worst_complete,
                 actual_value_str=actual_str,
                 unit=unit,
                 verdict=verdict,
@@ -826,7 +967,8 @@ class CandidateScreeningService:
             ))
 
         elif req.classification == RequirementClassification.SOFT_PREFERENCE:
-            actual_str = f"{min_observed_daily:.1f} {unit}" if min_observed_daily is not None else "Unavailable"
+            actual_str = f"{worst_complete:.1f} {unit}" if worst_complete is not None else "Unavailable"
+            partial_note = f" (Partial tail day: {daily_data.get('partial_day_sun_hours', 0.0):.1f} h in {daily_data.get('partial_day_hours', 0.0):.1f} h)" if has_partial_day else ""
             soft_results.append(SoftPreferenceItem(
                 requirement_id=req.id,
                 requirement_name=req.name,
@@ -834,20 +976,20 @@ class CandidateScreeningService:
                 operator=op,
                 threshold_value=threshold,
                 threshold_str=crit_str,
-                actual_value=min_observed_daily,
+                actual_value=worst_complete,
                 actual_value_str=actual_str,
                 unit=unit,
-                is_available=(min_observed_daily is not None),
-                notes=f"Minimum observed across {day_count} Earth days: {actual_str}. Preference: {crit_str}.",
+                is_available=(worst_complete is not None),
+                notes=f"Minimum observed across {complete_days_count} complete Earth days: {actual_str}. Preference: {crit_str}.{partial_note}",
             ))
 
         else:
-            actual_str = f"{min_observed_daily:.1f} {unit}" if min_observed_daily is not None else "Unavailable"
+            actual_str = f"{worst_complete:.1f} {unit}" if worst_complete is not None else "Unavailable"
             info_metrics.append(InformationalMetricItem(
                 id=req.id,
                 name=req.name,
                 category=category,
-                value=min_observed_daily,
+                value=worst_complete,
                 value_str=actual_str,
                 unit=unit,
                 source=source,
@@ -858,46 +1000,65 @@ class CandidateScreeningService:
     ) -> Dict[str, Any]:
         """
         Calculates non-overlapping 24.0-hour Earth day illumination hours.
-        Incomplete fractional tail intervals are proportionally scaled.
+        Incomplete fractional tail intervals are tracked separately and not counted as 24h days.
         """
-        if not series:
-            return {"min_daily_hours": None, "day_count": 0, "all_days_passed": True}
+        if not series or len(series) < 2:
+            return {
+                "min_daily_hours": None, "day_count": 0, "complete_days_count": 0,
+                "has_partial_day": False, "all_days_passed": True
+            }
 
         st = datetime.fromisoformat(start_iso.replace("Z", "+00:00")).timestamp()
         total_hours = dur_days * 24.0
-        n_days = math.ceil(total_hours / 24.0)
+        n_days = max(1, math.ceil(total_hours / 24.0))
 
         daily_illum = [0.0] * n_days
         daily_dt = [0.0] * n_days
 
-        for i in range(len(series)):
-            pt = series[i]
-            pt_t = datetime.fromisoformat(pt.timestamp_iso.replace("Z", "+00:00")).timestamp()
-            dt_from_start_h = (pt_t - st) / 3600.0
-            if dt_from_start_h < 0:
+        for i in range(len(series) - 1):
+            pt0 = series[i]
+            pt1 = series[i + 1]
+            t1 = datetime.fromisoformat(pt0.timestamp_iso.replace("Z", "+00:00")).timestamp()
+            t2 = datetime.fromisoformat(pt1.timestamp_iso.replace("Z", "+00:00")).timestamp()
+            dt_h = (t2 - t1) / 3600.0
+            if dt_h <= 0.0:
                 continue
 
-            day_idx = min(n_days - 1, int(dt_from_start_h // 24.0))
+            t_mid = (t1 + t2) / 2.0
+            day_idx = min(n_days - 1, max(0, int((t_mid - st) // 86400)))
 
-            # Step duration calculation
-            if i < len(series) - 1:
-                next_t = datetime.fromisoformat(series[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                step_h = (next_t - pt_t) / 3600.0
+            daily_dt[day_idx] += dt_h
+            if getattr(pt0, "sun_visible_fraction", 0.0) > 0.0 or getattr(pt1, "sun_visible_fraction", 0.0) > 0.0:
+                daily_illum[day_idx] += dt_h
+
+        # Separate complete 24h days from partial tail day
+        complete_illum = []
+        has_partial = False
+        partial_dur = 0.0
+        partial_sun = 0.0
+
+        for d in range(n_days):
+            if daily_dt[d] >= 23.9:
+                complete_illum.append(round(daily_illum[d], 2))
             else:
-                step_h = 1.0  # fallback
+                has_partial = True
+                partial_dur = round(daily_dt[d], 2)
+                partial_sun = round(daily_illum[d], 2)
 
-            daily_dt[day_idx] += step_h
-            if getattr(pt, "sun_visible_fraction", 0.0) > 0.0:
-                daily_illum[day_idx] += step_h
-
-        # Normalize or evaluate each interval
-        min_hours = min(daily_illum) if daily_illum else 0.0
+        worst_daily = min(daily_illum) if daily_illum else 0.0
+        worst_complete = min(complete_illum) if complete_illum else worst_daily
 
         return {
-            "min_daily_hours": round(min_hours, 2),
+            "min_daily_hours": round(worst_daily, 2),
+            "worst_complete_day_hours": round(worst_complete, 2),
             "day_count": n_days,
+            "complete_days_count": len(complete_illum),
+            "complete_daily_hours_list": complete_illum,
+            "has_partial_day": has_partial,
+            "partial_day_hours": partial_dur,
+            "partial_day_sun_hours": partial_sun,
             "daily_hours_list": [round(h, 2) for h in daily_illum],
-            "all_days_passed": True,  # Condition-checked dynamically in eval
+            "all_days_passed": True,
         }
 
     def _compute_daily_earth_metrics(
@@ -906,38 +1067,60 @@ class CandidateScreeningService:
         """
         Calculates non-overlapping 24.0-hour Earth day line-of-sight hours.
         """
-        if not series:
-            return {"min_daily_hours": None, "day_count": 0, "all_days_passed": True}
+        if not series or len(series) < 2:
+            return {
+                "min_daily_hours": None, "day_count": 0, "complete_days_count": 0,
+                "has_partial_day": False, "all_days_passed": True
+            }
 
         st = datetime.fromisoformat(start_iso.replace("Z", "+00:00")).timestamp()
         total_hours = dur_days * 24.0
-        n_days = math.ceil(total_hours / 24.0)
+        n_days = max(1, math.ceil(total_hours / 24.0))
 
         daily_vis = [0.0] * n_days
+        daily_dt = [0.0] * n_days
 
-        for i in range(len(series)):
-            pt = series[i]
-            pt_t = datetime.fromisoformat(pt.timestamp_iso.replace("Z", "+00:00")).timestamp()
-            dt_from_start_h = (pt_t - st) / 3600.0
-            if dt_from_start_h < 0:
+        for i in range(len(series) - 1):
+            pt0 = series[i]
+            pt1 = series[i + 1]
+            t1 = datetime.fromisoformat(pt0.timestamp_iso.replace("Z", "+00:00")).timestamp()
+            t2 = datetime.fromisoformat(pt1.timestamp_iso.replace("Z", "+00:00")).timestamp()
+            dt_h = (t2 - t1) / 3600.0
+            if dt_h <= 0.0:
                 continue
 
-            day_idx = min(n_days - 1, int(dt_from_start_h // 24.0))
+            t_mid = (t1 + t2) / 2.0
+            day_idx = min(n_days - 1, max(0, int((t_mid - st) // 86400)))
 
-            if i < len(series) - 1:
-                next_t = datetime.fromisoformat(series[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                step_h = (next_t - pt_t) / 3600.0
+            daily_dt[day_idx] += dt_h
+            if getattr(pt0, "earth_visible_fraction", 0.0) > 0.0 or getattr(pt1, "earth_visible_fraction", 0.0) > 0.0:
+                daily_vis[day_idx] += dt_h
+
+        complete_vis = []
+        has_partial = False
+        partial_dur = 0.0
+        partial_earth = 0.0
+
+        for d in range(n_days):
+            if daily_dt[d] >= 23.9:
+                complete_vis.append(round(daily_vis[d], 2))
             else:
-                step_h = 1.0
+                has_partial = True
+                partial_dur = round(daily_dt[d], 2)
+                partial_earth = round(daily_vis[d], 2)
 
-            if getattr(pt, "earth_visible_fraction", 0.0) > 0.0:
-                daily_vis[day_idx] += step_h
-
-        min_hours = min(daily_vis) if daily_vis else 0.0
+        worst_daily = min(daily_vis) if daily_vis else 0.0
+        worst_complete = min(complete_vis) if complete_vis else worst_daily
 
         return {
-            "min_daily_hours": round(min_hours, 2),
+            "min_daily_hours": round(worst_daily, 2),
+            "worst_complete_day_hours": round(worst_complete, 2),
             "day_count": n_days,
+            "complete_days_count": len(complete_vis),
+            "complete_daily_hours_list": complete_vis,
+            "has_partial_day": has_partial,
+            "partial_day_hours": partial_dur,
+            "partial_day_earth_hours": partial_earth,
             "daily_hours_list": [round(h, 2) for h in daily_vis],
             "all_days_passed": True,
         }

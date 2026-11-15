@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
-import { TerrainViewer3D } from '../terrain-explorer/TerrainViewer3D';
 import { RegionSelectionToolbar } from './RegionSelectionToolbar';
 import { RegionalMapCanvas } from './RegionalMapCanvas';
 import { HillshadeControls } from './HillshadeControls';
@@ -10,7 +9,8 @@ import { ExportToolbar } from './ExportToolbar';
 import {
   Mountain,
   Map,
-  Box,
+  Sparkles,
+  Columns,
   SlidersHorizontal,
   ChevronRight,
   ChevronLeft,
@@ -27,12 +27,18 @@ import { VisibilityExplorerView } from '../visibility/VisibilityExplorerView';
 import { VisibilityMetricsSummary } from '../visibility/VisibilityMetricsSummary';
 import { useHorizonStore } from '../../stores/horizonStore';
 import { useLocationStore } from '../../stores/locationStore';
+import { useCelestialSimulationStore } from '../../stores/celestialSimulationStore';
+import { CelestialViewer3D } from '../celestial/CelestialViewer3D';
+import { CelestialTimeControls } from '../celestial/CelestialTimeControls';
+import { LocationAnalysisDrawer } from '../celestial/LocationAnalysisDrawer';
+import { ScenarioCreateModal, ScenarioInitialValues } from '../scenario-comparison/ScenarioCreateModal';
 
 export const TerrainExplorer: React.FC = () => {
   const workspaceMode = useDynamicAnalysisStore((state) => state.workspaceMode);
   const setWorkspaceMode = useDynamicAnalysisStore((state) => state.setWorkspaceMode);
   const activeLayerMode = useDynamicAnalysisStore((state) => state.activeLayerMode);
   const currentPointTelemetry = useDynamicAnalysisStore((state) => state.currentPointTelemetry);
+  const activeDatasetId = useDynamicAnalysisStore((state) => state.activeDatasetId) || 'site01';
 
   const selectedLat = useLocationStore((state) => state.selectedLatitude);
   const selectedLon = useLocationStore((state) => state.selectedLongitude);
@@ -40,11 +46,52 @@ export const TerrainExplorer: React.FC = () => {
   const horizonData = useHorizonStore((state) => state.horizonData);
   const isHorizonLoading = useHorizonStore((state) => state.isLoading);
 
+  const analysisDrawerOpen = useCelestialSimulationStore((state) => state.analysisDrawerOpen);
+  const closeAnalysisDrawer = useCelestialSimulationStore((state) => state.closeAnalysisDrawer);
+  const simulationTime = useCelestialSimulationStore((state) => state.simulationTime);
+
   const observerLat = currentPointTelemetry?.latitude ?? selectedLat;
   const observerLon = currentPointTelemetry?.longitude ?? selectedLon;
 
   const [panelOpen, setPanelOpen] = useState(true);
   const [showTransect, setShowTransect] = useState(false);
+
+  // Scenario Creation modal state
+  const [isCandidateModalOpen, setIsCandidateModalOpen] = useState(false);
+  const [candidateInitialValues, setCandidateInitialValues] = useState<ScenarioInitialValues | undefined>(undefined);
+
+  const handleOpenCandidateModalFromSelection = () => {
+    setCandidateInitialValues({
+      siteId: activeDatasetId,
+      latitude: selectedLat,
+      longitude: selectedLon,
+      observerHeight: 2.0,
+      startIso: simulationTime,
+      name: `${activeDatasetId.toUpperCase()} — Candidate`,
+      description: `Evaluated at ${selectedLat.toFixed(4)}°, ${selectedLon.toFixed(4)}° using NASA LOLA 5m DEM & SPICE ephemeris`,
+    });
+    setIsCandidateModalOpen(true);
+  };
+
+  const handleOpenCandidateModalFromDrawer = (coords: {
+    latitude: number;
+    longitude: number;
+    siteId: string;
+    observerHeight: number;
+    startIso: string;
+  }) => {
+    setCandidateInitialValues({
+      siteId: coords.siteId,
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      observerHeight: coords.observerHeight,
+      startIso: coords.startIso,
+      name: `${coords.siteId.toUpperCase()} — Selected Point`,
+      description: `Target landing site selected at ${coords.latitude.toFixed(4)}°, ${coords.longitude.toFixed(4)}° on ${new Date(coords.startIso).toUTCString()}`,
+    });
+    setIsCandidateModalOpen(true);
+    closeAnalysisDrawer();
+  };
 
   return (
     <div className="terrain-workspace relative flex-1 flex flex-col xl:flex-row h-full min-h-0 overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
@@ -55,32 +102,34 @@ export const TerrainExplorer: React.FC = () => {
           <div className="flex items-center gap-2">
             <Mountain className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-200 uppercase tracking-wider hidden sm:inline">
-              Explore local terrain
+              Terrain & Visibility Workspace
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              NASA LOLA DATA
+              NASA LOLA & SPICE
             </span>
           </div>
 
           <div className="terrain-mode-switcher flex flex-wrap items-center gap-1.5 bg-[#070b12] p-1 rounded-lg border border-slate-800">
+            {/* 3D Celestial Environment */}
             <button
               aria-pressed={workspaceMode === '3d-terrain'}
               onClick={() => setWorkspaceMode('3d-terrain')}
-              title="Interactive 3D lunar terrain mesh with altitude relief and orbit controls"
+              title="3D Celestial Environment: LOLA DEM terrain with calculated Sun & Earth positions and dynamic shadows"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
                 workspaceMode === '3d-terrain'
                   ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Box className="w-3.5 h-3.5" />
-              <span>3D terrain</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>3D Celestial</span>
             </button>
 
+            {/* 2D Surface Map */}
             <button
               aria-pressed={workspaceMode === '2d-map'}
               onClick={() => setWorkspaceMode('2d-map')}
-              title="2D map with elevation, slope hazard classification and transects"
+              title="2D Map: Lunar surface map with elevation, slope hazard classification, and transects"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
                 workspaceMode === '2d-map'
                   ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
@@ -88,13 +137,29 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Map className="w-3.5 h-3.5" />
-              <span>Terrain map</span>
+              <span>2D Surface</span>
             </button>
 
+            {/* Split View */}
+            <button
+              aria-pressed={workspaceMode === 'split-view'}
+              onClick={() => setWorkspaceMode('split-view')}
+              title="Split View: Synchronized side-by-side 2D lunar map and 3D celestial environment"
+              className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
+                workspaceMode === 'split-view'
+                  ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Split View</span>
+            </button>
+
+            {/* Local Skyline */}
             <button
               aria-pressed={workspaceMode === 'horizon'}
               onClick={() => setWorkspaceMode('horizon')}
-              title="Lunar terrain skyline elevation angles across 360° azimuth"
+              title="Local Skyline: Lunar terrain skyline elevation angles across 360° azimuth"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
                 workspaceMode === 'horizon'
                   ? 'bg-emerald-500 text-black shadow-md shadow-emerald-500/20'
@@ -105,6 +170,7 @@ export const TerrainExplorer: React.FC = () => {
               <span>Local skyline</span>
             </button>
 
+            {/* Sun & Earth positions */}
             <button
               aria-pressed={workspaceMode === 'ephemeris'}
               onClick={() => setWorkspaceMode('ephemeris')}
@@ -116,9 +182,10 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Sun className="w-3.5 h-3.5 text-amber-400" />
-              <span>Sun & Earth positions</span>
+              <span>Ephemeris</span>
             </button>
 
+            {/* Visibility */}
             <button
               aria-pressed={workspaceMode === 'visibility'}
               onClick={() => setWorkspaceMode('visibility')}
@@ -141,10 +208,37 @@ export const TerrainExplorer: React.FC = () => {
         {/* Hillshade Controls if active in 2D mode */}
         {workspaceMode === '2d-map' && activeLayerMode === 'hillshade' && <HillshadeControls />}
 
-        {/* Primary Viewport: 3D Terrain Mesh OR 2D Regional Map OR Horizon Engine OR Ephemeris OR Visibility */}
-        <div className="flex-1 min-h-[300px] overflow-hidden">
+        {/* Time Simulation Strip for 3D Celestial & Split Views */}
+        {(workspaceMode === '3d-terrain' || workspaceMode === 'split-view') && (
+          <CelestialTimeControls />
+        )}
+
+        {/* Primary Viewport */}
+        <div className="flex-1 min-h-[350px] overflow-hidden flex flex-col">
           {workspaceMode === '3d-terrain' ? (
-            <TerrainViewer3D />
+            <CelestialViewer3D onOpenCandidateModal={handleOpenCandidateModalFromSelection} />
+          ) : workspaceMode === 'split-view' ? (
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-2 min-h-0 overflow-hidden">
+              {/* Left: 2D Surface Map */}
+              <div className="flex flex-col h-full min-h-0 bg-[#080d19] border border-slate-800 rounded-xl overflow-hidden relative">
+                <div className="absolute top-2 left-2 z-20 bg-[#070b14]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-mono font-bold text-slate-300">
+                  2D Moon Surface Map
+                </div>
+                <div className="flex-1 min-h-0">
+                  <RegionalMapCanvas />
+                </div>
+              </div>
+
+              {/* Right: 3D Celestial Environment */}
+              <div className="flex flex-col h-full min-h-0 bg-[#040711] border border-slate-800 rounded-xl overflow-hidden relative">
+                <div className="absolute top-2 left-2 z-20 bg-[#070b14]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-mono font-bold text-slate-300 pointer-events-none">
+                  3D Celestial Environment (Sun & Earth)
+                </div>
+                <div className="flex-1 min-h-0">
+                  <CelestialViewer3D onOpenCandidateModal={handleOpenCandidateModalFromSelection} />
+                </div>
+              </div>
+            </div>
           ) : workspaceMode === '2d-map' ? (
             <RegionalMapCanvas />
           ) : workspaceMode === 'horizon' ? (
@@ -227,6 +321,20 @@ export const TerrainExplorer: React.FC = () => {
           <span>Show details</span>
         </button>
       )}
+
+      {/* Location Analysis Drawer */}
+      <LocationAnalysisDrawer
+        isOpen={analysisDrawerOpen}
+        onClose={closeAnalysisDrawer}
+        onSaveAsCandidate={handleOpenCandidateModalFromDrawer}
+      />
+
+      {/* Candidate Creation Modal */}
+      <ScenarioCreateModal
+        isOpen={isCandidateModalOpen}
+        onClose={() => setIsCandidateModalOpen(false)}
+        initialValues={candidateInitialValues}
+      />
     </div>
   );
 };

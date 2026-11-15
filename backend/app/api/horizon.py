@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query
 from app.schemas.horizon import HorizonAnalysisRequest, HorizonAnalysisResponse
 from app.services.horizon_service import horizon_service
 
-router = APIRouter(prefix="/api/horizon", tags=["Lunar Horizon Engine"])
+router = APIRouter(prefix="/api/horizon", tags=["Horizon"])
 
 @router.post("/analyze", response_model=HorizonAnalysisResponse)
 def analyze_horizon_post(request: HorizonAnalysisRequest) -> HorizonAnalysisResponse:

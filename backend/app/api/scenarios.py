@@ -10,7 +10,7 @@ from app.schemas.scenario import (
 )
 from app.services.scenario_service import scenario_service
 
-scenarios_router = APIRouter(prefix="/api/scenarios", tags=["Mission Scenarios"])
+scenarios_router = APIRouter(prefix="/api/scenarios", tags=["Scenarios"])
 
 @scenarios_router.get("", response_model=List[ScenarioRecord])
 def list_scenarios():

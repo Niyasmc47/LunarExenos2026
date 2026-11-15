@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from pydantic import BaseModel, Field
+
 from app.api.terrain import router as terrain_router
 from app.api.datasets import router as datasets_router
 from app.api.regional_analysis import router as regional_router
@@ -15,13 +18,85 @@ from app.api.terrain_assessment import terrain_assessment_router
 from app.api.trade_off import trade_off_router
 from app.api.decision_reports import decision_reports_router
 
+tags_metadata = [
+    {
+        "name": "Health / System",
+        "description": "Backend operational health status, telemetry, and service availability checks.",
+    },
+    {
+        "name": "Terrain",
+        "description": "NASA LOLA 5 m DEM surface elevation, terrain slope, roughness, 3D mesh geometry, and point inspection.",
+    },
+    {
+        "name": "Datasets",
+        "description": "NASA Planetary Data System (PDS) Product 78 multi-region catalogue discovery, spatial bounding boxes, and coverage analysis.",
+    },
+    {
+        "name": "Regional Analysis",
+        "description": "Dynamic regional elevation maps, hillshade calculations, colormapping, and transect profile analysis.",
+    },
+    {
+        "name": "Exports",
+        "description": "Scientific data product exports including clipped GeoTIFF rasters, CSV elevation transects, and summary statistics.",
+    },
+    {
+        "name": "Horizon",
+        "description": "360° topocentric terrain horizon skyline engine: elevation profiles, radial ray-casting, and obstruction angles.",
+    },
+    {
+        "name": "Ephemeris",
+        "description": "Planetary ephemerides via CSPICE and DE421 kernels: apparent topocentric azimuth, elevation, and distance for Sun and Earth.",
+    },
+    {
+        "name": "Visibility",
+        "description": "Terrain-aware finite celestial disk line-of-sight integration, sunrise/sunset, earthrise/earthset, and solar/Earth visibility durations.",
+    },
+    {
+        "name": "Scenarios",
+        "description": "Candidate lunar landing site scenario definitions, persistence, configuration, and multi-scenario comparisons.",
+    },
+    {
+        "name": "Mission Profiles",
+        "description": "Mission requirement profiles, operational engineering constraints, validation, and starter templates.",
+    },
+    {
+        "name": "Screening",
+        "description": "Multi-candidate screening engine: evaluates sites against profile requirements with scope mismatch detection and data provenance.",
+    },
+    {
+        "name": "Mission Window Planning",
+        "description": "Mission launch/start window search: evaluates candidate landing sites across multi-day time intervals for compliant mission windows.",
+    },
+    {
+        "name": "Terrain Assessment",
+        "description": "Spatial landing hazard assessment: circular buffer slope statistics, roughness, relief, and touchdown safety verification.",
+    },
+    {
+        "name": "Trade-off Analysis",
+        "description": "Multi-criteria decision analysis (MCDA), Pareto-frontier identification, criterion weighting, and sensitivity analysis.",
+    },
+    {
+        "name": "Decision Reports",
+        "description": "Structured technical mission evaluation reports, archival JSON schemas, audit trails, and PDF generation.",
+    },
+]
+
 app = FastAPI(
-    title="LUNAVISTA Dynamic Lunar Terrain Analysis API",
-    description="High-resolution NASA LOLA DEM discovery, regional elevation, slope, hillshading, transects, and scientific statistics",
+    title="LUNAVISTA Lunar Mission Architecture & Scientific Analysis API",
+    description=(
+        "Scientific REST API powering LUNAVISTA: NASA LOLA 5 m DEM terrain analysis, "
+        "CSPICE/DE421 planetary ephemerides, 360° topocentric horizon computation, "
+        "finite celestial disk visibility integration, candidate screening, "
+        "mission window planning, landing hazard assessment, and trade-off analysis."
+    ),
     version="0.3.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    openapi_tags=tags_metadata,
 )
 
-# Enable CORS for frontend Vite development server
+# Enable CORS for frontend development server
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -45,13 +120,32 @@ app.include_router(terrain_assessment_router)
 app.include_router(trade_off_router)
 app.include_router(decision_reports_router)
 
-@app.get("/health")
+
+class HealthResponse(BaseModel):
+    status: str = Field("healthy", description="Operational status of the service")
+    service: str = Field("LUNAVISTA Lunar Terrain Engine", description="Service name")
+    version: str = Field("0.3.0", description="API version")
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    """Redirects root URL directly to Swagger UI."""
+    return RedirectResponse(url="/docs")
+
+
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    tags=["Health / System"],
+    summary="Health check & telemetry status",
+    description="Returns operational health status, active service version, and subsystem availability.",
+)
 def health_check():
-    return {
-        "status": "healthy",
-        "service": "LUNAVISTA Terrain Engine",
-        "version": "0.2.0"
-    }
+    return HealthResponse(
+        status="healthy",
+        service="LUNAVISTA Lunar Terrain Engine",
+        version="0.3.0",
+    )
 
 if __name__ == "__main__":
     import uvicorn

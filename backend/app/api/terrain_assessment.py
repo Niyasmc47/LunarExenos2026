@@ -9,7 +9,7 @@ from app.schemas.terrain_assessment import (
 )
 from app.services.terrain_assessment_service import terrain_assessment_service
 
-terrain_assessment_router = APIRouter(prefix="/api/terrain-assessment", tags=["terrain-assessment"])
+terrain_assessment_router = APIRouter(prefix="/api/terrain-assessment", tags=["Terrain Assessment"])
 
 @terrain_assessment_router.post("/assess", response_model=TerrainAssessmentResponse, status_code=status.HTTP_201_CREATED)
 def assess_candidates(req: TerrainAssessmentRequest):

@@ -14,7 +14,7 @@ from app.services.window_planner_service import window_planner_service
 class CompareWindowsPayload(BaseModel):
     window_ids: List[str] = Field(..., min_length=2, max_length=4, description="List of 2 to 4 window IDs to compare")
 
-window_planner_router = APIRouter(prefix="/api/window-planner", tags=["mission-window-planner"])
+window_planner_router = APIRouter(prefix="/api/window-planner", tags=["Mission Window Planning"])
 
 @window_planner_router.post("/search", response_model=MissionWindowSearchResponse, status_code=status.HTTP_201_CREATED)
 def execute_window_search(req: MissionWindowSearchRequest):

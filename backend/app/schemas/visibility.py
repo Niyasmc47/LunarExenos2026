@@ -100,6 +100,7 @@ class SolarMetrics(BaseModel):
     longest_darkness_end_iso: Optional[str] = None
     longest_illumination_hours: float
     illumination_fraction: float
+    sunlight_percentage: Optional[float] = None
     sunrise_count: int
     sunset_count: int
     max_sun_elevation_deg: float
@@ -115,6 +116,7 @@ class EarthMetrics(BaseModel):
     longest_earth_blackout_end_iso: Optional[str] = None
     longest_earth_visible_hours: float
     earth_visibility_fraction: float
+    earth_visibility_percentage: Optional[float] = None
     earthrise_count: int
     earthset_count: int
     max_earth_elevation_deg: float

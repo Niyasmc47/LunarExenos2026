@@ -9,7 +9,7 @@ from app.schemas.ephemeris import (
 from app.services.ephemeris_service import ephemeris_service
 from app.services.kernel_manager import kernel_manager
 
-router = APIRouter(prefix="/api/ephemeris", tags=["Sun & Earth Ephemeris Engine"])
+router = APIRouter(prefix="/api/ephemeris", tags=["Ephemeris"])
 
 @router.post("/position", response_model=EphemerisPositionResponse)
 def calculate_position(request: EphemerisPositionRequest) -> EphemerisPositionResponse:

@@ -310,6 +310,8 @@ class VisibilityEngineService:
             transitions=transitions,
             step_hours=req.step_interval_hours,
             total_duration_hours=(et_end - et_start) / 3600.0,
+            et_start=et_start,
+            et_end=et_end,
         )
 
         provenance = {
@@ -717,28 +719,63 @@ class VisibilityEngineService:
             convergence_tolerance_seconds=round(float(tolerance_sec), 2),
         )
 
+    def _interpolate_fraction(
+        self,
+        t: float,
+        t_a: float,
+        t_b: float,
+        f_a: float,
+        f_b: float,
+        step_transitions: List[VisibilityTransitionPoint],
+    ) -> float:
+        """
+        Interpolates visibility fraction at ephemeris time t in [t_a, t_b] using transition points.
+        """
+        if not step_transitions:
+            if abs(t_b - t_a) < 1e-6:
+                return f_a
+            alpha = (t - t_a) / (t_b - t_a)
+            return float(f_a + alpha * (f_b - f_a))
+
+        pts = [(t_a, f_a)] + [(tr.ephemeris_time_tdb, tr.visible_fraction) for tr in step_transitions] + [(t_b, f_b)]
+        pts.sort(key=lambda p: p[0])
+
+        for k in range(len(pts) - 1):
+            t0, f0 = pts[k]
+            t1, f1 = pts[k + 1]
+            if t0 <= t <= t1:
+                if abs(t1 - t0) < 1e-6:
+                    return f0
+                alpha = (t - t0) / (t1 - t0)
+                return float(f0 + alpha * (f1 - f0))
+
+        return f_b if t >= t_b else f_a
+
     def _calculate_metrics(
         self,
         series: List[VisibilityTimeSeriesPoint],
         transitions: List[VisibilityTransitionPoint],
         step_hours: float,
         total_duration_hours: float,
+        et_start: Optional[float] = None,
+        et_end: Optional[float] = None,
     ) -> Tuple[SolarMetrics, EarthMetrics, CombinedMetrics]:
         """
-        Computes rigorous, mathematically consistent mission durations, run-lengths, and counts.
+        Computes rigorous, mathematically consistent mission durations, run-lengths, and counts
+        using time-weighted interval integration and transition-refinement boundaries.
         Guarantees that all sub-durations sum up exactly to the total duration.
         """
-        if not series:
+        if not series or total_duration_hours <= 0:
             empty_sol = SolarMetrics(
                 total_sun_visible_hours=0.0, total_sun_full_hours=0.0, total_sun_partial_hours=0.0,
                 total_darkness_hours=0.0, longest_darkness_hours=0.0, longest_illumination_hours=0.0,
-                illumination_fraction=0.0, sunrise_count=0, sunset_count=0,
+                illumination_fraction=0.0, sunlight_percentage=0.0, sunrise_count=0, sunset_count=0,
                 max_sun_elevation_deg=0.0, min_sun_elevation_deg=0.0
             )
             empty_earth = EarthMetrics(
                 total_earth_visible_hours=0.0, total_earth_full_hours=0.0, total_earth_partial_hours=0.0,
                 total_earth_blackout_hours=0.0, longest_earth_blackout_hours=0.0, longest_earth_visible_hours=0.0,
-                earth_visibility_fraction=0.0, earthrise_count=0, earthset_count=0,
+                earth_visibility_fraction=0.0, earth_visibility_percentage=0.0, earthrise_count=0, earthset_count=0,
                 max_earth_elevation_deg=0.0, min_earth_elevation_deg=0.0
             )
             empty_comb = CombinedMetrics(
@@ -748,27 +785,115 @@ class VisibilityEngineService:
             )
             return empty_sol, empty_earth, empty_comb
 
-        dt = step_hours
-        n = len(series)
+        t_min = et_start if et_start is not None else series[0].ephemeris_time_tdb
+        t_max = et_end if et_end is not None else series[-1].ephemeris_time_tdb
 
-        # 1. Solar metrics summation
-        sun_full_pts = sum(1 for p in series if p.sun_visibility_state == VisibilityState.FULLY_VISIBLE)
-        sun_partial_pts = sum(1 for p in series if p.sun_visibility_state == VisibilityState.PARTIALLY_VISIBLE)
-        sun_dark_pts = sum(1 for p in series if p.sun_visibility_state == VisibilityState.FULLY_OBSTRUCTED)
+        # 1. Build sub-intervals between discrete series points partitioned by refined transitions
+        sub_intervals = []
 
-        # Normalization to ensure exact sum = total_duration_hours
-        total_pts = float(n)
-        sun_full_hours = round((sun_full_pts / total_pts) * total_duration_hours, 2)
-        sun_partial_hours = round((sun_partial_pts / total_pts) * total_duration_hours, 2)
+        sun_transitions_by_et = sorted(
+            [t for t in transitions if "SUN" in t.transition_type and t_min < t.ephemeris_time_tdb < t_max],
+            key=lambda x: x.ephemeris_time_tdb
+        )
+        earth_transitions_by_et = sorted(
+            [t for t in transitions if "EARTH" in t.transition_type and t_min < t.ephemeris_time_tdb < t_max],
+            key=lambda x: x.ephemeris_time_tdb
+        )
+
+        for i in range(len(series) - 1):
+            p0 = series[i]
+            p1 = series[i + 1]
+            t_a = max(t_min, p0.ephemeris_time_tdb)
+            t_b = min(t_max, p1.ephemeris_time_tdb)
+            if t_b <= t_a:
+                continue
+
+            step_sun_tr = [t for t in sun_transitions_by_et if t_a < t.ephemeris_time_tdb < t_b]
+            step_earth_tr = [t for t in earth_transitions_by_et if t_a < t.ephemeris_time_tdb < t_b]
+
+            step_splits = sorted(list(set([t_a, t_b] + [t.ephemeris_time_tdb for t in step_sun_tr + step_earth_tr])))
+
+            for j in range(len(step_splits) - 1):
+                u = step_splits[j]
+                v = step_splits[j + 1]
+                dt_h = (v - u) / 3600.0
+                if dt_h <= 1e-7:
+                    continue
+
+                # Solar fraction evaluation
+                sun_f_u = self._interpolate_fraction(u, t_a, t_b, p0.sun_visible_fraction, p1.sun_visible_fraction, step_sun_tr)
+                sun_f_v = self._interpolate_fraction(v, t_a, t_b, p0.sun_visible_fraction, p1.sun_visible_fraction, step_sun_tr)
+
+                if sun_f_u >= 0.999 and sun_f_v >= 0.999:
+                    sun_state = "FULL"
+                elif sun_f_u <= 0.0001 and sun_f_v <= 0.0001:
+                    sun_state = "DARK"
+                else:
+                    sun_state = "PARTIAL"
+
+                # Earth fraction evaluation
+                earth_f_u = self._interpolate_fraction(u, t_a, t_b, p0.earth_visible_fraction, p1.earth_visible_fraction, step_earth_tr)
+                earth_f_v = self._interpolate_fraction(v, t_a, t_b, p0.earth_visible_fraction, p1.earth_visible_fraction, step_earth_tr)
+
+                if earth_f_u >= 0.999 and earth_f_v >= 0.999:
+                    earth_state = "FULL"
+                elif earth_f_u <= 0.0001 and earth_f_v <= 0.0001:
+                    earth_state = "BLACKOUT"
+                else:
+                    earth_state = "PARTIAL"
+
+                sub_intervals.append({
+                    "u": u,
+                    "v": v,
+                    "dt": dt_h,
+                    "sun_state": sun_state,
+                    "earth_state": earth_state,
+                })
+
+        # 2. Sum durations from sub-intervals
+        sun_full_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] == "FULL")
+        sun_partial_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] == "PARTIAL")
+
+        sun_full_hours = round(sun_full_raw, 2)
+        sun_partial_hours = round(sun_partial_raw, 2)
         sun_dark_hours = round(max(0.0, total_duration_hours - sun_full_hours - sun_partial_hours), 2)
         sun_vis_hours = round(sun_full_hours + sun_partial_hours, 2)
 
-        # Run-length analysis for longest uninterrupted darkness and illumination
-        longest_dark_hrs, dark_start, dark_end = self._calculate_longest_streak(
-            series, lambda p: p.sun_visibility_state == VisibilityState.FULLY_OBSTRUCTED, dt
+        earth_full_raw = sum(s["dt"] for s in sub_intervals if s["earth_state"] == "FULL")
+        earth_partial_raw = sum(s["dt"] for s in sub_intervals if s["earth_state"] == "PARTIAL")
+
+        earth_full_hours = round(earth_full_raw, 2)
+        earth_partial_hours = round(earth_partial_raw, 2)
+        earth_blackout_hours = round(max(0.0, total_duration_hours - earth_full_hours - earth_partial_hours), 2)
+        earth_vis_hours = round(earth_full_hours + earth_partial_hours, 2)
+
+        both_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] != "DARK" and s["earth_state"] != "BLACKOUT")
+        sun_only_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] != "DARK" and s["earth_state"] == "BLACKOUT")
+        earth_only_raw = sum(s["dt"] for s in sub_intervals if s["sun_state"] == "DARK" and s["earth_state"] != "BLACKOUT")
+
+        both_hrs = round(both_raw, 2)
+        sun_only_hrs = round(sun_only_raw, 2)
+        earth_only_hrs = round(earth_only_raw, 2)
+        neither_hrs = round(max(0.0, total_duration_hours - both_hrs - sun_only_hrs - earth_only_hrs), 2)
+
+        # 3. Continuous streak calculations
+        longest_dark_hrs, dark_start, dark_end = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["sun_state"] == "DARK"
         )
-        longest_illum_hrs, _, _ = self._calculate_longest_streak(
-            series, lambda p: p.sun_visible_fraction > 0.0, dt
+        longest_illum_hrs, _, _ = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["sun_state"] != "DARK"
+        )
+        longest_blackout_hrs, blk_start, blk_end = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["earth_state"] == "BLACKOUT"
+        )
+        longest_earth_vis_hrs, _, _ = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["earth_state"] != "BLACKOUT"
+        )
+        longest_both_hrs, _, _ = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["sun_state"] != "DARK" and s["earth_state"] != "BLACKOUT"
+        )
+        longest_neither_hrs, _, _ = self._calculate_longest_streak_intervals(
+            sub_intervals, lambda s: s["sun_state"] == "DARK" and s["earth_state"] == "BLACKOUT"
         )
 
         sunrise_cnt = sum(1 for t in transitions if "SUNRISE" in t.transition_type)
@@ -780,32 +905,16 @@ class VisibilityEngineService:
             total_sun_full_hours=sun_full_hours,
             total_sun_partial_hours=sun_partial_hours,
             total_darkness_hours=sun_dark_hours,
-            longest_darkness_hours=round(longest_dark_hrs, 2),
+            longest_darkness_hours=round(min(total_duration_hours, longest_dark_hrs), 2),
             longest_darkness_start_iso=dark_start,
             longest_darkness_end_iso=dark_end,
-            longest_illumination_hours=round(longest_illum_hrs, 2),
+            longest_illumination_hours=round(min(total_duration_hours, longest_illum_hrs), 2),
             illumination_fraction=round(sun_vis_hours / max(0.01, total_duration_hours), 4),
+            sunlight_percentage=round((sun_vis_hours / max(0.01, total_duration_hours)) * 100.0, 2),
             sunrise_count=sunrise_cnt,
             sunset_count=sunset_cnt,
             max_sun_elevation_deg=round(float(np.max(sun_elevs)), 2),
             min_sun_elevation_deg=round(float(np.min(sun_elevs)), 2),
-        )
-
-        # 2. Earth metrics summation
-        earth_full_pts = sum(1 for p in series if p.earth_visibility_state == VisibilityState.FULLY_VISIBLE)
-        earth_partial_pts = sum(1 for p in series if p.earth_visibility_state == VisibilityState.PARTIALLY_VISIBLE)
-        earth_blackout_pts = sum(1 for p in series if p.earth_visibility_state == VisibilityState.FULLY_OBSTRUCTED)
-
-        earth_full_hours = round((earth_full_pts / total_pts) * total_duration_hours, 2)
-        earth_partial_hours = round((earth_partial_pts / total_pts) * total_duration_hours, 2)
-        earth_blackout_hours = round(max(0.0, total_duration_hours - earth_full_hours - earth_partial_hours), 2)
-        earth_vis_hours = round(earth_full_hours + earth_partial_hours, 2)
-
-        longest_blackout_hrs, blk_start, blk_end = self._calculate_longest_streak(
-            series, lambda p: p.earth_visibility_state == VisibilityState.FULLY_OBSTRUCTED, dt
-        )
-        longest_earth_vis_hrs, _, _ = self._calculate_longest_streak(
-            series, lambda p: p.earth_visible_fraction > 0.0, dt
         )
 
         earthrise_cnt = sum(1 for t in transitions if "EARTHRISE" in t.transition_type)
@@ -817,33 +926,16 @@ class VisibilityEngineService:
             total_earth_full_hours=earth_full_hours,
             total_earth_partial_hours=earth_partial_hours,
             total_earth_blackout_hours=earth_blackout_hours,
-            longest_earth_blackout_hours=round(longest_blackout_hrs, 2),
+            longest_earth_blackout_hours=round(min(total_duration_hours, longest_blackout_hrs), 2),
             longest_earth_blackout_start_iso=blk_start,
             longest_earth_blackout_end_iso=blk_end,
-            longest_earth_visible_hours=round(longest_earth_vis_hrs, 2),
+            longest_earth_visible_hours=round(min(total_duration_hours, longest_earth_vis_hrs), 2),
             earth_visibility_fraction=round(earth_vis_hours / max(0.01, total_duration_hours), 4),
+            earth_visibility_percentage=round((earth_vis_hours / max(0.01, total_duration_hours)) * 100.0, 2),
             earthrise_count=earthrise_cnt,
             earthset_count=earthset_cnt,
             max_earth_elevation_deg=round(float(np.max(earth_elevs)), 2),
             min_earth_elevation_deg=round(float(np.min(earth_elevs)), 2),
-        )
-
-        # 3. Combined metrics summation
-        both_pts = sum(1 for p in series if p.sun_visible_fraction > 0.0 and p.earth_visible_fraction > 0.0)
-        sun_only_pts = sum(1 for p in series if p.sun_visible_fraction > 0.0 and p.earth_visible_fraction == 0.0)
-        earth_only_pts = sum(1 for p in series if p.sun_visible_fraction == 0.0 and p.earth_visible_fraction > 0.0)
-        neither_pts = sum(1 for p in series if p.sun_visible_fraction == 0.0 and p.earth_visible_fraction == 0.0)
-
-        both_hrs = round((both_pts / total_pts) * total_duration_hours, 2)
-        sun_only_hrs = round((sun_only_pts / total_pts) * total_duration_hours, 2)
-        earth_only_hrs = round((earth_only_pts / total_pts) * total_duration_hours, 2)
-        neither_hrs = round(max(0.0, total_duration_hours - both_hrs - sun_only_hrs - earth_only_hrs), 2)
-
-        longest_both_hrs, _, _ = self._calculate_longest_streak(
-            series, lambda p: p.sun_visible_fraction > 0.0 and p.earth_visible_fraction > 0.0, dt
-        )
-        longest_neither_hrs, _, _ = self._calculate_longest_streak(
-            series, lambda p: p.sun_visible_fraction == 0.0 and p.earth_visible_fraction == 0.0, dt
         )
 
         comb_metrics = CombinedMetrics(
@@ -851,43 +943,51 @@ class VisibilityEngineService:
             sun_only_hours=sun_only_hrs,
             earth_only_hours=earth_only_hrs,
             neither_visible_hours=neither_hrs,
-            longest_both_visible_hours=round(longest_both_hrs, 2),
-            longest_neither_visible_hours=round(longest_neither_hrs, 2),
+            longest_both_visible_hours=round(min(total_duration_hours, longest_both_hrs), 2),
+            longest_neither_visible_hours=round(min(total_duration_hours, longest_neither_hrs), 2),
             total_interval_hours=round(total_duration_hours, 2),
         )
 
         return sol_metrics, earth_metrics, comb_metrics
 
-    def _calculate_longest_streak(
+    def _calculate_longest_streak_intervals(
         self,
-        series: List[VisibilityTimeSeriesPoint],
+        sub_intervals: List[Dict[str, Any]],
         condition,
-        dt_hours: float,
     ) -> Tuple[float, Optional[str], Optional[str]]:
         """
-        Finds the longest consecutive streak of epochs satisfying `condition`.
+        Finds the longest consecutive streak of sub-intervals satisfying `condition`.
         Returns (duration_hours, start_iso, end_iso).
         """
-        max_len = 0
-        cur_len = 0
-        best_start = None
-        best_end = None
-        cur_start = None
+        max_duration = 0.0
+        cur_duration = 0.0
+        best_u = None
+        best_v = None
+        cur_u = None
 
-        for p in series:
-            if condition(p):
-                if cur_len == 0:
-                    cur_start = p.timestamp_iso
-                cur_len += 1
-                if cur_len > max_len:
-                    max_len = cur_len
-                    best_start = cur_start
-                    best_end = p.timestamp_iso
+        for sub in sub_intervals:
+            if condition(sub):
+                if cur_duration == 0.0:
+                    cur_u = sub["u"]
+                cur_duration += sub["dt"]
+                if cur_duration > max_duration:
+                    max_duration = cur_duration
+                    best_u = cur_u
+                    best_v = sub["v"]
             else:
-                cur_len = 0
-                cur_start = None
+                cur_duration = 0.0
+                cur_u = None
 
-        duration_hours = max_len * dt_hours
-        return duration_hours, best_start, best_end
+        start_iso = None
+        end_iso = None
+        if best_u is not None and best_v is not None:
+            try:
+                with SPICE_LOCK:
+                    start_iso = spice.et2utc(best_u, "ISOC", 0) + "Z"
+                    end_iso = spice.et2utc(best_v, "ISOC", 0) + "Z"
+            except Exception:
+                pass
+
+        return max_duration, start_iso, end_iso
 
 visibility_service = VisibilityEngineService()

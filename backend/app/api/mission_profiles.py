@@ -10,7 +10,7 @@ from app.schemas.mission_profile import (
 )
 from app.services.mission_profile_service import mission_profile_service, TEMPLATE_PROFILES
 
-router = APIRouter(prefix="/api/profiles", tags=["Mission Requirements & Profiles"])
+router = APIRouter(prefix="/api/profiles", tags=["Mission Profiles"])
 
 @router.get("/", response_model=List[MissionProfile], summary="List all saved mission profiles and templates")
 def list_profiles():

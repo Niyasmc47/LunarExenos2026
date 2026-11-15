@@ -1,12 +1,25 @@
 import { DialogSurface } from '../ui/DialogSurface';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, AlertCircle, MapPin, CheckCircle2 } from 'lucide-react';
 import { useScenarioStore } from '../../stores/scenarioStore';
 import { PlainLanguageExplainer } from '../ui/PlainLanguageExplainer';
 
+export interface ScenarioInitialValues {
+  name?: string;
+  description?: string;
+  siteId?: string;
+  latitude?: number;
+  longitude?: number;
+  observerHeight?: number;
+  startIso?: string;
+  endIso?: string;
+  stepHours?: number;
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  initialValues?: ScenarioInitialValues;
 }
 
 interface SitePreset {
@@ -57,7 +70,7 @@ const SITE_PRESETS: SitePreset[] = [
   },
 ];
 
-export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialValues }) => {
   const addScenario = useScenarioStore((state) => state.addScenario);
 
   const [name, setName] = useState('');
@@ -71,6 +84,20 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [stepHours, setStepHours] = useState(2.0);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && initialValues) {
+      if (initialValues.name !== undefined) setName(initialValues.name);
+      if (initialValues.description !== undefined) setDescription(initialValues.description);
+      if (initialValues.siteId !== undefined) setSiteId(initialValues.siteId);
+      if (initialValues.latitude !== undefined) setLatitude(initialValues.latitude);
+      if (initialValues.longitude !== undefined) setLongitude(initialValues.longitude);
+      if (initialValues.observerHeight !== undefined) setObserverHeight(initialValues.observerHeight);
+      if (initialValues.startIso !== undefined) setStartIso(initialValues.startIso);
+      if (initialValues.endIso !== undefined) setEndIso(initialValues.endIso);
+      if (initialValues.stepHours !== undefined) setStepHours(initialValues.stepHours);
+    }
+  }, [isOpen, initialValues]);
 
   const currentPreset = SITE_PRESETS.find((s) => s.id === siteId) || SITE_PRESETS[0];
 

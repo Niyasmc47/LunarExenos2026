@@ -43,7 +43,10 @@ export const RegionSelectionToolbar: React.FC = () => {
   }, [selectedRegionBbox]);
 
   // Run discovery on mount or when bounding box changes
-  const handleTriggerDiscovery = (overrideBbox?: { minLat: number; maxLat: number; minLon: number; maxLon: number }) => {
+  const handleTriggerDiscovery = (
+    overrideBbox?: { minLat: number; maxLat: number; minLon: number; maxLon: number },
+    preventDatasetOverride: boolean = false
+  ) => {
     const lat1 = overrideBbox ? overrideBbox.minLat : parseFloat(minLat);
     const lat2 = overrideBbox ? overrideBbox.maxLat : parseFloat(maxLat);
     const lon1 = overrideBbox ? overrideBbox.minLon : parseFloat(minLon);
@@ -58,14 +61,29 @@ export const RegionSelectionToolbar: React.FC = () => {
     discoverDatasets(lat1, lat2, lon1, lon2)
       .then((resp) => {
         if (resp) {
-          setDiscoveryResponse(resp);
-          // Only auto-select if currently active dataset is not in the discovered candidates
-          const currentActive = useDynamicAnalysisStore.getState().activeDatasetId;
-          const isCurrentInCandidates = resp.all_candidates.some(
-            (c) => c.dataset.dataset_id === currentActive
-          );
-          if (!isCurrentInCandidates && resp.best_resolution_candidate) {
-            setActiveDatasetId(resp.best_resolution_candidate.dataset.dataset_id);
+          // Only list authentic imported NASA datasets (is_local_available == true)
+          const localOnlyCandidates = resp.all_candidates.filter((c) => c.dataset.is_local_available);
+          const filteredCandidates = localOnlyCandidates.length > 0 ? localOnlyCandidates : resp.all_candidates;
+          const bestRes = filteredCandidates.find((c) => c.dataset.nominal_pixel_spacing_m === 5.0) || filteredCandidates[0];
+          const bestCov = [...filteredCandidates].sort((a, b) => b.coverage_percentage - a.coverage_percentage)[0];
+
+          const filteredResp = {
+            ...resp,
+            all_candidates: filteredCandidates,
+            best_resolution_candidate: bestRes,
+            best_coverage_candidate: bestCov,
+          };
+          setDiscoveryResponse(filteredResp);
+
+          // Only auto-select if caller did not explicitly prevent dataset override
+          if (!preventDatasetOverride) {
+            const currentActive = useDynamicAnalysisStore.getState().activeDatasetId;
+            const isCurrentInCandidates = filteredCandidates.some(
+              (c) => c.dataset.dataset_id === currentActive
+            );
+            if (!isCurrentInCandidates && bestRes) {
+              setActiveDatasetId(bestRes.dataset.dataset_id);
+            }
           }
         }
       })
@@ -73,7 +91,7 @@ export const RegionSelectionToolbar: React.FC = () => {
   };
 
   useEffect(() => {
-    handleTriggerDiscovery();
+    handleTriggerDiscovery(undefined, true);
   }, []);
 
   return (
@@ -93,7 +111,7 @@ export const RegionSelectionToolbar: React.FC = () => {
                 key={site.id}
                 onClick={() => {
                   selectPredefinedSite(site.id);
-                  handleTriggerDiscovery(site.bbox);
+                  handleTriggerDiscovery(site.bbox, true);
                 }}
                 className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
                   isSelected

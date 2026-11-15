@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocationStore } from '../../stores/locationStore';
+import { useDynamicAnalysisStore } from '../../stores/dynamicAnalysisStore';
 import { formatCoordinates, LUNAR_PRESETS, validateCoordinates } from '../../utils/lunarCoordinates';
 import { findCoveringSite } from '../../utils/explorerCoverage';
 
@@ -54,10 +55,21 @@ export function CoordinatePanel() {
       <h3>{coveredSite ? `Inside ${coveredSite.shortName} terrain footprint` : 'Imagery exploration only here'}</h3>
       <p className="help-text">{coveredSite ? `The authentic NASA LOLA dataset for ${coveredSite.name} covers this footprint. Detailed 5 m elevation and complete skyline coverage can be inspected in Terrain & Visibility.` : 'Global imagery is available; this location is outside available local terrain footprints (Site 01, Site 04, Site 11). No elevation or terrain visibility is inferred.'}</p>
       <p className="help-text">Map/globe imagery is not elevation. The globe is a reference sphere; its lighting is illustrative.</p>
-      {coveredSite && <button type="button" className="secondary-button" onClick={() => setAppScreen('terrain-explorer')}>Inspect terrain data</button>}
+      {coveredSite && (
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={() => {
+            useDynamicAnalysisStore.getState().selectPredefinedSite(coveredSite.id);
+            setAppScreen('terrain-explorer');
+          }}
+        >
+          Inspect terrain data
+        </button>
+      )}
     </div>
 
-    <details className="learning-card"><summary>New to lunar exploration?</summary><ol><li>Start with a named site or enter latitude and longitude.</li><li>Use 2D Map for geography, 3D Globe for orientation, or Both views to compare them.</li><li>Try Connecting Ridge to locate the available terrain footprint.</li></ol>
+    <details className="learning-card"><summary>New to lunar exploration?</summary><ol><li>Start with a named site or enter latitude and longitude.</li><li>Use 2D Map for geography, 3D Globe for orientation, or Both views to compare them.</li><li>Try Connecting Ridge (Site 01), Shackleton Rim (Site 04), or de Gerlache Rim (Site 11) to inspect available NASA terrain footprints.</li></ol>
       <p>Azimuth is direction around the horizon: north 0°, east 90°. Elevation is the angle above the local horizontal plane.</p>
       <p>Polar ridges can block a low Sun or Earth. The real skyline requires terrain data. Seeing the Sun or Earth does not by itself guarantee electrical power or a radio link.</p>
       <p>Use Tab to reach controls and Enter to select. Location selection is available through the form and catalogue without a mouse or 3D controls.</p>

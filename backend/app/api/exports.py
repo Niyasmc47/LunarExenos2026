@@ -14,7 +14,7 @@ from app.services.regional_statistics import regional_statistics_service
 from app.services.raster_export import raster_export_service
 from app.services.slope_service import slope_service
 
-router = APIRouter(prefix="/api/exports", tags=["exports"])
+router = APIRouter(prefix="/api/exports", tags=["Exports"])
 
 @router.post("/profile-csv")
 def export_profile_csv(req: ProfileTransectRequest):

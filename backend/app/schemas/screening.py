@@ -11,6 +11,8 @@ class ScreeningVerdict(str, Enum):
     PASS = "PASS"
     FAIL = "FAIL"
     INDETERMINATE = "INDETERMINATE"
+    NOT_EVALUABLE_SCOPE_MISMATCH = "NOT_EVALUABLE_SCOPE_MISMATCH"
+    IMPOSSIBLE_THRESHOLD = "IMPOSSIBLE_THRESHOLD"
 
 class OverallCandidateStatus(str, Enum):
     COMPLIANT = "COMPLIANT"          # All active hard constraints passed
@@ -74,7 +76,12 @@ class CandidateScreeningSummary(BaseModel):
     hard_constraints_passed: int = Field(0)
     hard_constraints_failed: int = Field(0)
     hard_constraints_indeterminate: int = Field(0)
+    hard_constraints_scope_mismatch: int = Field(0)
+    hard_constraints_impossible: int = Field(0)
     total_hard_constraints: int = Field(0)
+    analysis_duration_hours: Optional[float] = Field(None, description="Analysis window duration in hours")
+    profile_duration_hours: Optional[float] = Field(None, description="Target profile duration in hours")
+    scope_mismatch_detected: bool = Field(False, description="Whether analysis duration differs from profile duration")
     hard_constraint_results: List[RequirementEvaluationResult] = Field(default_factory=list)
     soft_preference_results: List[SoftPreferenceItem] = Field(default_factory=list)
     informational_metrics: List[InformationalMetricItem] = Field(default_factory=list)

@@ -13,7 +13,7 @@ from app.schemas.trade_off import (
 )
 from app.services.trade_off_service import trade_off_service
 
-trade_off_router = APIRouter(prefix="/api/trade-off", tags=["trade-off"])
+trade_off_router = APIRouter(prefix="/api/trade-off", tags=["Trade-off Analysis"])
 
 
 @trade_off_router.post("/studies", response_model=TradeOffStudyResponse, status_code=status.HTTP_201_CREATED)

@@ -10,7 +10,7 @@ from app.schemas.visibility import (
 from app.services.visibility_service import visibility_service
 from app.services.kernel_manager import kernel_manager
 
-router = APIRouter(prefix="/api/visibility", tags=["Terrain-Aware Visibility & Illumination Engine"])
+router = APIRouter(prefix="/api/visibility", tags=["Visibility"])
 
 @router.post("/instant", response_model=VisibilityInstantResponse)
 def compute_instant_visibility(request: VisibilityInstantRequest) -> VisibilityInstantResponse:

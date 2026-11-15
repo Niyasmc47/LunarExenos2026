@@ -723,13 +723,11 @@ class MissionWindowPlannerService:
         sunsets = 0
         prev_vis = False
 
-        for i, pt in enumerate(points):
-            # Step duration approximation
-            dt_h = step_hours
-            if i < len(points) - 1:
-                t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                dt_h = (t2 - t1) / 3600.0
+        for i in range(len(points) - 1):
+            pt = points[i]
+            t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
+            t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
+            dt_h = (t2 - t1) / 3600.0
 
             f = getattr(pt, "sun_visible_fraction", 0.0)
             is_vis = f > 0.0
@@ -799,12 +797,11 @@ class MissionWindowPlannerService:
         earthsets = 0
         prev_vis = False
 
-        for i, pt in enumerate(points):
-            dt_h = step_hours
-            if i < len(points) - 1:
-                t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
-                dt_h = (t2 - t1) / 3600.0
+        for i in range(len(points) - 1):
+            pt = points[i]
+            t1 = datetime.fromisoformat(points[i].timestamp_iso.replace("Z", "+00:00")).timestamp()
+            t2 = datetime.fromisoformat(points[i+1].timestamp_iso.replace("Z", "+00:00")).timestamp()
+            dt_h = (t2 - t1) / 3600.0
 
             f = getattr(pt, "earth_visible_fraction", 0.0)
             is_vis = f > 0.0

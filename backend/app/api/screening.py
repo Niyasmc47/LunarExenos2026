@@ -8,7 +8,7 @@ from app.schemas.screening import (
 )
 from app.services.screening_service import screening_service
 
-screening_router = APIRouter(prefix="/api/screening", tags=["candidate-screening"])
+screening_router = APIRouter(prefix="/api/screening", tags=["Screening"])
 
 @screening_router.post("/run", response_model=CandidateScreeningResponse, status_code=status.HTTP_201_CREATED)
 def run_candidate_screening(req: CandidateScreeningRequest):
