@@ -152,11 +152,11 @@ export const ScenarioMapOverview: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[500px] rounded-xl overflow-hidden border border-slate-800 bg-[#070b12] shadow-xl font-mono text-xs">
+    <div className="relative w-full h-[500px] rounded-xl overflow-hidden border border-[#2b2d32] bg-[#0e1013] shadow-xl font-mono text-xs">
       <div ref={mapElementRef} className="w-full h-full cursor-crosshair" />
 
       {/* Map Controls */}
-      <div className="absolute right-3 top-3 z-30 flex flex-col gap-1.5 bg-[#0c121e]/90 p-1 rounded-xl border border-slate-800 shadow-2xl backdrop-blur-md">
+      <div className="absolute right-3 top-3 z-30 flex flex-col gap-1.5 bg-[#141619] p-1 rounded-xl border border-[#2b2d32] shadow-2xl backdrop-blur-md">
         <button
           onClick={handleZoomIn}
           className="p-2 text-slate-300 hover:text-emerald-400 hover:bg-slate-800 rounded-lg transition-colors"
@@ -182,7 +182,7 @@ export const ScenarioMapOverview: React.FC = () => {
 
       {/* Floating Info Overlay for Active Scenario */}
       {activeScenarioId && (
-        <div className="absolute left-3 bottom-3 z-30 bg-[#0c121e]/95 border border-slate-700 p-2.5 rounded-xl shadow-2xl backdrop-blur-md max-w-sm space-y-1">
+        <div className="absolute left-3 bottom-3 z-30 bg-[#141619] border border-[#303238] p-2.5 rounded-xl shadow-2xl backdrop-blur-md max-w-sm space-y-1">
           {(() => {
             const activeRes = scenarios.find((s) => s.scenario.id === activeScenarioId);
             if (!activeRes) return null;
@@ -210,7 +210,7 @@ export const ScenarioMapOverview: React.FC = () => {
       )}
 
       {/* Legend */}
-      <div className="absolute right-3 bottom-3 z-30 bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-[10px] text-slate-300 shadow-xl space-y-1">
+      <div className="absolute right-3 bottom-3 z-30 bg-[#141619] border border-[#2b2d32] px-3 py-1.5 rounded-xl text-[10px] text-slate-300 shadow-xl space-y-1">
         <div className="text-[9px] text-slate-500 font-bold uppercase">CANDIDATE PINS</div>
         {scenarios.map((scRes, idx) => (
           <div

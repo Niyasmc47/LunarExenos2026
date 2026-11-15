@@ -81,9 +81,9 @@ export const ElevationProfileChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 flex flex-col h-full shadow-xl">
+    <div className="bg-[#141619]/95 backdrop-blur-md border border-[#2b2d32] rounded-xl p-3 flex flex-col h-full shadow-xl">
       {/* Top Header & Presets */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2 mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2b2d32] pb-2 mb-2">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-emerald-400" />
           <h3 className="text-xs font-bold font-mono text-slate-200 uppercase tracking-wider">
@@ -99,7 +99,7 @@ export const ElevationProfileChart: React.FC = () => {
             <button
               key={preset.name}
               onClick={() => handleSelectPreset(preset)}
-              className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#070b12] hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-slate-300 hover:text-emerald-400 transition-colors"
+              className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#0e1013] hover:bg-slate-800 border border-[#2b2d32] hover:border-emerald-500/50 text-slate-300 hover:text-emerald-400 transition-colors"
             >
               {preset.name}
             </button>
@@ -110,7 +110,7 @@ export const ElevationProfileChart: React.FC = () => {
       {/* Profile Metrics Summary Pills */}
       {profileData && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2 text-xs font-mono">
-          <div className="bg-[#070b12] p-1.5 px-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+          <div className="bg-[#0e1013] p-1.5 px-2.5 rounded-lg border border-[#2b2d32]/80 flex items-center justify-between">
             <span className="text-slate-400 text-[10px] flex items-center gap-1">
               <Ruler className="w-3 h-3 text-slate-500" /> DISTANCE
             </span>
@@ -119,7 +119,7 @@ export const ElevationProfileChart: React.FC = () => {
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 px-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+          <div className="bg-[#0e1013] p-1.5 px-2.5 rounded-lg border border-[#2b2d32]/80 flex items-center justify-between">
             <span className="text-slate-400 text-[10px] flex items-center gap-1">
               <TrendingUp className="w-3 h-3 text-emerald-400" /> MAX ELEV
             </span>
@@ -128,7 +128,7 @@ export const ElevationProfileChart: React.FC = () => {
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 px-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+          <div className="bg-[#0e1013] p-1.5 px-2.5 rounded-lg border border-[#2b2d32]/80 flex items-center justify-between">
             <span className="text-slate-400 text-[10px] flex items-center gap-1">
               <TrendingDown className="w-3 h-3 text-cyan-400" /> MIN ELEV
             </span>
@@ -137,7 +137,7 @@ export const ElevationProfileChart: React.FC = () => {
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 px-2.5 rounded-lg border border-slate-800/80 flex items-center justify-between">
+          <div className="bg-[#0e1013] p-1.5 px-2.5 rounded-lg border border-[#2b2d32]/80 flex items-center justify-between">
             <span className="text-slate-400 text-[10px]">ΔH RELIEF</span>
             <span className="text-amber-400 font-bold">
               {profileData.elevation_diff_m !== null ? `${Math.round(profileData.elevation_diff_m!)} m` : 'N/A'}
@@ -179,7 +179,7 @@ export const ElevationProfileChart: React.FC = () => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-[#070b12] border border-slate-700 p-2 rounded-lg text-xs font-mono shadow-xl">
+                      <div className="bg-[#0e1013] border border-[#2b2d32] p-2 rounded-lg text-xs font-mono shadow-xl">
                         <div className="text-emerald-400 font-bold">
                           Elevation: {data.elevation !== null ? `${data.elevation > 0 ? '+' : ''}${data.elevation} m` : 'N/A'}
                         </div>

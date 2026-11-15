@@ -154,14 +154,10 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
   };
 
   return (
-    <DialogSurface
-      label="Create a scenario"
-      onClose={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs"
-    >
-      <div className="bg-[#0c121e] border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <DialogSurface label="Create a scenario" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs">
+      <div className="bg-[#141619] border border-[#303238] rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-[#2b2d32]">
           <div className="flex items-center gap-2">
             <Plus className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-100 text-sm">
@@ -195,7 +191,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Shackleton Rim — Artemis Outpost"
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -208,7 +204,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g. Primary habitat site on high ridge crest with persistent sunlight"
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -223,7 +219,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
             <select
               value={siteId}
               onChange={(e) => handleSiteSelect(e.target.value)}
-              className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-2 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
               {SITE_PRESETS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -275,7 +271,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                 required
                 value={latitude}
                 onChange={(e) => setLatitude(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[9px] text-slate-500">
                 Coverage: {currentPreset.latRange.min}° to {currentPreset.latRange.max}°
@@ -294,7 +290,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                 required
                 value={longitude}
                 onChange={(e) => setLongitude(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-3 py-1.5 text-slate-100 font-bold focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[9px] text-slate-500">
                 Coverage: {currentPreset.lonRange.min}° to {currentPreset.lonRange.max}°
@@ -316,7 +312,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                   className={`px-3 py-1 rounded font-bold transition-all ${
                     observerHeight === h
                       ? 'bg-emerald-500 text-black'
-                      : 'bg-[#070b12] text-slate-400 border border-slate-700 hover:text-slate-200'
+                      : 'bg-[#0e1013] text-slate-400 border border-[#303238] hover:text-slate-200'
                   }`}
                 >
                   {h} m
@@ -334,7 +330,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                 required
                 value={startIso}
                 onChange={(e) => setStartIso(e.target.value)}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
@@ -345,7 +341,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                 required
                 value={endIso}
                 onChange={(e) => setEndIso(e.target.value)}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
@@ -359,13 +355,13 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose, initialV
                 required
                 value={stepHours}
                 onChange={(e) => setStepHours(parseFloat(e.target.value))}
-                className="w-full bg-[#070b12] border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#0e1013] border border-[#303238] rounded-lg px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           {/* Footer Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-[#2b2d32] flex items-center justify-end gap-2">
             <button
               type="button"
               aria-label="Close dialog"

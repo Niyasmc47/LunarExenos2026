@@ -31,8 +31,8 @@ export const VisibilityMetricsSummary: React.FC = () => {
   return (
     <div className="space-y-3 font-mono text-xs">
       {/* Observer Location Telemetry */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="text-slate-200 font-bold flex items-center gap-2">
             <Database className="w-4 h-4 text-emerald-400" />
             <span>OBSERVER LOCATION & DEM</span>
@@ -73,8 +73,8 @@ export const VisibilityMetricsSummary: React.FC = () => {
       </div>
 
       {/* Solar Mission Metrics */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="text-amber-400 font-bold flex items-center gap-2">
             <Sun className="w-4 h-4" />
             <span>SOLAR ILLUMINATION METRICS</span>
@@ -84,7 +84,7 @@ export const VisibilityMetricsSummary: React.FC = () => {
         {solar ? (
           <div className="mt-2 space-y-2 text-[11px]">
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                 <div className="text-slate-500 text-[10px]">TOTAL SUNLIGHT</div>
                 <div className="text-amber-300 font-bold text-sm">
                   {solar.total_sun_visible_hours.toFixed(1)} h
@@ -93,7 +93,7 @@ export const VisibilityMetricsSummary: React.FC = () => {
                   ({(solar.illumination_fraction * 100).toFixed(1)}% of window)
                 </div>
               </div>
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                 <div className="text-slate-500 text-[10px]">LONGEST DARKNESS</div>
                 <div className="text-rose-400 font-bold text-sm">
                   {solar.longest_darkness_hours.toFixed(1)} h
@@ -133,8 +133,8 @@ export const VisibilityMetricsSummary: React.FC = () => {
       </div>
 
       {/* Earth Mission Metrics */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="text-cyan-400 font-bold flex items-center gap-2">
             <Globe className="w-4 h-4" />
             <span>EARTH COMM LINE-OF-SIGHT</span>
@@ -144,7 +144,7 @@ export const VisibilityMetricsSummary: React.FC = () => {
         {earth ? (
           <div className="mt-2 space-y-2 text-[11px]">
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                 <div className="text-slate-500 text-[10px]">TOTAL EARTH VISIBLE</div>
                 <div className="text-cyan-300 font-bold text-sm">
                   {earth.total_earth_visible_hours.toFixed(1)} h
@@ -153,7 +153,7 @@ export const VisibilityMetricsSummary: React.FC = () => {
                   ({(earth.earth_visibility_fraction * 100).toFixed(1)}% of window)
                 </div>
               </div>
-              <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
+              <div className="bg-[#0e1013] p-2 rounded-lg border border-[#202228]">
                 <div className="text-slate-500 text-[10px]">LONGEST BLACKOUT</div>
                 <div className="text-rose-400 font-bold text-sm">
                   {earth.longest_earth_blackout_hours.toFixed(1)} h
@@ -190,8 +190,8 @@ export const VisibilityMetricsSummary: React.FC = () => {
 
       {/* Combined Mission Simultaneous Window */}
       {combined && (
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
             <div className="text-emerald-400 font-bold flex items-center gap-2">
               <Layers className="w-4 h-4" />
               <span>COMBINED MISSION WINDOWS</span>
@@ -221,8 +221,8 @@ export const VisibilityMetricsSummary: React.FC = () => {
 
       {/* Transition Events Log */}
       {transitions.length > 0 && (
-        <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg">
+          <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
             <div className="text-slate-200 font-bold flex items-center gap-2">
               <Clock className="w-4 h-4 text-cyan-400" />
               <span>HORIZON LIMB TRANSITIONS</span>
@@ -236,7 +236,7 @@ export const VisibilityMetricsSummary: React.FC = () => {
             {transitions.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-[#070b12] p-1.5 rounded-lg border border-slate-800/80 text-[10px] flex items-center justify-between"
+                className="bg-[#0e1013] p-1.5 rounded-lg border border-[#202228] text-[10px] flex items-center justify-between"
               >
                 <div className="flex items-center gap-1.5">
                   {t.transition_type.includes('RISE') ? (

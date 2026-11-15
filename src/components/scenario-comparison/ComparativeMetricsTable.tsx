@@ -9,8 +9,8 @@ export const ComparativeMetricsTable: React.FC = () => {
   if (scenarios.length === 0) return null;
 
   return (
-    <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-3 font-mono text-xs overflow-x-auto">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-3 font-mono text-xs overflow-x-auto">
+      <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
         <div className="flex items-center gap-2">
           <FileSpreadsheet className="w-4 h-4 text-cyan-400" />
           <span className="font-bold text-slate-100">
@@ -21,7 +21,7 @@ export const ComparativeMetricsTable: React.FC = () => {
 
       <table className="w-full text-left border-collapse min-w-[750px]">
         <thead>
-          <tr className="border-b border-slate-800 text-slate-400 text-[10px] uppercase">
+          <tr className="border-b border-[#2b2d32] text-slate-400 text-[10px] uppercase">
             <th className="py-2 pr-4">Metric / Parameter</th>
             {scenarios.map((scRes) => (
               <th key={scRes.scenario.id} className="py-2 px-3 text-cyan-300 font-bold">

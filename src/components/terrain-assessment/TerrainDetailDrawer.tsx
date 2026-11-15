@@ -27,9 +27,9 @@ export const TerrainDetailDrawer: React.FC = () => {
 
   return (
     <DialogSurface label="Terrain assessment details" onClose={closeDetailDrawer} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      <div className="bg-[#141619] border border-[#303238]/80 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-[#0b101c]/95 backdrop-blur z-10">
+        <div className="flex items-center justify-between p-5 border-b border-[#2b2d32] sticky top-0 bg-[#141619]/95 backdrop-blur z-10">
           <div className="flex items-center gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export const TerrainDetailDrawer: React.FC = () => {
 
         <div className="p-6 space-y-6">
           {/* Metadata Card */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-xs font-mono">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#0e1013] p-4 rounded-xl border border-[#2b2d32] text-xs font-mono">
             <div>
               <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
                 Evaluated Mission Profile
@@ -119,14 +119,14 @@ export const TerrainDetailDrawer: React.FC = () => {
           {/* Hard Constraints Table */}
           <div className="space-y-3">
             <h3 className="text-xs font-mono font-bold text-white tracking-wide flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className="w-4 h-4 text-[#ffe3b0]" />
               <span>HARD CONSTRAINTS EVALUATION MATRIX</span>
             </h3>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-xl border border-[#2b2d32]">
               <table className="w-full text-left border-collapse text-xs font-mono">
                 <thead>
-                  <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                  <tr className="bg-[#191b20] text-slate-400 border-b border-[#2b2d32]">
                     <th className="py-2.5 px-3">Parameter</th>
                     <th className="py-2.5 px-3">Target Condition</th>
                     <th className="py-2.5 px-3">Measured Value</th>
@@ -134,9 +134,9 @@ export const TerrainDetailDrawer: React.FC = () => {
                     <th className="py-2.5 px-3">Evaluation Details</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 bg-slate-900/30">
+                <tbody className="divide-y divide-[#202228] bg-[#141619]">
                   {c.hard_constraint_results.map((r, idx) => (
-                    <tr key={idx} className="hover:bg-slate-800/30">
+                    <tr key={idx} className="hover:bg-[#191b20]">
                       <td className="py-2.5 px-3 text-slate-200 font-medium">
                         {r.requirement_name}
                       </td>
@@ -179,10 +179,10 @@ export const TerrainDetailDrawer: React.FC = () => {
               <h3 className="text-xs font-mono font-bold text-slate-300 tracking-wide">
                 SOFT PREFERENCES & INFORMATIONAL METRICS
               </h3>
-              <div className="overflow-x-auto rounded-xl border border-slate-800">
+              <div className="overflow-x-auto rounded-xl border border-[#2b2d32]">
                 <table className="w-full text-left border-collapse text-xs font-mono">
                   <thead>
-                    <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                    <tr className="bg-[#191b20] text-slate-400 border-b border-[#2b2d32]">
                       <th className="py-2.5 px-3">Parameter</th>
                       <th className="py-2.5 px-3">Classification</th>
                       <th className="py-2.5 px-3">Target / Preference</th>
@@ -190,9 +190,9 @@ export const TerrainDetailDrawer: React.FC = () => {
                       <th className="py-2.5 px-3">Explanation</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 bg-slate-900/30">
+                  <tbody className="divide-y divide-[#202228] bg-[#141619]">
                     {[...c.soft_preference_results, ...c.informational_metrics].map((r, idx) => (
-                      <tr key={idx} className="hover:bg-slate-800/30">
+                      <tr key={idx} className="hover:bg-[#191b20]">
                         <td className="py-2.5 px-3 text-slate-200">{r.requirement_name}</td>
                         <td className="py-2.5 px-3 text-sky-400 text-[10px]">{r.classification}</td>
                         <td className="py-2.5 px-3 text-slate-400">{r.threshold_str}</td>

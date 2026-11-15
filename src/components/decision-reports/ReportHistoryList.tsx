@@ -12,12 +12,12 @@ export const ReportHistoryList: React.FC = () => {
   const isLoading = useDecisionReportStore((state) => state.isLoading);
 
   return (
-    <div className="w-80 border-r border-slate-800 bg-[#090e1b] flex flex-col h-full shrink-0 text-xs font-mono">
+    <div className="w-80 border-r border-[#2b2d32] bg-[#0e1013] flex flex-col h-full shrink-0 text-xs font-mono">
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-4 border-b border-[#2b2d32] flex items-center justify-between">
         <div>
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <FileText className="w-4 h-4 text-purple-400" />
+            <FileText className="w-4 h-4 text-[#ffe3b0]" />
             <span>Mission Reports</span>
           </h3>
           <span className="text-[10px] text-slate-500 block mt-0.5">
@@ -29,7 +29,7 @@ export const ReportHistoryList: React.FC = () => {
           <button
             onClick={() => loadReports()}
             disabled={isLoading}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#191b20] transition-colors"
             title="Refresh reports"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -37,7 +37,7 @@ export const ReportHistoryList: React.FC = () => {
 
           <button
             onClick={openCreateModal}
-            className="px-2.5 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold flex items-center gap-1 transition-all shadow-md shadow-purple-950/40 text-xs"
+            className="px-2.5 py-1.5 rounded-lg bg-[#ffe3b0] hover:bg-[#ffdea3] text-[#141619] font-bold flex items-center gap-1 transition-all shadow-md shadow-[#ffe3b0]/20 text-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Report</span>
@@ -49,11 +49,11 @@ export const ReportHistoryList: React.FC = () => {
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {reports.length === 0 ? (
           <div className="text-center p-8 text-slate-500 space-y-2">
-            <FileText className="w-8 h-8 mx-auto opacity-30 text-purple-400" />
-            <p className="text-xs">No reports yet. Generate a report from completed analyses.</p>
+            <FileText className="w-8 h-8 mx-auto opacity-30 text-[#ffe3b0]" />
+            <p className="text-xs">No mission decision reports generated yet.</p>
             <button
               onClick={openCreateModal}
-              className="text-purple-400 hover:text-purple-300 underline text-xs"
+              className="text-[#ffe3b0] hover:text-[#ffdea3] underline text-xs"
             >
               Generate your first report
             </button>
@@ -68,8 +68,8 @@ export const ReportHistoryList: React.FC = () => {
                 onClick={() => selectReport(r.id)}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 relative group ${
                   isSelected
-                    ? 'bg-purple-950/30 border-purple-500/50 shadow-md shadow-purple-950/30'
-                    : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900/80 hover:border-slate-700'
+                    ? 'bg-[#191b20] border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-md shadow-[#ffe3b0]/10'
+                    : 'bg-[#141619] border-[#2b2d32] hover:bg-[#191b20] hover:border-slate-600'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
@@ -94,7 +94,7 @@ export const ReportHistoryList: React.FC = () => {
                   Mission: {r.mission_name}
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-800/60">
+                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-[#202228]">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
                     <span>{r.created_at_iso.slice(0, 10)}</span>

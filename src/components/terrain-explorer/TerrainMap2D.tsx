@@ -248,10 +248,10 @@ export const TerrainMap2D: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group">
+    <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group">
       {/* Top HUD Bar */}
       <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-2 bg-[#141619]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#2b2d32]/60 shadow-lg pointer-events-auto">
           <Layers className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-semibold tracking-wider text-slate-200 uppercase font-mono">
             2D ELEVATION MAP — SITE 01
@@ -259,7 +259,7 @@ export const TerrainMap2D: React.FC = () => {
         </div>
 
         {/* Overlay Layer Selector Pills */}
-        <div className="flex items-center gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-lg border border-slate-700/60 pointer-events-auto text-xs font-mono">
+        <div className="flex items-center gap-1.5 bg-[#141619]/90 backdrop-blur-md p-1 rounded-lg border border-[#2b2d32]/60 pointer-events-auto text-xs font-mono">
           <button
             onClick={() => {
               setElevationLayerVisible(true);
@@ -288,7 +288,7 @@ export const TerrainMap2D: React.FC = () => {
           </button>
           <button
             onClick={() => setElevationLayerVisible(!elevationLayerVisible)}
-            className={`px-2 py-0.5 rounded border border-slate-700 text-[10px] ${
+            className={`px-2 py-0.5 rounded border border-[#2b2d32] text-[10px] ${
               !elevationLayerVisible ? 'bg-slate-800 text-slate-300' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -298,7 +298,7 @@ export const TerrainMap2D: React.FC = () => {
       </div>
 
       {/* Floating Action Buttons */}
-      <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
+      <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#141619]/90 backdrop-blur-md p-1.5 rounded-lg border border-[#2b2d32]/60 shadow-lg">
         <button
           onClick={handleRecenter}
           title="Recenter to Site 01 (Connecting Ridge)"
@@ -341,18 +341,18 @@ export const TerrainMap2D: React.FC = () => {
 
       {/* Bottom HUD: Live Coordinates & Sampling Status */}
       <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none flex items-center justify-between text-[11px] font-mono">
-        <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded border border-slate-800 text-slate-300 pointer-events-auto flex items-center gap-2">
+        <div className="bg-[#141619]/90 backdrop-blur-md px-2.5 py-1 rounded border border-[#2b2d32] text-slate-300 pointer-events-auto flex items-center gap-2">
           <MapPin className="w-3.5 h-3.5 text-emerald-400" />
           <span>SELECTED: {formatCoordinates({ latitude: selectedLatitude, longitude: selectedLongitude }, 3)}</span>
           {currentElevationData?.in_bounds && typeof currentElevationData.elevation_m === 'number' && (
-            <span className="text-emerald-400 font-bold border-l border-slate-700 pl-2">
+            <span className="text-emerald-400 font-bold border-l border-[#2b2d32] pl-2">
               ELEV: {currentElevationData.elevation_m > 0 ? '+' : ''}{currentElevationData.elevation_m.toFixed(1)} m
             </span>
           )}
         </div>
 
         {hoverCoords && (
-          <div className="bg-[#0c121e]/90 backdrop-blur-md px-2.5 py-1 rounded border border-slate-800 text-slate-400 pointer-events-auto hidden sm:block">
+          <div className="bg-[#141619]/90 backdrop-blur-md px-2.5 py-1 rounded border border-[#2b2d32] text-slate-400 pointer-events-auto hidden sm:block">
             CURSOR: {formatCoordinates({ latitude: hoverCoords.lat, longitude: hoverCoords.lon }, 3)}
           </div>
         )}

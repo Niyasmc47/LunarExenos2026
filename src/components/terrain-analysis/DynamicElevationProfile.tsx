@@ -95,9 +95,9 @@ export const DynamicElevationProfile: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0c121e]/95 backdrop-blur-md border border-slate-800 rounded-xl p-3 flex flex-col h-full shadow-xl text-xs font-mono">
+    <div className="bg-[#141619] backdrop-blur-md border border-[#2b2d32] rounded-xl p-3 flex flex-col h-full shadow-xl text-xs font-mono">
       {/* Top Header & Metrics Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2 mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2b2d32] pb-2 mb-2">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200 uppercase tracking-wider">
@@ -108,7 +108,7 @@ export const DynamicElevationProfile: React.FC = () => {
 
         <button
           onClick={handleExportCsv}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0e1013] hover:bg-slate-800 border border-[#303238] text-slate-300 hover:text-emerald-400 transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           <span>EXPORT TRANSECT CSV</span>
@@ -118,40 +118,40 @@ export const DynamicElevationProfile: React.FC = () => {
       {/* Numerical Metrics Summary Pills */}
       {transectProfile && (
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-1.5 mb-2 text-[11px]">
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500">DISTANCE:</span>
             <span className="text-slate-200 font-bold">{transectProfile.total_distance_km} km</span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500">MAX ELEV:</span>
             <span className="text-emerald-400 font-bold">
               {transectProfile.elevation_max_m !== null ? `+${transectProfile.elevation_max_m} m` : 'N/A'}
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500">MIN ELEV:</span>
             <span className="text-cyan-400 font-bold">
               {transectProfile.elevation_min_m !== null ? `${transectProfile.elevation_min_m} m` : 'N/A'}
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500">RELIEF ΔH:</span>
             <span className="text-amber-400 font-bold">
               {transectProfile.total_relief_m !== null ? `${transectProfile.total_relief_m} m` : 'N/A'}
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500 flex items-center gap-0.5"><ArrowUpRight className="w-3 h-3 text-emerald-400" /> GAIN:</span>
             <span className="text-emerald-400 font-bold">
               {transectProfile.elevation_gain_m !== null ? `+${transectProfile.elevation_gain_m} m` : 'N/A'}
             </span>
           </div>
 
-          <div className="bg-[#070b12] p-1.5 rounded border border-slate-800 flex justify-between items-center">
+          <div className="bg-[#0e1013] p-1.5 rounded border border-[#2b2d32] flex justify-between items-center">
             <span className="text-slate-500 flex items-center gap-0.5"><ArrowDownRight className="w-3 h-3 text-rose-400" /> LOSS:</span>
             <span className="text-rose-400 font-bold">
               {transectProfile.elevation_loss_m !== null ? `-${transectProfile.elevation_loss_m} m` : 'N/A'}
@@ -179,7 +179,7 @@ export const DynamicElevationProfile: React.FC = () => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-[#070b12] border border-slate-700 p-2 rounded-lg text-xs font-mono shadow-xl">
+                      <div className="bg-[#0e1013] border border-[#303238] p-2 rounded-lg text-xs font-mono shadow-xl">
                         <div className="text-emerald-400 font-bold">
                           Elevation: {data.elevation !== null ? `${data.elevation > 0 ? '+' : ''}${data.elevation} m` : 'N/A'}
                         </div>

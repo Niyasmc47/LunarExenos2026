@@ -23,9 +23,9 @@ export const WindowDetailDrawer: React.FC = () => {
 
   return (
     <DialogSurface label="Mission window details" onClose={closeDetailDrawer} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+      <div className="bg-[#141619] border border-[#303238]/80 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-[#0b101c]/95 backdrop-blur z-10">
+        <div className="flex items-center justify-between p-5 border-b border-[#2b2d32] sticky top-0 bg-[#141619]/95 backdrop-blur z-10">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-base font-mono font-bold text-white tracking-wide">
@@ -66,7 +66,7 @@ export const WindowDetailDrawer: React.FC = () => {
 
         <div className="p-6 space-y-6">
           {/* Timing & Candidate Metadata */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-[#2b2d32]">
             <div>
               <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
                 Mission Interval (UTC)
@@ -124,10 +124,10 @@ export const WindowDetailDrawer: React.FC = () => {
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-xl border border-[#2b2d32]">
               <table className="w-full text-left border-collapse text-xs font-mono">
                 <thead>
-                  <tr className="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                  <tr className="bg-slate-900/90 text-slate-400 border-b border-[#2b2d32]">
                     <th className="py-2.5 px-3">Requirement</th>
                     <th className="py-2.5 px-3">Condition</th>
                     <th className="py-2.5 px-3">Actual Value</th>
@@ -182,14 +182,14 @@ export const WindowDetailDrawer: React.FC = () => {
                 <FileText className="w-3.5 h-3.5 text-sky-400" />
                 <span>Soft Preferences (No Synthetic Weighting)</span>
               </h4>
-              <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-800 space-y-2">
+              <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32] space-y-2">
                 {w.soft_preference_results.length === 0 ? (
                   <span className="text-[11px] font-mono text-slate-500">
                     No soft preferences configured in this profile.
                   </span>
                 ) : (
                   w.soft_preference_results.map((sp, idx) => (
-                    <div key={idx} className="text-xs font-mono pb-2 border-b border-slate-800/40 last:border-none last:pb-0">
+                    <div key={idx} className="text-xs font-mono pb-2 border-b border-[#202228] last:border-none last:pb-0">
                       <div className="flex items-center justify-between">
                         <span className="text-slate-300">{sp.requirement_name}</span>
                         <span className="text-sky-300 font-semibold">{sp.actual_value_str}</span>
@@ -209,20 +209,20 @@ export const WindowDetailDrawer: React.FC = () => {
                 <Clock className="w-3.5 h-3.5 text-amber-400" />
                 <span>24.0h Earth Day Breakdown & Transitions</span>
               </h4>
-              <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-800 space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between pb-1.5 border-b border-slate-800/40">
+              <div className="bg-slate-900/50 rounded-xl p-3 border border-[#2b2d32] space-y-2 text-xs font-mono">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[#202228]">
                   <span className="text-slate-400">Min 24h Daily Sunlight:</span>
                   <span className="text-amber-300 font-semibold">
                     {w.solar_summary.min_daily_sunlight_hours.toFixed(1)} h / 24h
                   </span>
                 </div>
-                <div className="flex items-center justify-between pb-1.5 border-b border-slate-800/40">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[#202228]">
                   <span className="text-slate-400">Min 24h Daily Earth Visibility:</span>
                   <span className="text-sky-300 font-semibold">
                     {w.earth_summary.min_daily_earth_visible_hours.toFixed(1)} h / 24h
                   </span>
                 </div>
-                <div className="flex items-center justify-between pb-1.5 border-b border-slate-800/40">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[#202228]">
                   <span className="text-slate-400">Solar Transitions:</span>
                   <span className="text-slate-200">
                     {w.solar_summary.sunrise_transitions} Sunrise / {w.solar_summary.sunset_transitions} Sunset

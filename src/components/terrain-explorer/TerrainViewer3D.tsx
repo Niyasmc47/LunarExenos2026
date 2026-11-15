@@ -304,7 +304,7 @@ const TerrainMeshObject: React.FC<TerrainSceneProps> = ({
             distanceFactor={8}
             zIndexRange={[90, 0]}
           >
-            <div className="px-2 py-0.5 rounded-lg bg-[#0c121e]/95 text-emerald-400 font-bold font-mono text-[10px] border border-emerald-500/50 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
+            <div className="px-2 py-0.5 rounded-lg bg-[#141619]/95 text-emerald-400 font-bold font-mono text-[10px] border border-emerald-500/50 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
               <span>▲ NORTH (0°)</span>
             </div>
           </Html>
@@ -315,7 +315,7 @@ const TerrainMeshObject: React.FC<TerrainSceneProps> = ({
             distanceFactor={8}
             zIndexRange={[90, 0]}
           >
-            <div className="px-2 py-0.5 rounded-lg bg-[#0c121e]/95 text-sky-400 font-bold font-mono text-[10px] border border-sky-500/50 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
+            <div className="px-2 py-0.5 rounded-lg bg-[#141619]/95 text-sky-400 font-bold font-mono text-[10px] border border-sky-500/50 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
               <span>► EAST (90°)</span>
             </div>
           </Html>
@@ -326,7 +326,7 @@ const TerrainMeshObject: React.FC<TerrainSceneProps> = ({
             distanceFactor={8}
             zIndexRange={[90, 0]}
           >
-            <div className="px-2 py-0.5 rounded-lg bg-[#0c121e]/95 text-slate-300 font-bold font-mono text-[10px] border border-slate-700 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
+            <div className="px-2 py-0.5 rounded-lg bg-[#141619]/95 text-slate-300 font-bold font-mono text-[10px] border border-[#2b2d32] shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
               <span>▼ SOUTH (180°)</span>
             </div>
           </Html>
@@ -337,7 +337,7 @@ const TerrainMeshObject: React.FC<TerrainSceneProps> = ({
             distanceFactor={8}
             zIndexRange={[90, 0]}
           >
-            <div className="px-2 py-0.5 rounded-lg bg-[#0c121e]/95 text-slate-300 font-bold font-mono text-[10px] border border-slate-700 shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
+            <div className="px-2 py-0.5 rounded-lg bg-[#141619]/95 text-slate-300 font-bold font-mono text-[10px] border border-[#2b2d32] shadow-2xl flex items-center gap-1 select-none whitespace-nowrap">
               <span>◄ WEST (270°)</span>
             </div>
           </Html>
@@ -425,10 +425,10 @@ export const TerrainViewer3D: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group select-none">
+    <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group select-none">
       {/* Top HUD Bar */}
       <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between flex-wrap gap-2 pointer-events-none">
-        <div className="flex items-center gap-2 bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/60 shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-2 bg-[#141619]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#2b2d32]/60 shadow-lg pointer-events-auto">
           <Mountain className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-semibold tracking-wider text-slate-200 uppercase font-mono">
             3D LUNAR TERRAIN — {activeDatasetId === 'site04' ? 'SITE 04 (SHACKLETON RIM)' : activeDatasetId === 'site11' ? 'SITE 11 (DE GERLACHE RIM)' : 'SITE 01 (CONNECTING RIDGE)'}
@@ -452,7 +452,7 @@ export const TerrainViewer3D: React.FC = () => {
             className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-mono font-bold transition-all shadow-md ${
               cameraMode === 'north'
                 ? 'bg-emerald-500 text-black shadow-emerald-500/20'
-                : 'bg-[#0c121e]/90 text-emerald-400 hover:text-white hover:bg-slate-800 border border-emerald-500/40'
+                : 'bg-[#141619]/90 text-emerald-400 hover:text-white hover:bg-slate-800 border border-emerald-500/40'
             }`}
           >
             <Navigation className="w-3.5 h-3.5" />
@@ -466,7 +466,7 @@ export const TerrainViewer3D: React.FC = () => {
             className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono font-bold transition-all border ${
               showCompass
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                : 'bg-[#0c121e]/90 text-slate-400 hover:text-slate-200 border-slate-800'
+                : 'bg-[#141619]/90 text-slate-400 hover:text-slate-200 border-[#2b2d32]'
             }`}
           >
             <Compass className="w-3.5 h-3.5" />
@@ -474,7 +474,7 @@ export const TerrainViewer3D: React.FC = () => {
           </button>
 
           {/* Vertical Exaggeration Switcher */}
-          <div className="flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md px-2 py-1 rounded-lg border border-slate-700/60 text-xs font-mono">
+          <div className="flex items-center gap-1 bg-[#141619]/90 backdrop-blur-md px-2 py-1 rounded-lg border border-[#2b2d32]/60 text-xs font-mono">
             <span className="text-[10px] text-slate-400">RELIEF:</span>
             {[1.0, 1.5, 2.0, 3.0, 5.0].map((exag) => (
               <button
@@ -492,7 +492,7 @@ export const TerrainViewer3D: React.FC = () => {
           </div>
 
           {/* LOD Switcher */}
-          <div className="flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md px-2 py-1 rounded-lg border border-slate-700/60 text-xs font-mono">
+          <div className="flex items-center gap-1 bg-[#141619]/90 backdrop-blur-md px-2 py-1 rounded-lg border border-[#2b2d32]/60 text-xs font-mono">
             <span className="text-[10px] text-slate-400">MESH:</span>
             {(['low', 'medium', 'high'] as const).map((lod) => (
               <button
@@ -512,7 +512,7 @@ export const TerrainViewer3D: React.FC = () => {
       </div>
 
       {/* Floating Camera Mode Toolstrip */}
-      <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1.5 rounded-lg border border-slate-700/60 shadow-lg">
+      <div className="absolute right-3 top-16 z-20 flex flex-col gap-1.5 bg-[#141619]/90 backdrop-blur-md p-1.5 rounded-lg border border-[#2b2d32]/60 shadow-lg">
         <button
           onClick={handleAlignNorth}
           title="Face Directly North (0°)"
@@ -594,14 +594,14 @@ export const TerrainViewer3D: React.FC = () => {
       {/* Bottom Hint, Cardinal Legend & Dynamic Elevation Scale */}
       <div className="absolute bottom-2 left-3 right-3 z-20 pointer-events-none flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="text-[10px] font-mono text-slate-400 bg-[#070b12]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 shadow-md">
+          <div className="text-[10px] font-mono text-slate-400 bg-[#0e1013]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2b2d32] shadow-md">
             <span className="text-emerald-400 font-bold">Orbit:</span> Left-Click + Drag &nbsp;|&nbsp; 
             <span className="text-emerald-400 font-bold">Pan:</span> Right-Click + Drag &nbsp;|&nbsp; 
             <span className="text-emerald-400 font-bold">Zoom:</span> Scroll Wheel
           </div>
 
           {/* Cardinal Directions Quick Legend */}
-          <div className="text-[10px] font-mono bg-[#070b12]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800 shadow-md flex items-center gap-2">
+          <div className="text-[10px] font-mono bg-[#0e1013]/90 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#2b2d32] shadow-md flex items-center gap-2">
             <span className="flex items-center gap-1 text-emerald-400 font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
               N (0°)
@@ -622,7 +622,7 @@ export const TerrainViewer3D: React.FC = () => {
         </div>
 
         {meshData && (
-          <div className="bg-[#070b12]/90 backdrop-blur-md px-3 py-1 rounded-lg border border-slate-800 text-[10px] font-mono flex items-center gap-2 shadow-md pointer-events-auto">
+          <div className="bg-[#0e1013]/90 backdrop-blur-md px-3 py-1 rounded-lg border border-[#2b2d32] text-[10px] font-mono flex items-center gap-2 shadow-md pointer-events-auto">
             <span className="text-blue-400 font-bold">{meshData.min_elevation.toFixed(0)} m</span>
             <div
               className="w-24 h-2 rounded"

@@ -1,15 +1,11 @@
 import React from 'react';
 import {
-  Sun,
-  Globe,
-  Mountain,
-  Layers,
   Copy,
   Trash2,
   MapPin,
   CheckCircle2,
   XCircle,
-  AlertTriangle,
+  ArrowRight,
 } from 'lucide-react';
 import { useScenarioStore } from '../../stores/scenarioStore';
 import { ScenarioComparisonResult } from '../../types/scenario';
@@ -27,24 +23,9 @@ export const SideBySideScenarioCards: React.FC = () => {
     return null;
   }
 
-  const getRankBadge = (scenarioId: string) => {
-    const item = comparisonResult?.ranking_summary.find((r) => r.scenario_id === scenarioId);
-    if (!item) return null;
-
-    let color = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-    if (item.rank === 2) color = 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
-    if (item.rank >= 3) color = 'bg-slate-800 text-slate-300 border-slate-700';
-
-    return (
-      <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${color}`}>
-        COMPLIANCE #{item.rank} ({item.passed_count}/{item.total_count} Passed)
-      </span>
-    );
-  };
-
   return (
-    <div className="space-y-3 font-mono text-xs">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="space-y-4 font-mono text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {scenarios.map((scRes: ScenarioComparisonResult) => {
           const sc = scRes.scenario;
           const t = scRes.terrain;
@@ -53,162 +34,307 @@ export const SideBySideScenarioCards: React.FC = () => {
           const c = scRes.combined;
           const isActive = activeScenarioId === sc.id;
 
+          const rankItem = comparisonResult?.ranking_summary.find((r) => r.scenario_id === sc.id);
+          const isPrime = rankItem?.rank === 1;
+          const isBackup = rankItem?.rank === 2;
+          const isDisqualified = scRes.failed_constraints_count > 0;
+
+          // Compliance score display
+          const scoreVal = rankItem?.compliance_score_pct !== undefined
+            ? rankItem.compliance_score_pct
+            : scRes.constraints.length > 0
+              ? (scRes.passed_constraints_count / scRes.constraints.length) * 100
+              : 100.0;
+
+          // Tilt margin
+          const slopeVal = t.local_slope_deg ?? 5.0;
+          const tiltMargin = Math.max(0, 10.0 - slopeVal);
+
+          // Sunlight and Earth percentages
+          const sunPct = (s.illumination_fraction * 100).toFixed(0);
+          const earthPct = (e.earth_visibility_fraction * 100).toFixed(0);
+
+          // Trade-off text
+          const tradeoffText = rankItem?.dominant_tradeoff ||
+            `Slope: ${slopeVal.toFixed(1)}° • Sun: ${sunPct}% (${s.total_sun_visible_hours.toFixed(0)}h) • Earth LOS: ${earthPct}% (${e.total_earth_visible_hours.toFixed(0)}h)`;
+
           return (
             <div
               key={sc.id}
               onClick={() => setActiveScenarioId(sc.id)}
-              className={`bg-[#0c121e]/95 rounded-xl border p-3 flex flex-col justify-between shadow-xl transition-all cursor-pointer ${
+              className={`bg-[#0e1013] rounded-xl border flex flex-col justify-between shadow-xl transition-all cursor-pointer overflow-hidden ${
                 isActive
-                  ? 'border-cyan-500 shadow-cyan-500/10 ring-1 ring-cyan-500'
-                  : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-[#ffe3b0] ring-1 ring-[#ffe3b0]/50 shadow-[#ffe3b0]/10'
+                  : 'border-[#2b2d32] hover:border-slate-600'
               }`}
             >
               <div>
-                {/* Header Row */}
-                <div className="flex items-start justify-between gap-1 pb-2 border-b border-slate-800">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                      <h3 className="font-bold text-slate-100 truncate text-[11px]" title={sc.name}>
-                        {sc.name}
-                      </h3>
-                    </div>
-                    <div className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                      <span>{sc.latitude.toFixed(4)}° N, {sc.longitude.toFixed(4)}° E</span>
-                    </div>
-                  </div>
-                  <div className="shrink-0">{getRankBadge(sc.id)}</div>
-                </div>
+                {/* Header Container */}
+                <div className={`p-3.5 bg-gradient-to-b ${
+                  isDisqualified
+                    ? 'from-rose-950/20 via-[#141619] to-transparent'
+                    : isPrime
+                      ? 'from-[#ffe3b0]/10 via-[#141619] to-transparent'
+                      : 'from-[#191b20] via-[#141619] to-transparent'
+                } border-b border-[#202228]`}>
+                  {/* Status & Rank Badges */}
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    {isDisqualified ? (
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 font-bold text-[10px] border border-rose-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                        MANDATORY REQUIREMENT FAILED
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        ALL MANDATORY LIMITS PASSED
+                      </div>
+                    )}
 
-                {/* Configuration Differences Alert */}
-                {scRes.configuration_differences.length > 0 && (
-                  <div className="my-2 p-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-[9px] text-amber-300 space-y-0.5">
-                    <div className="font-bold flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3 text-amber-400" />
-                      <span>Configuration Difference:</span>
-                    </div>
-                    {scRes.configuration_differences.map((diff, i) => (
-                      <div key={i} className="pl-4 text-slate-400">• {diff}</div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Section 1: Solar Illumination */}
-                <div className="mt-2.5 space-y-1.5 bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1 font-bold text-amber-300">
-                      <Sun className="w-3.5 h-3.5" />
-                      <span>Sunlight Duration</span>
-                    </span>
-                    <span className="text-amber-400 font-bold">
-                      {s.total_sun_visible_hours.toFixed(1)} h ({(s.illumination_fraction * 100).toFixed(0)}%)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
-                    <div>Full Sun: <b className="text-slate-200">{s.total_sun_full_hours.toFixed(1)}h</b></div>
-                    <div>Partial: <b className="text-slate-200">{s.total_sun_partial_hours.toFixed(1)}h</b></div>
-                    <div>Darkness: <b className="text-rose-400">{s.total_darkness_hours.toFixed(1)}h</b></div>
-                    <div>Max Dark: <b className="text-rose-400">{s.longest_darkness_hours.toFixed(1)}h</b></div>
-                  </div>
-                </div>
-
-                {/* Section 2: Earth Direct Line-of-Sight */}
-                <div className="mt-2 space-y-1.5 bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1 font-bold text-cyan-300">
-                      <Globe className="w-3.5 h-3.5" />
-                      <span>Earth Line-of-Sight</span>
-                    </span>
-                    <span className="text-cyan-400 font-bold">
-                      {e.total_earth_visible_hours.toFixed(1)} h ({(e.earth_visibility_fraction * 100).toFixed(0)}%)
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
-                    <div>Full LOS: <b className="text-slate-200">{e.total_earth_full_hours.toFixed(1)}h</b></div>
-                    <div>Partial: <b className="text-slate-200">{e.total_earth_partial_hours.toFixed(1)}h</b></div>
-                    <div>Blackout: <b className="text-rose-400">{e.total_earth_blackout_hours.toFixed(1)}h</b></div>
-                    <div>Max Blackout: <b className="text-rose-400">{e.longest_earth_blackout_hours.toFixed(1)}h</b></div>
-                  </div>
-                </div>
-
-                {/* Section 3: Combined Opportunity */}
-                <div className="mt-2 space-y-1.5 bg-[#070b12] p-2 rounded-lg border border-slate-800/80">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="flex items-center gap-1 font-bold text-emerald-300">
-                      <Layers className="w-3.5 h-3.5" />
-                      <span>Both Sun & Earth</span>
-                    </span>
-                    <span className="text-emerald-400 font-bold">
-                      {c.both_visible_hours.toFixed(1)} h
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
-                    <div>Sun Only: <b className="text-amber-300">{c.sun_only_hours.toFixed(1)}h</b></div>
-                    <div>Earth Only: <b className="text-cyan-300">{c.earth_only_hours.toFixed(1)}h</b></div>
-                    <div className="col-span-2">Dual Occlusion: <b className="text-rose-400">{c.neither_visible_hours.toFixed(1)}h</b></div>
-                  </div>
-                </div>
-
-                {/* Section 4: Terrain & LOLA Data Quality */}
-                <div className="mt-2 space-y-1 bg-[#070b12] p-2 rounded-lg border border-slate-800/80 text-[10px]">
-                  <div className="flex items-center gap-1 text-slate-300 font-bold">
-                    <Mountain className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Terrain & LOLA DEM</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1 text-slate-400">
-                    <div>Surface Elev: <b className="text-slate-200">{t.observer_surface_elevation_m.toFixed(1)}m</b></div>
-                    <div>Local Slope: <b className="text-emerald-300">{t.local_slope_deg !== undefined ? `${t.local_slope_deg.toFixed(1)}°` : 'N/A'}</b></div>
-                    <div>Eye Height: <b className="text-slate-200">+{t.observer_height_m.toFixed(1)}m</b></div>
-                    <div>DEM Grid: <b className="text-slate-200">{t.dem_nominal_spacing_m}m/px</b></div>
-                  </div>
-                  <div className="text-[9px] text-slate-500 pt-0.5 border-t border-slate-800">
-                    * ~90% interpolated between ground tracks
-                  </div>
-                </div>
-
-                {/* Section 5: Constraints Summary */}
-                <div className="mt-2 flex items-center justify-between px-1 text-[10px]">
-                  <span className="text-slate-400">Constraints Status:</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-bold flex items-center gap-0.5">
-                      <CheckCircle2 className="w-3 h-3" /> {scRes.passed_constraints_count} Pass
-                    </span>
-                    {scRes.failed_constraints_count > 0 && (
-                      <span className="text-rose-400 font-bold flex items-center gap-0.5">
-                        <XCircle className="w-3 h-3" /> {scRes.failed_constraints_count} Fail
+                    {isPrime ? (
+                      <span className="font-bold text-[#ffe3b0] px-2 py-0.5 rounded bg-[#ffe3b0]/10 border border-[#ffe3b0]/30 text-[10px]">
+                        #1 PRIME CANDIDATE
+                      </span>
+                    ) : isBackup ? (
+                      <span className="font-bold text-[#7bd0ff] px-2 py-0.5 rounded bg-[#7bd0ff]/10 border border-[#7bd0ff]/30 text-[10px]">
+                        #2 VIABLE BACKUP
+                      </span>
+                    ) : (
+                      <span className="font-bold text-slate-400 px-2 py-0.5 rounded bg-slate-800 text-[10px]">
+                        {isDisqualified ? 'DISQUALIFIED' : `#${rankItem?.rank ?? 3} CANDIDATE`}
                       </span>
                     )}
+                  </div>
+
+                  {/* Title & Site */}
+                  <h3 className="text-sm font-bold text-slate-100 truncate" title={sc.name}>
+                    {sc.name}
+                  </h3>
+
+                  {/* Big Compliance Score Display */}
+                  <div className="flex items-baseline gap-2 mt-1.5">
+                    <span className={`text-2xl font-bold tracking-tight ${
+                      isDisqualified ? 'text-rose-400' : 'text-slate-100'
+                    }`}>
+                      {scoreVal.toFixed(1)}%
+                    </span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                      Overall Compliance Score
+                    </span>
+                  </div>
+
+                  {/* Dominant Trade-off Box */}
+                  <div className="mt-2.5 p-2 rounded-lg bg-[#08090b] border border-[#202228] text-[11px] leading-relaxed">
+                    <p className="text-slate-300">
+                      <span className="text-[#ffe3b0] font-bold">Dominant trade-off: </span>
+                      <span className="text-slate-400">{tradeoffText}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Synthetic Visual Profile & Coordinate Thumbnail */}
+                <div className="px-3.5 pt-3">
+                  <div className="relative w-full h-24 rounded-lg overflow-hidden bg-gradient-to-br from-[#141619] via-[#0e1013] to-[#08090b] border border-[#202228]">
+                    {/* Simulated Elevation / Gradient Mesh Contour */}
+                    <div
+                      className="absolute inset-0 opacity-40 bg-cover bg-center"
+                      style={{
+                        backgroundImage:
+                          'radial-gradient(ellipse at 50% 30%, #303238 0%, #191b20 50%, #08090b 100%)',
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-transparent to-transparent" />
+
+                    {/* Coordinates Overlay */}
+                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded bg-[#141619]/90 border border-[#2b2d32] text-[10px] text-slate-300">
+                      <MapPin className="w-3 h-3 text-[#ffe3b0]" />
+                      <span>LAT {sc.latitude.toFixed(4)}° / LON {sc.longitude.toFixed(4)}°</span>
+                    </div>
+
+                    {/* Tilt Margin Badge */}
+                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold font-mono border"
+                      style={{
+                        backgroundColor: isDisqualified ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                        color: isDisqualified ? '#f87171' : '#34d399',
+                        borderColor: isDisqualified ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
+                      }}
+                    >
+                      {slopeVal > 10.0 ? `SLOPE EXCESS: +${(slopeVal - 10.0).toFixed(1)}°` : `TILT MARGIN: +${tiltMargin.toFixed(1)}°`}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 14-Day Timeline Gantt Strip */}
+                <div className="px-3.5 py-2.5">
+                  <div className="flex items-center justify-between mb-1.5 text-[10px]">
+                    <span className="text-slate-400 uppercase font-semibold">
+                      Illumination &amp; Comm Timeline
+                    </span>
+                    <span className="text-[#ffe3b0] font-bold">
+                      {s.total_sun_visible_hours.toFixed(0)}h Sun / {s.total_darkness_hours.toFixed(0)}h Dark
+                    </span>
+                  </div>
+
+                  {/* Dual Bars: Solar & Earth */}
+                  <div className="space-y-1.5">
+                    {/* Solar Illumination Bar */}
+                    <div className="w-full bg-[#08090b] h-2.5 rounded overflow-hidden flex border border-[#202228]">
+                      <div
+                        className="bg-[#ffe3b0] h-full transition-all"
+                        style={{ width: `${Math.min(100, Math.max(0, s.illumination_fraction * 100))}%` }}
+                        title={`Sunlight: ${s.total_sun_visible_hours.toFixed(1)}h (${sunPct}%)`}
+                      />
+                      <div
+                        className="bg-[#202228] h-full flex-1"
+                        title={`Shadow: ${s.total_darkness_hours.toFixed(1)}h`}
+                      />
+                    </div>
+
+                    {/* Earth Line-of-Sight Bar */}
+                    <div className="w-full bg-[#08090b] h-2 rounded overflow-hidden flex border border-[#202228]">
+                      <div
+                        className="bg-[#7bd0ff] h-full transition-all"
+                        style={{ width: `${Math.min(100, Math.max(0, e.earth_visibility_fraction * 100))}%` }}
+                        title={`Earth Direct LOS: ${e.total_earth_visible_hours.toFixed(1)}h (${earthPct}%)`}
+                      />
+                      <div
+                        className="bg-[#202228] h-full flex-1"
+                        title={`Earth Blackout: ${e.total_earth_blackout_hours.toFixed(1)}h`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Day Axis Ticks */}
+                  <div className="flex items-center justify-between text-[9px] text-slate-500 mt-1 font-mono">
+                    <span>DAY 00</span>
+                    <span>DAY 04</span>
+                    <span>DAY 08</span>
+                    <span>DAY 12</span>
+                    <span>DAY 14</span>
+                  </div>
+                </div>
+
+                {/* Critical Metrics & Limits Table */}
+                <div className="px-3.5 pb-2">
+                  <div className="rounded-lg bg-[#08090b] border border-[#202228] overflow-hidden text-[10px]">
+                    <div className="px-2.5 py-1.5 bg-[#141619] flex justify-between text-slate-400 uppercase font-semibold border-b border-[#202228]">
+                      <span>Critical Metric</span>
+                      <span>Recorded</span>
+                      <span>Limit Margin</span>
+                    </div>
+
+                    <div className="divide-y divide-[#202228]">
+                      {/* Slope */}
+                      <div className="px-2.5 py-1.5 flex items-center justify-between">
+                        <span className="text-slate-300">Mean Landing Slope</span>
+                        <span className="text-slate-100 font-semibold">{slopeVal.toFixed(1)}°</span>
+                        {slopeVal <= 10.0 ? (
+                          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> PASS (≤10°)
+                          </span>
+                        ) : (
+                          <span className="text-rose-400 font-semibold flex items-center gap-1">
+                            <XCircle className="w-3 h-3 text-rose-400" /> FAIL (&gt;10°)
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Max Darkness */}
+                      <div className="px-2.5 py-1.5 flex items-center justify-between">
+                        <span className="text-slate-300">Max Darkness Run</span>
+                        <span className="text-slate-100 font-semibold">{s.longest_darkness_hours.toFixed(1)} h</span>
+                        {s.longest_darkness_hours <= 48.0 ? (
+                          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> PASS (≤48h)
+                          </span>
+                        ) : (
+                          <span className="text-rose-400 font-semibold flex items-center gap-1">
+                            <XCircle className="w-3 h-3 text-rose-400" /> FAIL (&gt;48h)
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Earth LOS */}
+                      <div className="px-2.5 py-1.5 flex items-center justify-between">
+                        <span className="text-slate-300">Earth LOS Coverage</span>
+                        <span className="text-slate-100 font-semibold">{earthPct}%</span>
+                        {e.earth_visibility_fraction >= 0.8 ? (
+                          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" /> PASS (≥80%)
+                          </span>
+                        ) : (
+                          <span className="text-rose-400 font-semibold flex items-center gap-1">
+                            <XCircle className="w-3 h-3 text-rose-400" /> MARGINAL
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Combined Sun & Earth */}
+                      <div className="px-2.5 py-1.5 flex items-center justify-between">
+                        <span className="text-slate-300">Both Sun &amp; Earth</span>
+                        <span className="text-emerald-400 font-semibold">{c.both_visible_hours.toFixed(1)} h</span>
+                        <span className="text-slate-400 font-mono">
+                          {((c.both_visible_hours / (s.total_sun_visible_hours + s.total_darkness_hours || 1)) * 100).toFixed(0)}% Sortie
+                        </span>
+                      </div>
+
+                      {/* Elevation Datum */}
+                      <div className="px-2.5 py-1.5 flex items-center justify-between">
+                        <span className="text-slate-300">Elevation Datum</span>
+                        <span className="text-slate-200 font-semibold">
+                          {t.observer_surface_elevation_m >= 0 ? '+' : ''}{t.observer_surface_elevation_m.toFixed(0)} m
+                        </span>
+                        <span className="text-slate-500">LOLA grid {t.dem_nominal_spacing_m}m</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Card Footer Actions */}
-              <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+              <div className="p-3 bg-[#08090b] border-t border-[#202228] space-y-2">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    copyScenario(sc.id);
+                    setActiveScenarioId(sc.id);
                   }}
-                  className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-slate-200"
-                  title="Duplicate Scenario"
+                  className={`w-full py-1.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all text-xs ${
+                    isActive
+                      ? 'bg-[#ffe3b0] text-[#1a1408] shadow-md shadow-[#e5c68d]/20'
+                      : 'bg-[#141619] hover:bg-[#191b20] text-slate-200 border border-[#2b2d32]'
+                  }`}
                 >
-                  <Copy className="w-3 h-3" />
-                  <span>Duplicate</span>
+                  <span>{isActive ? 'Active Candidate Selected' : 'Inspect Flight Corridor'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 
-                {sc.id.startsWith('scenario-') && !sc.id.startsWith('scenario-cr-') && (
+                <div className="flex items-center justify-between pt-1 text-[10px]">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeScenario(sc.id);
+                      copyScenario(sc.id);
                     }}
-                    className="flex items-center gap-1 text-[10px] text-rose-400 hover:text-rose-300"
-                    title="Delete Custom Scenario"
+                    className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors"
+                    title="Duplicate Scenario"
                   >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Delete</span>
+                    <Copy className="w-3 h-3 text-[#7bd0ff]" />
+                    <span>Duplicate</span>
                   </button>
-                )}
+
+                  {sc.id.startsWith('scenario-') && !sc.id.startsWith('scenario-cr-') && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeScenario(sc.id);
+                      }}
+                      className="flex items-center gap-1 text-rose-400 hover:text-rose-300 transition-colors"
+                      title="Delete Custom Scenario"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Delete</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

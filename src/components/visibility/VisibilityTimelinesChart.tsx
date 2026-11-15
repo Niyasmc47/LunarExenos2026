@@ -69,9 +69,9 @@ export const VisibilityTimelinesChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 font-mono text-xs shadow-lg space-y-2.5">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 font-mono text-xs shadow-lg space-y-2.5">
       {/* Header */}
-      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-1.5 border-b border-[#2b2d32]">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-cyan-400" />
           <span className="font-bold text-slate-200">
@@ -116,7 +116,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
                   Total Sun: {analysisData?.solar_metrics.total_sun_visible_hours.toFixed(1)}h ({(analysisData ? analysisData.solar_metrics.illumination_fraction * 100 : 0).toFixed(1)}%)
                 </span>
               </div>
-              <div className="h-6 w-full flex rounded-md overflow-hidden border border-slate-800 bg-[#070b12]">
+              <div className="h-6 w-full flex rounded-md overflow-hidden border border-[#2b2d32] bg-[#0e1013]">
                 {series.map((p, idx) => (
                   <div
                     key={idx}
@@ -146,7 +146,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
                   Total Earth: {analysisData?.earth_metrics.total_earth_visible_hours.toFixed(1)}h ({(analysisData ? analysisData.earth_metrics.earth_visibility_fraction * 100 : 0).toFixed(1)}%)
                 </span>
               </div>
-              <div className="h-6 w-full flex rounded-md overflow-hidden border border-slate-800 bg-[#070b12]">
+              <div className="h-6 w-full flex rounded-md overflow-hidden border border-[#2b2d32] bg-[#0e1013]">
                 {series.map((p, idx) => (
                   <div
                     key={idx}
@@ -176,7 +176,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
                   Both Visible: {analysisData?.combined_metrics.both_visible_hours.toFixed(1)}h
                 </span>
               </div>
-              <div className="h-6 w-full flex rounded-md overflow-hidden border border-slate-800 bg-[#070b12]">
+              <div className="h-6 w-full flex rounded-md overflow-hidden border border-[#2b2d32] bg-[#0e1013]">
                 {series.map((p, idx) => (
                   <div
                     key={idx}
@@ -204,7 +204,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
 
           {/* Hovered point telemetry detail */}
           {hoveredIndex !== null && series[hoveredIndex] && (
-            <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32] flex flex-wrap items-center justify-between gap-2 text-[11px]">
               <div className="text-slate-300 font-bold flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-cyan-400" />
                 <span>{series[hoveredIndex].timestamp_iso}</span>
@@ -224,7 +224,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
           )}
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/80">
+          <div className="flex flex-wrap items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-[#202228]">
             <div className="flex items-center gap-3 flex-wrap">
               <span className="flex items-center gap-1">
                 <span className="w-2.5 h-2.5 rounded-sm bg-[#10b981] inline-block"></span>
@@ -239,7 +239,7 @@ export const VisibilityTimelinesChart: React.FC = () => {
                 <span>Earth Only</span>
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-sm bg-[#090d16] border border-slate-700 inline-block"></span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#141619] border border-[#303238] inline-block"></span>
                 <span>Obstructed / Darkness</span>
               </span>
             </div>

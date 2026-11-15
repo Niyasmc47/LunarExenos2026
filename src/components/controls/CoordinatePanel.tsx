@@ -16,11 +16,19 @@ export function CoordinatePanel() {
   const selected = LUNAR_PRESETS.find(p => Math.abs(p.latitude - latitude) < 1e-6 && Math.abs(p.longitude - longitude) < 1e-6);
   const places = LUNAR_PRESETS.filter(p => (kind === 'All places' || p.kind === kind) && (p.name + ' ' + p.description + ' ' + p.category).toLowerCase().includes(query.trim().toLowerCase()));
   const coveredSite = findCoveringSite(latitude, longitude);
+  const isCovered = Boolean(coveredSite);
   return <section className="explorer-panel" aria-labelledby="location-heading">
     <div><p className="eyebrow">YOUR STARTING POINT</p><h2 id="location-heading">Choose a location</h2><p className="help-text">Pick a place, enter coordinates, or click the map or globe. Both views share one selection.</p></div>
     <div className="selection-card" aria-live="polite" aria-atomic="true">
-      <p className="eyebrow">SELECTED LOCATION</p><h3>{selected?.name ?? 'Custom location'}</h3>
-      <p className="selected-coordinates" data-testid="selected-coordinates">{formatCoordinates({ latitude, longitude }, 5)}</p>
+      <div className="flex items-center justify-between mb-1">
+        <p className="eyebrow mb-0">SELECTED LOCATION</p>
+        <span className={`px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 ${isCovered ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-[#303238]'}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${isCovered ? 'bg-emerald-400' : 'bg-slate-400'}`}></span>
+          {isCovered ? 'LOLA Active' : 'Imagery Only'}
+        </span>
+      </div>
+      <h3>{selected?.name ?? 'Custom location'}</h3>
+      <p className="selected-coordinates font-mono bg-[#0c0e11] px-2.5 py-1.5 rounded border border-[#2b2d32] inline-block tracking-tight" data-testid="selected-coordinates">{formatCoordinates({ latitude, longitude }, 5)}</p>
       <p className="help-text">{selected?.description ?? 'Custom coordinates use the explorer’s lunar reference sphere. Confirm the source frame before precise terrain analysis.'}</p>
       {selected && <details><summary>Coordinate source and accuracy</summary><p className="help-text">{selected.kind} · {selected.coordinateNote}</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">{selected.sourceLabel} ↗</a><p className="help-text">Catalogue reviewed {selected.reviewedOn}. Review date does not imply a new survey.</p></details>}
       <button type="button" className="text-button" onClick={async () => {
@@ -49,6 +57,21 @@ export function CoordinatePanel() {
       <p id="coordinate-help" className="help-text">Decimal degrees: north/east positive; south/west negative. Latitude is planetocentric.</p>
       <p id="coordinate-error" role="alert" className="error-text">{error}</p>
       <div className="action-row"><button className="primary-button" type="submit">Apply coordinates</button><button className="secondary-button" type="button" onClick={() => { resetToDefault(); setLat(String(LUNAR_PRESETS[1].latitude)); setLon(String(LUNAR_PRESETS[1].longitude)); setError(''); }}>Reset</button></div>
+      <div className="pt-2">
+        <span className="eyebrow block mb-1.5">QUICK PRESETS</span>
+        <div className="flex flex-wrap gap-1">
+          {LUNAR_PRESETS.slice(0, 5).map(p => (
+            <button
+              key={p.id}
+              type="button"
+              className="px-2 py-0.5 rounded bg-[#15171b] border border-[#303238] hover:border-[#e5c68d] hover:text-[#e5c68d] text-slate-300 text-[11px] font-mono transition-colors"
+              onClick={() => setSelectedCoordinates(p.latitude, p.longitude, 'preset')}
+            >
+              {p.name.split(' (')[0]}
+            </button>
+          ))}
+        </div>
+      </div>
     </form>
     </details>
     <div className="coverage-card" data-testid="coverage">

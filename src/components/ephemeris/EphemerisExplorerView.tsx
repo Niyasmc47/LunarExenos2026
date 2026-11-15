@@ -55,12 +55,12 @@ export const EphemerisExplorerView: React.FC = () => {
       <EphemerisControlToolbar observerLat={observerLat} observerLon={observerLon} />
 
       {/* High-Level Scientific Solar & Earth Geometry Status Banner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-[#0c121e]/90 border border-slate-800 rounded-xl p-2.5 font-mono shadow-md text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-[#141619] border border-[#2b2d32] rounded-xl p-2.5 font-mono shadow-md text-xs">
         {/* Sun Geometry Status */}
         <div className={`flex flex-col gap-1.5 px-3 py-2 rounded-lg border ${
           isSunUp
             ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
-            : 'bg-slate-900/80 border-slate-800 text-slate-400'
+            : 'bg-slate-900/80 border-[#2b2d32] text-slate-400'
         }`}>
           <div className="flex items-center gap-2.5">
             <div className={`p-2 rounded-lg ${isSunUp ? 'bg-amber-400/20 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
@@ -91,7 +91,7 @@ export const EphemerisExplorerView: React.FC = () => {
         <div className={`flex flex-col gap-1.5 px-3 py-2 rounded-lg border ${
           isEarthUp
             ? 'bg-sky-500/10 border-sky-500/30 text-sky-200'
-            : 'bg-slate-900/80 border-slate-800 text-slate-400'
+            : 'bg-slate-900/80 border-[#2b2d32] text-slate-400'
         }`}>
           <div className="flex items-center gap-2.5">
             <div className={`p-2 rounded-lg ${isEarthUp ? 'bg-sky-400/20 text-sky-400' : 'bg-slate-800 text-rose-400'}`}>

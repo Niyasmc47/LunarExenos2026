@@ -38,9 +38,9 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-3 bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 text-xs font-mono">
+    <div className="flex flex-col gap-3 bg-[#141619] border border-[#2b2d32] rounded-xl p-3 text-xs font-mono">
       {/* Header & Recompute Trigger */}
-      <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+      <div className="flex items-center justify-between border-b border-[#202228] pb-2">
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200 uppercase tracking-wider">
@@ -58,7 +58,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
       </div>
 
       {/* Observer Location Details */}
-      <div className="grid grid-cols-2 gap-2 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+      <div className="grid grid-cols-2 gap-2 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
         <div>
           <span className="text-[10px] text-slate-500 flex items-center gap-1">
             <MapPin className="w-3 h-3 text-emerald-400" />
@@ -100,7 +100,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
               className={`py-1 rounded text-center transition-all ${
                 observerHeight === h
                   ? 'bg-emerald-500 text-black font-bold'
-                  : 'bg-[#070b12] text-slate-400 hover:text-slate-200 border border-slate-800'
+                  : 'bg-[#0e1013] text-slate-400 hover:text-slate-200 border border-[#2b2d32]'
               }`}
             >
               {h} m
@@ -122,7 +122,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
 
       {/* Summary Statistics */}
       {data && (
-        <div className="space-y-2 bg-[#070b12] p-2.5 rounded-lg border border-slate-800">
+        <div className="space-y-2 bg-[#0e1013] p-2.5 rounded-lg border border-[#2b2d32]">
           <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center justify-between">
             <span>Horizon Skyline Summary</span>
             <span
@@ -141,7 +141,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80">
+          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#202228]">
             <div>
               <div className="text-[10px] text-slate-500">MAX SKYLINE ELEVATION</div>
               <div className="text-emerald-400 font-bold text-sm">
@@ -164,7 +164,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80 text-[10px]">
+          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#202228] text-[10px]">
             <div>
               <span className="text-slate-500">Mean Skyline:</span>{' '}
               <span className="text-slate-300">
@@ -193,7 +193,7 @@ export const HorizonTelemetryCard: React.FC<HorizonTelemetryCardProps> = ({
       )}
 
       {/* Provenance Footer */}
-      <div className="border-t border-slate-800/80 pt-2 text-[10px] text-slate-500 space-y-1">
+      <div className="border-t border-[#202228] pt-2 text-[10px] text-slate-500 space-y-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 text-slate-400 font-bold">
             <Database className="w-3 h-3 text-emerald-400" />

@@ -79,9 +79,9 @@ export const ParetoAnalysisView: React.FC = () => {
   );
 
   return (
-    <div className="bg-[#0b101c] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-2xl p-6 shadow-xl space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2b2d32]">
         <div>
           <h3 className="text-sm font-mono font-bold text-white flex items-center gap-2">
             <Award className="w-4 h-4 text-emerald-400" />
@@ -99,7 +99,7 @@ export const ParetoAnalysisView: React.FC = () => {
             <select
               value={xAxisKey}
               onChange={(e) => setXAxisKey(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-slate-200 rounded-lg px-2 py-1 text-xs font-mono focus:border-emerald-500"
+              className="bg-slate-900 border border-[#303238] text-slate-200 rounded-lg px-2 py-1 text-xs font-mono focus:border-emerald-500"
             >
               {enabledCriteria.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -114,7 +114,7 @@ export const ParetoAnalysisView: React.FC = () => {
             <select
               value={yAxisKey}
               onChange={(e) => setYAxisKey(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-slate-200 rounded-lg px-2 py-1 text-xs font-mono focus:border-emerald-500"
+              className="bg-slate-900 border border-[#303238] text-slate-200 rounded-lg px-2 py-1 text-xs font-mono focus:border-emerald-500"
             >
               {enabledCriteria.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -127,7 +127,7 @@ export const ParetoAnalysisView: React.FC = () => {
       </div>
 
       {/* 2D Scatter Chart */}
-      <div className="w-full h-[360px] bg-slate-950/40 rounded-xl p-4 border border-slate-800/60">
+      <div className="w-full h-[360px] bg-[#08090b] rounded-xl p-4 border border-[#202228]">
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -172,8 +172,8 @@ export const ParetoAnalysisView: React.FC = () => {
                 if (!payload || payload.length === 0) return null;
                 const d = payload[0].payload;
                 return (
-                  <div className="p-3 bg-slate-950/95 border border-slate-700 rounded-xl shadow-2xl font-mono text-xs space-y-1 z-50">
-                    <p className="font-bold text-white pb-1 border-b border-slate-800">{d.name}</p>
+                  <div className="p-3 bg-[#08090b]/95 border border-[#303238] rounded-xl shadow-2xl font-mono text-xs space-y-1 z-50">
+                    <p className="font-bold text-white pb-1 border-b border-[#2b2d32]">{d.name}</p>
                     <div className="text-[11px] text-slate-300">
                       <span>Status: </span>
                       <strong className={d.status === 'PARETO_OPTIMAL' ? 'text-emerald-400' : 'text-slate-400'}>
@@ -232,7 +232,7 @@ export const ParetoAnalysisView: React.FC = () => {
               <div
                 key={alt.id}
                 onClick={() => openDetailDrawer(alt.id)}
-                className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 flex items-center justify-between hover:border-emerald-500/50 cursor-pointer transition-all"
+                className="p-2 rounded-lg bg-[#08090b]/80 border border-[#2b2d32] flex items-center justify-between hover:border-emerald-500/50 cursor-pointer transition-all"
               >
                 <div>
                   <span className="text-xs font-mono font-bold text-white">{alt.name}</span>
@@ -249,7 +249,7 @@ export const ParetoAnalysisView: React.FC = () => {
         </div>
 
         {/* Dominated Alternatives */}
-        <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+        <div className="p-4 bg-slate-900/60 rounded-xl border border-[#2b2d32] space-y-2">
           <div className="flex items-center justify-between text-xs font-mono font-bold text-slate-300">
             <span>DOMINATED ALTERNATIVES ({dominatedAlternatives.length})</span>
             <span className="text-[10px] text-slate-500">Sub-optimal</span>
@@ -264,7 +264,7 @@ export const ParetoAnalysisView: React.FC = () => {
                 <div
                   key={alt.id}
                   onClick={() => openDetailDrawer(alt.id)}
-                  className="p-2 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-between hover:border-slate-700 cursor-pointer transition-all"
+                  className="p-2 rounded-lg bg-[#08090b] border border-[#2b2d32] flex items-center justify-between hover:border-[#303238] cursor-pointer transition-all"
                 >
                   <div>
                     <span className="text-xs font-mono font-medium text-slate-300">{alt.name}</span>

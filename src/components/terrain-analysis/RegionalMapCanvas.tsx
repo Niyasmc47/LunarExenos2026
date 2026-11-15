@@ -251,15 +251,15 @@ export const RegionalMapCanvas: React.FC = () => {
   }, [selectedLatitude, selectedLongitude]);
 
   return (
-    <div className="relative w-full h-full bg-[#05080e] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col group">
+    <div className="relative w-full h-full bg-[#05080e] border border-[#2b2d32] rounded-xl overflow-hidden shadow-2xl flex flex-col group">
       {/* Top Layer Tabs */}
       <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-1.5 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-lg border border-slate-700/60 pointer-events-auto text-xs font-mono">
+        <div className="flex items-center gap-1.5 bg-[#0e1013]/90 backdrop-blur-md p-1 rounded-lg border border-[#2b2d32] pointer-events-auto text-xs font-mono">
           <button
             onClick={() => setActiveLayerMode('elevation')}
-            className={`px-3 py-1 rounded font-bold transition-all ${
+            className={`px-3 py-1 rounded font-bold transition-all text-xs ${
               activeLayerMode === 'elevation'
-                ? 'bg-emerald-500 text-black shadow-md'
+                ? 'bg-[#ffe3b0] text-[#1a1408] shadow-sm font-semibold'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -267,9 +267,9 @@ export const RegionalMapCanvas: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveLayerMode('slope')}
-            className={`px-3 py-1 rounded font-bold transition-all ${
+            className={`px-3 py-1 rounded font-bold transition-all text-xs ${
               activeLayerMode === 'slope'
-                ? 'bg-amber-500 text-black shadow-md'
+                ? 'bg-[#ffe3b0] text-[#1a1408] shadow-sm font-semibold'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -277,9 +277,9 @@ export const RegionalMapCanvas: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveLayerMode('hillshade')}
-            className={`px-3 py-1 rounded font-bold transition-all ${
+            className={`px-3 py-1 rounded font-bold transition-all text-xs ${
               activeLayerMode === 'hillshade'
-                ? 'bg-cyan-500 text-black shadow-md'
+                ? 'bg-[#ffe3b0] text-[#1a1408] shadow-sm font-semibold'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -288,45 +288,45 @@ export const RegionalMapCanvas: React.FC = () => {
         </div>
 
         {/* Action Tools */}
-        <div className="flex items-center gap-1.5 pointer-events-auto bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-lg border border-slate-700/60">
+        <div className="flex items-center gap-1.5 pointer-events-auto bg-[#0e1013]/90 backdrop-blur-md p-1 rounded-lg border border-[#2b2d32]">
           <button
             onClick={handleZoomIn}
             title="Zoom In"
-            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded text-slate-300 hover:text-[#ffe3b0] hover:bg-[#141619] transition-colors"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleZoomOut}
             title="Zoom Out"
-            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded text-slate-300 hover:text-[#ffe3b0] hover:bg-[#141619] transition-colors"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleRecenter}
             title="Recenter Map View"
-            className="p-1.5 rounded text-slate-300 hover:text-emerald-400 hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded text-slate-300 hover:text-[#ffe3b0] hover:bg-[#141619] transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
 
-          <div className="h-4 w-px bg-slate-700 my-auto" />
+          <div className="h-4 w-px bg-[#2b2d32] my-auto" />
 
           <button
             onClick={() => setShowLegend(!showLegend)}
             title={showLegend ? 'Hide Legend Overlay' : 'Show Legend Overlay'}
             className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-mono transition-colors ${
               showLegend
-                ? 'bg-slate-800 text-slate-200'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-[#141619] text-slate-200 border border-[#2b2d32]'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#141619]'
             }`}
           >
-            {showLegend ? <EyeOff className="w-3 h-3 text-slate-400" /> : <Eye className="w-3 h-3 text-emerald-400" />}
+            {showLegend ? <EyeOff className="w-3 h-3 text-slate-400" /> : <Eye className="w-3 h-3 text-[#ffe3b0]" />}
             <span className="hidden sm:inline">LEGEND</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-700 my-auto" />
+          <div className="h-4 w-px bg-[#2b2d32] my-auto" />
 
           <button
             onClick={() => {
@@ -337,8 +337,8 @@ export const RegionalMapCanvas: React.FC = () => {
             title={isDrawingTransect ? 'Cancel transect' : 'Click two points on map to draw elevation transect'}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-bold transition-all ${
               isDrawingTransect
-                ? 'bg-emerald-500 text-black shadow-lg animate-pulse'
-                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                ? 'bg-[#ffe3b0] text-[#1a1408] shadow-lg animate-pulse font-semibold'
+                : 'bg-[#141619] hover:bg-[#191b20] text-[#ffe3b0] border border-[#ffe3b0]/30'
             }`}
           >
             <Ruler className="w-3.5 h-3.5" />
@@ -349,8 +349,8 @@ export const RegionalMapCanvas: React.FC = () => {
 
       {/* Drawing Mode Prompt Banner */}
       {isDrawingTransect && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 px-3.5 py-1.5 rounded-lg text-xs font-mono shadow-xl backdrop-blur-sm flex items-center gap-2 pointer-events-none">
-          <Ruler className="w-4 h-4 text-emerald-400 animate-pulse" />
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-[#0e1013]/95 text-[#ffe3b0] border border-[#ffe3b0]/50 px-3.5 py-1.5 rounded-lg text-xs font-mono shadow-xl backdrop-blur-sm flex items-center gap-2 pointer-events-none">
+          <Ruler className="w-4 h-4 text-[#ffe3b0] animate-pulse" />
           <span>
             {drawStep === 'none'
               ? 'Click START POINT on map for profile transect'
@@ -364,7 +364,7 @@ export const RegionalMapCanvas: React.FC = () => {
 
       {/* Compact Bottom Context Legend */}
       {showLegend && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 pointer-events-auto bg-[#0c121e]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 shadow-xl max-w-md w-[92%] sm:w-auto">
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 pointer-events-auto bg-[#0e1013]/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#2b2d32] shadow-xl max-w-md w-[92%] sm:w-auto">
           {activeLayerMode === 'elevation' ? (
             <div className="text-[10px] font-mono text-slate-400 space-y-1">
               <div className="flex justify-between gap-6">
@@ -392,7 +392,7 @@ export const RegionalMapCanvas: React.FC = () => {
           ) : (
             <div className="flex items-center justify-between gap-4 text-[10px] font-mono text-slate-400">
               <span>HILLSHADE: Az {hillshadeAzimuth.toFixed(0)}°, Alt {hillshadeAltitude.toFixed(0)}°</span>
-              <span className="text-amber-400">Z {hillshadeZFactor.toFixed(1)}×</span>
+              <span className="text-[#ffe3b0] font-semibold">Z {hillshadeZFactor.toFixed(1)}×</span>
             </div>
           )}
         </div>

@@ -20,8 +20,8 @@ export const ComparativeCharts: React.FC = () => {
   return (
     <div className="space-y-3 font-mono text-xs">
       {/* Chart 1: Grouped Opportunity Bars */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-200">
@@ -70,8 +70,8 @@ export const ComparativeCharts: React.FC = () => {
                 onClick={() => setActiveScenarioId(sc.id)}
                 className={`p-2 rounded-lg border transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#070b12] border-cyan-500/80 shadow-md'
-                    : 'bg-[#070b12]/50 border-slate-800 hover:border-slate-700'
+                    ? 'bg-[#0e1013] border-cyan-500/80 shadow-md'
+                    : 'bg-[#0e1013]/50 border-[#2b2d32] hover:border-[#303238]'
                 }`}
               >
                 <div className="flex items-center justify-between text-[11px] mb-1.5">
@@ -88,7 +88,7 @@ export const ComparativeCharts: React.FC = () => {
                   {/* Sun Bar */}
                   <div className="flex items-center gap-2">
                     <span className="w-14 text-[9px] text-amber-400">Sunlight</span>
-                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-slate-800">
+                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-[#2b2d32]">
                       <div
                         style={{ width: `${sunPct}%` }}
                         className="bg-amber-400 h-full transition-all duration-500"
@@ -106,7 +106,7 @@ export const ComparativeCharts: React.FC = () => {
                   {/* Earth Bar */}
                   <div className="flex items-center gap-2">
                     <span className="w-14 text-[9px] text-cyan-400">Earth LOS</span>
-                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-slate-800">
+                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-[#2b2d32]">
                       <div
                         style={{ width: `${earthPct}%` }}
                         className="bg-cyan-400 h-full transition-all duration-500"
@@ -119,7 +119,7 @@ export const ComparativeCharts: React.FC = () => {
                   {/* Both Bar */}
                   <div className="flex items-center gap-2">
                     <span className="w-14 text-[9px] text-emerald-400">Dual Visible</span>
-                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-slate-800">
+                    <div className="flex-1 h-3 rounded bg-slate-900 overflow-hidden flex border border-[#2b2d32]">
                       <div
                         style={{ width: `${bothPct}%` }}
                         className="bg-emerald-400 h-full transition-all duration-500"
@@ -136,8 +136,8 @@ export const ComparativeCharts: React.FC = () => {
       </div>
 
       {/* Chart 2: Synchronized Comparative Illumination Timelines */}
-      <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 shadow-lg space-y-2.5">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 shadow-lg space-y-2.5">
+        <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32]">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-cyan-400" />
             <span className="font-bold text-slate-200">
@@ -163,10 +163,10 @@ export const ComparativeCharts: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="h-5 w-full flex rounded overflow-hidden border border-slate-800 bg-[#070b12]">
+                <div className="h-5 w-full flex rounded overflow-hidden border border-[#2b2d32] bg-[#0e1013]">
                   {timeline.map((pt, idx) => {
                     const isHovered = hoveredEpochIndex === idx;
-                    let bg = '#090d16'; // Obstructed
+                    let bg = '#141619'; // Obstructed
                     if (pt.sun_visibility_state === 'FULLY_VISIBLE') bg = '#fbbf24';
                     else if (pt.sun_visibility_state === 'PARTIALLY_VISIBLE') bg = '#f59e0b';
 
@@ -198,7 +198,7 @@ export const ComparativeCharts: React.FC = () => {
 
           {/* Hovered Epoch Telemetry Across All Scenarios */}
           {hoveredEpochIndex !== null && scenarios[0]?.timeline[hoveredEpochIndex] && (
-            <div className="bg-[#070b12] p-2 rounded-lg border border-slate-800 text-[10px] space-y-1">
+            <div className="bg-[#0e1013] p-2 rounded-lg border border-[#2b2d32] text-[10px] space-y-1">
               <div className="text-cyan-400 font-bold">
                 SIMULTANEOUS EPOCH: {scenarios[0].timeline[hoveredEpochIndex].timestamp_iso}
               </div>
@@ -207,7 +207,7 @@ export const ComparativeCharts: React.FC = () => {
                   const pt = scRes.timeline[hoveredEpochIndex];
                   if (!pt) return null;
                   return (
-                    <div key={scRes.scenario.id} className="border-l border-slate-800 pl-2">
+                    <div key={scRes.scenario.id} className="border-l border-[#2b2d32] pl-2">
                       <div className="font-bold text-slate-400 truncate">{scRes.scenario.name.split('—')[1]?.trim()}</div>
                       <div className={pt.sun_visibility_state === 'FULLY_VISIBLE' ? 'text-amber-400' : 'text-slate-500'}>
                         Sun: {(pt.sun_visible_fraction * 100).toFixed(0)}%

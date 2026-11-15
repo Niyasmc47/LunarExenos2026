@@ -14,7 +14,7 @@ export const ViewSwitcher: React.FC = () => {
   ];
 
   return (
-    <div role="group" aria-label="Explorer view" className="view-switcher flex items-center gap-1 bg-[#0c121e]/90 backdrop-blur-md p-1 rounded-xl border border-slate-800 shadow-md">
+    <div role="group" aria-label="Explorer view" className="view-switcher flex items-center gap-1 bg-[#141619] backdrop-blur-md p-1 rounded-xl border border-[#2b2d32] shadow-md">
       {views.map((v) => {
         const isActive = activeView === v.id;
         return (
@@ -24,8 +24,8 @@ export const ViewSwitcher: React.FC = () => {
             onClick={() => setActiveView(v.id)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
               isActive
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent'
+                ? 'bg-[#ffe3b0] text-[#141619] font-bold shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-[#191b20] border border-transparent'
             }`}
           >
             {v.icon}

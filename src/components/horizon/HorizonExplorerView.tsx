@@ -36,7 +36,7 @@ export const HorizonExplorerView: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto gap-2">
       {/* View Layout Controls & Quick Help */}
-      <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+      <div className="shrink-0 flex items-center justify-between bg-[#141619] border border-[#2b2d32] px-3 py-1.5 rounded-xl text-xs font-mono">
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 text-slate-400 text-[11px]">
             <MapPin className="w-3.5 h-3.5 text-emerald-400" />
@@ -45,7 +45,7 @@ export const HorizonExplorerView: React.FC = () => {
         </div>
 
         {/* View Mode Pills */}
-        <div className="flex items-center gap-1 bg-[#070b12] p-1 rounded-lg border border-slate-800 text-[11px]">
+        <div className="flex items-center gap-1 bg-[#0e1013] p-1 rounded-lg border border-[#2b2d32] text-[11px]">
           <button
             onClick={() => setViewLayout('3d-split')}
             title="Spacious 3D Terrain alongside interactive 360° Horizon Skyline"
@@ -100,9 +100,9 @@ export const HorizonExplorerView: React.FC = () => {
             {/* Right Side Horizon Skyline Panel (takes 40% of space) */}
             <div className="w-full lg:w-[40%] h-full flex flex-col gap-1.5 min-h-0">
               {/* Radar vs Graph Switcher Header */}
-              <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 px-3 py-1 rounded-lg border border-slate-800 text-[11px] font-mono">
+              <div className="shrink-0 flex items-center justify-between bg-[#141619] px-3 py-1 rounded-lg border border-[#2b2d32] text-[11px] font-mono">
                 <span className="text-slate-400 font-bold">HORIZON SKYLINE:</span>
-                <div className="flex items-center gap-1 bg-[#070b12] p-0.5 rounded border border-slate-800">
+                <div className="flex items-center gap-1 bg-[#0e1013] p-0.5 rounded border border-[#2b2d32]">
                   <button
                     onClick={() => setRightPanelMode('radar')}
                     className={`px-2 py-0.5 rounded font-bold transition-colors ${
@@ -153,7 +153,7 @@ export const HorizonExplorerView: React.FC = () => {
 
             {/* Floating Skyline Quick Badge */}
             {horizonData && (
-              <div className="absolute top-16 right-3 z-30 bg-[#0c121e]/95 backdrop-blur-md border border-slate-700/80 p-3 rounded-xl shadow-2xl max-w-xs text-xs font-mono pointer-events-auto">
+              <div className="absolute top-16 right-3 z-30 bg-[#141619] backdrop-blur-md border border-[#303238]/80 p-3 rounded-xl shadow-2xl max-w-xs text-xs font-mono pointer-events-auto">
                 <div className="flex items-center justify-between text-emerald-400 font-bold mb-1">
                   <span className="flex items-center gap-1.5">
                     <Compass className="w-4 h-4" />

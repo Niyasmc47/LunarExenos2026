@@ -26,9 +26,9 @@ export const EphemerisTimeSeriesChart: React.FC<EphemerisTimeSeriesChartProps> =
   const chartData = data?.series || [];
 
   return (
-    <div className="flex flex-col h-full bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 text-xs font-mono">
+    <div className="flex flex-col h-full bg-[#141619] border border-[#2b2d32] rounded-xl p-3 text-xs font-mono">
       {/* Header & Metric Switcher */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-2">
+      <div className="flex items-center justify-between pb-2 border-b border-[#2b2d32] mb-2">
         <div className="flex items-center gap-2">
           <LineChartIcon className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200 uppercase tracking-wider">
@@ -38,7 +38,7 @@ export const EphemerisTimeSeriesChart: React.FC<EphemerisTimeSeriesChartProps> =
         </div>
 
         {/* Elevation vs Azimuth Switcher */}
-        <div className="flex items-center gap-1 bg-[#070b12] p-0.5 rounded-lg border border-slate-800 text-[11px]">
+        <div className="flex items-center gap-1 bg-[#0e1013] p-0.5 rounded-lg border border-[#2b2d32] text-[11px]">
           <button
             onClick={() => setMetricMode('elevation')}
             className={`px-2.5 py-1 rounded font-bold transition-all ${
@@ -120,8 +120,8 @@ export const EphemerisTimeSeriesChart: React.FC<EphemerisTimeSeriesChartProps> =
                   if (!active || !payload || payload.length === 0) return null;
                   const pt = payload[0].payload;
                   return (
-                    <div className="bg-[#070b12]/95 border border-slate-700 p-2.5 rounded-lg shadow-2xl text-xs font-mono text-slate-200">
-                      <div className="text-slate-400 font-bold mb-1 border-b border-slate-800 pb-1">
+                    <div className="bg-[#0e1013]/95 border border-[#303238] p-2.5 rounded-lg shadow-2xl text-xs font-mono text-slate-200">
+                      <div className="text-slate-400 font-bold mb-1 border-b border-[#2b2d32] pb-1">
                         Epoch: {pt.timestamp_iso}
                       </div>
                       <div className="text-amber-400 font-bold mt-1">

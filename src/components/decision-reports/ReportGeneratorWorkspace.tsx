@@ -15,7 +15,7 @@ export const ReportGeneratorWorkspace: React.FC = () => {
   }, [loadReports]);
 
   return (
-    <div className="report-split flex-1 flex overflow-hidden bg-[#070a14]">
+    <div className="report-split flex-1 flex overflow-hidden bg-[#0e1013]">
       {/* Sidebar: Historical Reports */}
       <ReportHistoryList />
 
@@ -24,7 +24,7 @@ export const ReportGeneratorWorkspace: React.FC = () => {
         <ReportViewer key={activeReport.id} report={activeReport} />
       ) : (
         <div className="mission-empty flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500 font-mono space-y-4">
-          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-purple-400">
+          <div className="p-4 rounded-2xl bg-slate-900 border border-[#2b2d32] text-purple-400">
             <FileText className="w-12 h-12 stroke-[1.2]" />
           </div>
           <div className="space-y-1">

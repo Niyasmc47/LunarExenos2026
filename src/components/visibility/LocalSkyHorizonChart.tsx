@@ -109,25 +109,25 @@ export const LocalSkyHorizonChart: React.FC = () => {
   }, [profile, minElev, maxPolarElev]);
 
   return (
-    <div className="bg-[#0c121e]/90 border border-slate-800 rounded-xl p-3 font-mono text-xs shadow-lg space-y-2">
+    <div className="bg-[#141619] border border-[#2b2d32] rounded-xl p-3 font-mono text-xs shadow-lg space-y-2">
       {/* Header with Mode Switcher */}
-      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-1.5 border-b border-[#2b2d32]">
         <div className="flex items-center gap-2">
           <Eye className="w-4 h-4 text-emerald-400" />
           <span className="font-bold text-slate-200">
             LOCAL SKY HORIZON SKYLINE & CELESTIAL PROJECTION
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-[#303238]">
             {profile.length > 0 ? `${profile.length} Azimuth Rays` : '360° Profile'}
           </span>
         </div>
 
-        <div className="flex items-center gap-1 bg-[#070b12] p-0.5 rounded-lg border border-slate-800">
+        <div className="flex items-center gap-1 bg-[#0e1013] p-0.5 rounded-lg border border-[#2b2d32]">
           <button
             onClick={() => setViewMode('panoramic')}
             className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all ${
               viewMode === 'panoramic'
-                ? 'bg-emerald-500 text-black'
+                ? 'bg-[#ffe3b0] text-[#141619]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -137,7 +137,7 @@ export const LocalSkyHorizonChart: React.FC = () => {
             onClick={() => setViewMode('polar')}
             className={`px-2.5 py-0.5 rounded text-[10px] font-bold transition-all ${
               viewMode === 'polar'
-                ? 'bg-emerald-500 text-black'
+                ? 'bg-[#ffe3b0] text-[#141619]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -478,7 +478,7 @@ export const LocalSkyHorizonChart: React.FC = () => {
       )}
 
       {/* Footer Info Strip */}
-      <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/80 px-1">
+      <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-[#202228] px-1">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>

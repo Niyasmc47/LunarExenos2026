@@ -10,11 +10,11 @@ export const TerrainExplorer: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'both' | '3d' | '2d'>('both');
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
+    <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden bg-[#0e1013] p-2 md:p-3 gap-2 md:gap-3">
       {/* Main Terrain Analysis Workspace */}
       <div className="flex-1 flex flex-col gap-2 min-h-0 min-w-0 overflow-hidden">
         {/* Top View Toggle Strip */}
-        <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 border border-slate-800/80 px-3 py-1.5 rounded-xl">
+        <div className="shrink-0 flex items-center justify-between bg-[#141619]/90 border border-[#2b2d32]/80 px-3 py-1.5 rounded-xl">
           <div className="flex items-center gap-2">
             <Mountain className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
@@ -22,7 +22,7 @@ export const TerrainExplorer: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center gap-1 bg-[#070b12] p-1 rounded-lg border border-slate-800 text-xs font-mono">
+          <div className="flex items-center gap-1 bg-[#0e1013] p-1 rounded-lg border border-[#2b2d32] text-xs font-mono">
             <button
               onClick={() => setActiveTab('both')}
               className={`px-2.5 py-1 rounded transition-colors ${
@@ -95,7 +95,7 @@ export const TerrainExplorer: React.FC = () => {
         <button
           onClick={() => setPanelOpen(!panelOpen)}
           title={panelOpen ? 'Collapse Terrain Info Panel' : 'Expand Terrain Info Panel'}
-          className="hidden md:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-40 items-center justify-center w-7 h-12 bg-[#0c121e] border border-slate-700 hover:border-emerald-500 rounded-l-md text-slate-400 hover:text-emerald-400 shadow-xl transition-colors"
+          className="hidden md:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-40 items-center justify-center w-7 h-12 bg-[#141619] border border-[#2b2d32] hover:border-emerald-500 rounded-l-md text-slate-400 hover:text-emerald-400 shadow-xl transition-colors"
         >
           {panelOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -111,7 +111,7 @@ export const TerrainExplorer: React.FC = () => {
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
-          className="hidden md:flex absolute right-4 bottom-4 z-40 items-center gap-2 bg-[#0c121e]/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-mono shadow-2xl transition-all"
+          className="hidden md:flex absolute right-4 bottom-4 z-40 items-center gap-2 bg-[#141619]/90 hover:bg-slate-800 text-emerald-400 border border-[#2b2d32] px-3 py-2 rounded-xl text-xs font-mono shadow-2xl transition-all"
         >
           <SlidersHorizontal className="w-4 h-4" />
           <span>SHOW TERRAIN DATA</span>
