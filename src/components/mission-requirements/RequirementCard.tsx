@@ -21,38 +21,38 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
     switch (cls) {
       case 'HARD_CONSTRAINT':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            <ShieldAlert className="w-3 h-3 text-rose-400" />
-            HARD CONSTRAINT
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            <ShieldAlert className="w-3 h-3 text-amber-400" />
+            HARD LIMIT
           </span>
         );
       case 'SOFT_PREFERENCE':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <Sparkles className="w-3 h-3 text-amber-400" />
-            SOFT PREFERENCE
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/30">
+            <Sparkles className="w-3 h-3 text-sky-400" />
+            PREFERENCE
           </span>
         );
       case 'INFORMATIONAL_METRIC':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30">
-            <Info className="w-3 h-3 text-sky-400" />
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+            <Info className="w-3 h-3 text-slate-400" />
             INFORMATIONAL
           </span>
         );
     }
   };
 
-  const operatorSymbol = requirement.operator === 'ge' ? '≥' : requirement.operator === 'le' ? '≤' : '=';
+  const operatorSymbol = requirement.operator === 'ge' ? '≥ (At least)' : requirement.operator === 'le' ? '≤ (At most)' : '=';
 
   return (
     <div
       className={`p-3.5 rounded-xl border transition-all ${
         !requirement.enabled
-          ? 'bg-slate-900/30 border-slate-800/50 opacity-60'
+          ? 'bg-[#141619]/40 border-[#2b2d32]/50 opacity-60'
           : fieldError
           ? 'bg-rose-950/20 border-rose-500/50 shadow-md shadow-rose-950/20'
-          : 'bg-[#0d1424] border-slate-800 hover:border-slate-700 shadow-sm'
+          : 'bg-[#141619] border-[#2b2d32] hover:border-[#383b42] shadow-sm'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
@@ -103,7 +103,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
       </p>
 
       {/* Threshold Value Row */}
-      <div className="flex items-center justify-between bg-slate-950/60 border border-slate-800/80 px-3 py-2 rounded-lg">
+      <div className="flex items-center justify-between bg-[#0e1013] border border-[#2b2d32] px-3 py-2 rounded-lg">
         <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
           <span className="text-slate-400 font-semibold">{operatorSymbol}</span>
           {isEditing && requirement.enabled ? (
@@ -115,10 +115,10 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
                 const val = e.target.value === '' ? null : parseFloat(e.target.value);
                 onUpdate({ value: val });
               }}
-              className="w-24 bg-slate-900 border border-slate-700 text-emerald-400 px-2 py-0.5 rounded text-xs font-mono focus:outline-none focus:border-emerald-500"
+              className="w-24 bg-[#141619] border border-[#2b2d32] text-[#ffe3b0] px-2 py-0.5 rounded text-xs font-mono focus:outline-none focus:border-[#e5c68d]"
             />
           ) : (
-            <span className="text-emerald-400 font-semibold text-sm">
+            <span className="text-[#ffe3b0] font-semibold text-sm">
               {requirement.value !== null ? requirement.value : 'N/A'}
             </span>
           )}

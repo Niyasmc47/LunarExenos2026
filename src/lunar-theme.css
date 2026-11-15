@@ -10,8 +10,31 @@
   --color-slate-300: #ced1d7;
   --color-slate-200: #e1e3e7;
   --color-slate-100: #f2f1ed;
+
+  /* Stitch Theme Integration */
+  --color-lunar-gold: #e5c68d;
+  --color-lunar-gold-light: #ffe3b0;
+  --color-lunar-cyan: #7bd0ff;
+  --color-lunar-emerald: #10B981;
+  --color-lunar-amber: #F59E0B;
+  --color-lunar-crimson: #EF4444;
+  --color-lunar-surface: #0e1013;
+  --color-lunar-surface-low: #141619;
+  --color-lunar-card: #191b20;
+  --color-lunar-card-high: #202228;
+  --color-lunar-border: #2b2d32;
+  --color-lunar-border-subtle: #303238;
 }
-:root { font-family: 'Segoe UI', system-ui, sans-serif; --lunar-accent: #e5c68d; --lunar-border: #303238; }
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  --lunar-accent: #e5c68d;
+  --lunar-accent-light: #ffe3b0;
+  --lunar-secondary: #7bd0ff;
+  --lunar-border: #303238;
+  --lunar-border-subtle: #2b2d32;
+  --lunar-surface: #0e1013;
+  --lunar-surface-card: #191b20;
+}
 body { margin: 0; background: #0e1013; }
 .lunar-app { height: 100dvh; display: grid; grid-template-columns: 244px minmax(0,1fr); color: #f2f1ed; background: #0e1013; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
 .lunar-app :focus-visible { outline: 2px solid var(--lunar-accent); outline-offset: 3px; }
