@@ -13,19 +13,19 @@ export const MissionRequirementsWorkspace: React.FC = () => {
   }, [loadProfiles]);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-4rem)] bg-[#070b14] overflow-hidden">
+    <div className="flex-1 flex flex-col h-full min-h-0 bg-[#070b14] overflow-hidden">
       {/* Workspace Sub-Header */}
-      <div className="h-10 px-6 bg-[#0a0f1d] border-b border-slate-800 flex items-center justify-between shrink-0">
+      <div className="min-h-14 py-3 px-6 bg-[#0a0f1d] border-b border-slate-800 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-bold text-slate-100 font-mono tracking-wider">
-            MISSION REQUIREMENTS BUILDER
+            Your mission profiles
           </span>
         </div>
 
         <div className="flex items-center gap-3">
           <span className="text-[11px] text-slate-400 font-sans hidden sm:inline">
-            Define lunar mission profiles, hard safety constraints, and soft trade-offs.
+            Set safety limits and mission preferences.
           </span>
           <button
             onClick={() => loadProfiles()}
@@ -39,7 +39,7 @@ export const MissionRequirementsWorkspace: React.FC = () => {
       </div>
 
       {/* Main Split Layout: Sidebar + Editor */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="profile-split flex-1 flex overflow-hidden">
         <ProfileListSidebar />
         <ProfileEditor />
       </div>

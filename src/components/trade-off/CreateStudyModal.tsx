@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React, { useState, useEffect } from 'react';
 import { useTradeOffStore } from '../../stores/tradeOffStore';
 import { fetchMissionProfiles } from '../../services/missionProfileApi';
@@ -156,21 +157,21 @@ export const CreateStudyModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <DialogSurface label="Create a trade-off study" onClose={closeCreateModal} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-[#0b101c]/95 backdrop-blur z-10">
           <div>
             <h2 className="text-base font-mono font-bold text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>NEW MISSION TRADE-OFF STUDY</span>
+              <span>Create a trade-off study</span>
             </h2>
             <p className="text-[11px] font-mono text-slate-400 mt-0.5">
               Select 2–10 mission alternatives to compare across multi-criteria solar, earth comm, and terrain preferences.
             </p>
           </div>
           <button
-            onClick={closeCreateModal}
+            aria-label="Close dialog" onClick={closeCreateModal}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -235,7 +236,7 @@ export const CreateStudyModal: React.FC = () => {
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-mono font-bold text-white tracking-wide flex items-center gap-1.5">
-                <span>CANDIDATE ALTERNATIVES ({alternatives.length}/10)</span>
+                <span>Candidates to compare ({alternatives.length}/10)</span>
               </h3>
               <button
                 type="button"
@@ -358,7 +359,7 @@ export const CreateStudyModal: React.FC = () => {
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
             <button
               type="button"
-              onClick={closeCreateModal}
+              aria-label="Close dialog" onClick={closeCreateModal}
               className="px-4 py-2 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-900 text-slate-300 text-xs font-mono font-medium transition-colors"
             >
               Cancel
@@ -373,6 +374,6 @@ export const CreateStudyModal: React.FC = () => {
           </div>
         </form>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

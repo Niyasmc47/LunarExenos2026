@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React, { useState, useEffect } from 'react';
 import { useDecisionReportStore } from '../../stores/decisionReportStore';
 import { fetchMissionProfiles } from '../../services/missionProfileApi';
@@ -110,7 +111,7 @@ export const CreateReportModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <DialogSurface label="Create a decision report" onClose={closeCreateModal} className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-[#0b101c] border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl font-mono text-xs">
         {/* Header */}
         <div className="p-5 border-b border-slate-800 flex items-center justify-between">
@@ -126,7 +127,7 @@ export const CreateReportModal: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={closeCreateModal}
+            aria-label="Close dialog" onClick={closeCreateModal}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
           >
             <X className="w-5 h-5" />
@@ -296,7 +297,7 @@ export const CreateReportModal: React.FC = () => {
           <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
             <button
               type="button"
-              onClick={closeCreateModal}
+              aria-label="Close dialog" onClick={closeCreateModal}
               className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors"
             >
               Cancel
@@ -312,6 +313,6 @@ export const CreateReportModal: React.FC = () => {
           </div>
         </form>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect, useMemo } from 'react';
 import { useWindowPlannerStore } from '../../stores/windowPlannerStore';
 import { SearchControls } from './SearchControls';
@@ -73,12 +74,13 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
   }, [activeSearch, filterClassification, sortBy, sortOrder]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+    <div className="analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
       {/* Top Search Controls */}
       <SearchControls />
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5">
+      <div className="analysis-results p-6 space-y-5">
+        <ResultIntro title="Review your mission windows" description="Filter the results, inspect a timeline, or select windows to compare." />
         {/* Active Search Selector & Summary Bar */}
         {searches.length > 0 && activeSearch && (
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
@@ -87,13 +89,13 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                 Search Run:
               </span>
               <select
-                value={activeSearch.id}
+                aria-label="Saved window searches" value={activeSearch.id}
                 onChange={(e) => selectSearch(e.target.value)}
                 className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500 max-w-xs truncate"
               >
                 {searches.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} ({s.id})
+                    {s.name}
                   </option>
                 ))}
               </select>
@@ -138,7 +140,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
               {/* Filter Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
                 <button
-                  onClick={() => setFilterClassification('ALL')}
+                  aria-pressed={filterClassification === 'ALL'} onClick={() => setFilterClassification('ALL')}
                   className={`px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'ALL'
                       ? 'bg-indigo-600 text-white font-semibold shadow-sm'
@@ -148,7 +150,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   All ({activeSearch.windows.length})
                 </button>
                 <button
-                  onClick={() => setFilterClassification('COMPLIANT')}
+                  aria-pressed={filterClassification === 'COMPLIANT'} onClick={() => setFilterClassification('COMPLIANT')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'COMPLIANT'
                       ? 'bg-emerald-600 text-white font-semibold shadow-sm'
@@ -159,7 +161,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   <span>Compliant ({activeSearch.compliant_windows_count})</span>
                 </button>
                 <button
-                  onClick={() => setFilterClassification('NON_COMPLIANT')}
+                  aria-pressed={filterClassification === 'NON_COMPLIANT'} onClick={() => setFilterClassification('NON_COMPLIANT')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'NON_COMPLIANT'
                       ? 'bg-rose-600 text-white font-semibold shadow-sm'
@@ -170,7 +172,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   <span>Non-Compliant ({activeSearch.non_compliant_windows_count})</span>
                 </button>
                 <button
-                  onClick={() => setFilterClassification('INDETERMINATE')}
+                  aria-pressed={filterClassification === 'INDETERMINATE'} onClick={() => setFilterClassification('INDETERMINATE')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                     filterClassification === 'INDETERMINATE'
                       ? 'bg-amber-600 text-white font-semibold shadow-sm'
@@ -189,7 +191,7 @@ export const MissionWindowPlannerWorkspace: React.FC = () => {
                   <span>Sort:</span>
                 </span>
                 <select
-                  value={sortBy}
+                  aria-label="Sort mission windows" value={sortBy}
                   onChange={(e: any) => setSortBy(e.target.value)}
                   className="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono px-2 py-1 rounded focus:outline-none"
                 >

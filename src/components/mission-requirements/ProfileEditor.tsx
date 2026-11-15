@@ -41,10 +41,10 @@ export const ProfileEditor: React.FC = () => {
     }
   }, [isEditing]);
 
-  if (!profile) {
+  if (!profile || !profile.requirements) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#070b14] text-slate-400 font-mono text-sm">
-        Select a mission profile from the sidebar or click "New Profile" to begin.
+      <div className="mission-empty flex-1 flex items-center justify-center bg-[#070b14] text-slate-400 font-mono text-sm">
+        Choose a saved profile, or create one with your mission duration, equipment, and safety limits.
       </div>
     );
   }
@@ -54,25 +54,25 @@ export const ProfileEditor: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+    <div className="profile-editor flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
       {/* Top Action Header */}
       <div className="px-6 py-4 border-b border-slate-800 bg-[#090e1a] flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-slate-100 font-mono tracking-wide">
+              <h2 className="text-base font-bold text-slate-100 font-mono tracking-wide">
                 {isEditing ? (
                   <input
                     type="text"
                     value={profile.name}
                     onChange={(e) => updateDraftField('name', e.target.value)}
-                    placeholder="Mission Profile Name..."
-                    className="bg-slate-950 border border-slate-700 text-slate-100 px-2.5 py-1 rounded text-sm font-mono focus:outline-none focus:border-emerald-500 min-w-[280px]"
+                    aria-label="Mission profile name" placeholder="Name your mission profile"
+                    className="bg-slate-950 border border-slate-700 text-slate-100 px-2.5 py-1 rounded text-sm font-mono focus:outline-none focus:border-emerald-500 w-full min-w-0"
                   />
                 ) : (
                   profile.name
                 )}
-              </h1>
+              </h2>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
                 v{profile.version}
               </span>
@@ -84,7 +84,7 @@ export const ProfileEditor: React.FC = () => {
               )}
             </div>
             <span className="text-xs text-slate-400 font-sans mt-0.5">
-              {profile.id} • Last updated {new Date(profile.updated_at_iso).toLocaleDateString()}
+              Last updated {new Date(profile.updated_at_iso).toLocaleDateString()}
             </span>
           </div>
         </div>
@@ -162,7 +162,7 @@ export const ProfileEditor: React.FC = () => {
           <div className="flex items-center gap-2 pb-3 border-b border-slate-800/80">
             <Clock className="w-4 h-4 text-emerald-400" />
             <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
-              1. MISSION SCOPE & TIME CONFIGURATION
+              1. Mission basics & schedule
             </h2>
           </div>
 

@@ -39318,5 +39318,1811 @@
         "status": "PENDING_REVIEW"
       }
     ]
+  },
+  {
+    "id": "rep-a5b10a5d",
+    "title": "Mission Decision Report: Robotic Exploration Rover (Illustrative Template)",
+    "mission_name": "Artemis Polar Scout-1",
+    "description": "Comprehensive multi-criteria lunar landing site decision synthesis report.",
+    "author_organization": "LUNAVISTA Mission Planning Directorate",
+    "created_at_iso": "2026-11-15T01:43:01.308784+00:00",
+    "updated_at_iso": "2026-11-15T01:43:01.308784+00:00",
+    "report_version": "1.0",
+    "template_version": "LUNAVISTA-REP-2026.1",
+    "profile_snapshot": {
+      "id": "template-robotic-rover",
+      "name": "Robotic Exploration Rover (Illustrative Template)",
+      "description": "Template for a mobile autonomous rover exploring lunar south polar ridge terrain across a user-selected 14.0 Earth day (336.0 h) illumination analysis window. (Note: The user-selected mission duration is an operational planning window, distinct from the astronomical ~29.53-day lunar synodic cycle. Example values are user-editable illustrative defaults.)",
+      "mission_type": "robotic_exploration",
+      "duration_days": 14.0,
+      "start_timestamp_iso": "2026-10-04T12:00:00Z",
+      "end_timestamp_iso": "2026-10-18T12:00:00Z",
+      "observer_height_m": 1.5,
+      "time_display_preference": "UTC",
+      "requirements": {
+        "solar": {
+          "min_total_sunlight_hours": {
+            "id": "min_total_sunlight_hours",
+            "name": "Minimum Total Geometric Sunlight Duration",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 150.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Minimum cumulative sunlight hours required to maintain rover traverse battery charge.",
+            "scientific_disclaimer": "Geometric illumination does not model photovoltaic panel dust coating or cosine efficiency."
+          },
+          "min_full_sunlight_hours": {
+            "id": "min_full_sunlight_hours",
+            "name": "Minimum Full Sunlight Duration",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 48.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+            "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+          },
+          "max_continuous_darkness_hours": {
+            "id": "max_continuous_darkness_hours",
+            "name": "Maximum Continuous Darkness Duration",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 48.0,
+            "unit": "hours",
+            "operator": "le",
+            "description": "Maximum survivable continuous darkness for rover secondary battery sleep mode.",
+            "scientific_disclaimer": "Evaluates uninterrupted zero-illumination intervals."
+          },
+          "min_sunlight_percentage": {
+            "id": "min_sunlight_percentage",
+            "name": "Minimum Sunlight Percentage",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": true,
+            "value": 55.0,
+            "unit": "%",
+            "operator": "ge",
+            "description": "Desirable illumination percentage over the 14-day traverse envelope.",
+            "scientific_disclaimer": "Expressed relative to total 336-hour duration."
+          },
+          "min_daily_sunlight_hours": {
+            "id": "min_daily_sunlight_hours",
+            "name": "Minimum Daily Sunlight Duration",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 6.0,
+            "unit": "hours/day",
+            "operator": "ge",
+            "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+            "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+          }
+        },
+        "earth": {
+          "min_total_earth_visible_hours": {
+            "id": "min_total_earth_visible_hours",
+            "name": "Minimum Total Geometric Earth Visibility",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 100.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Direct-to-Earth line-of-sight required for telemetry and teleoperation uplinks.",
+            "scientific_disclaimer": "Does not model RF ground station elevation masks or Deep Space Network scheduling."
+          },
+          "max_continuous_earth_blackout_hours": {
+            "id": "max_continuous_earth_blackout_hours",
+            "name": "Maximum Continuous Earth LOS Blackout",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": true,
+            "value": 24.0,
+            "unit": "hours",
+            "operator": "le",
+            "description": "Desirable threshold for maximum autonomous rover drive between ground contacts.",
+            "scientific_disclaimer": "Continuous periods where terrain completely obstructs Earth disk."
+          },
+          "min_daily_earth_visible_hours": {
+            "id": "min_daily_earth_visible_hours",
+            "name": "Minimum Daily Earth Visibility",
+            "classification": "SOFT_PREFERENCE",
+            "enabled": false,
+            "value": 4.0,
+            "unit": "hours/day",
+            "operator": "ge",
+            "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+            "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+          },
+          "min_full_disk_earth_visible_hours": {
+            "id": "min_full_disk_earth_visible_hours",
+            "name": "Minimum Full-Disk Earth Visibility",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 24.0,
+            "unit": "hours",
+            "operator": "ge",
+            "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+            "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+          }
+        },
+        "terrain": {
+          "max_local_slope_deg": {
+            "id": "max_local_slope_deg",
+            "name": "Maximum Allowable Landing Site Slope",
+            "classification": "HARD_CONSTRAINT",
+            "enabled": true,
+            "value": 15.0,
+            "unit": "deg",
+            "operator": "le",
+            "description": "Maximum wheel slip / tip-over grade limit for robotic rover traverse.",
+            "scientific_disclaimer": "Derived from LOLA 5 m DEM slopes. Does not model rock hazards smaller than DEM pixel."
+          },
+          "min_elevation_m": {
+            "id": "min_elevation_m",
+            "name": "Minimum Surface Elevation",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 0.0,
+            "unit": "m",
+            "operator": "ge",
+            "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+            "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+          },
+          "max_elevation_m": {
+            "id": "max_elevation_m",
+            "name": "Maximum Surface Elevation",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 2500.0,
+            "unit": "m",
+            "operator": "le",
+            "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+            "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+          },
+          "max_roughness_factor": {
+            "id": "max_roughness_factor",
+            "name": "Maximum Local Terrain Roughness Factor",
+            "classification": "INFORMATIONAL_METRIC",
+            "enabled": false,
+            "value": 5.0,
+            "unit": "deg_std",
+            "operator": "le",
+            "description": "Local standard deviation of slope within the landing area footprint.",
+            "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+          }
+        }
+      },
+      "version": 1,
+      "is_template": true,
+      "created_at_iso": "2026-10-01T00:00:00Z",
+      "updated_at_iso": "2026-10-01T00:00:00Z"
+    },
+    "trade_off_study_id": "study-7a5734ee",
+    "source_screening_id": "screening-67bf4adf",
+    "source_window_search_id": "search-37264ce7",
+    "source_terrain_assessment_id": "terrain-eval-f4ac9e6e",
+    "evaluated_candidate_ids": [
+      "scenario-cr-crest",
+      "scenario-cr-alpha"
+    ],
+    "total_candidates_evaluated": 2,
+    "compliant_candidates_count": 0,
+    "non_compliant_candidates_count": 0,
+    "indeterminate_candidates_count": 2,
+    "has_recommended_winner": false,
+    "recommended_winner_id": null,
+    "sections": [
+      {
+        "section_number": 1,
+        "section_id": "sec-cover-overview",
+        "title": "Mission Cover & Executive Overview",
+        "summary": "LUNAVISTA comprehensive landing site navigation and mission decision support compilation for mission 'Artemis Polar Scout-1'. Evaluation conducted against mission profile 'Robotic Exploration Rover (Illustrative Template)' across 2 candidate lunar alternatives.",
+        "details": {
+          "mission_name": "Artemis Polar Scout-1",
+          "profile_id": "template-robotic-rover",
+          "profile_name": "Robotic Exploration Rover (Illustrative Template)",
+          "profile_version": 1,
+          "nominal_duration_days": 14.0,
+          "observer_height_m": 1.5,
+          "author": "LUNAVISTA Mission Planning Directorate"
+        },
+        "tables": [],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 2,
+        "section_id": "sec-exec-summary",
+        "title": "Executive Summary & Trade-off Synopsis",
+        "summary": "Multi-criteria evaluation of 2 candidate alternatives for mission 'Artemis Polar Scout-1'. Of the candidate pool, 0 satisfied all evaluated hard constraints, 0 failed one or more hard constraints, and 2 possessed unverified/indeterminate requirements due to partial DEM coverage or missing assessment layers. The decision support engine highlights key trade-offs in solar illumination, continuous darkness periods, Earth line-of-sight visibility, and local topographic slope.",
+        "details": {
+          "total_evaluated": 2,
+          "compliant_candidates": 0,
+          "non_compliant_candidates": 0,
+          "indeterminate_candidates": 2,
+          "winner_declaration": "No automated winner declared; decision authority reserved for mission planners."
+        },
+        "tables": [],
+        "callouts": [
+          "High soft-preference scores do NOT compensate for hard constraint violations.",
+          "Official landing site certification requires independent geotechnical and engineering validation."
+        ],
+        "disclaimers": []
+      },
+      {
+        "section_number": 3,
+        "section_id": "sec-requirements",
+        "title": "Mission Profile & Requirements Definition",
+        "summary": "Requirements defined under profile 'Robotic Exploration Rover (Illustrative Template)' (Version 1). Mission architecture: Robotic Exploration. Nominal analysis duration: 14.0 Earth Days.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Configured Mission Requirements Matrix",
+            "headers": [
+              "Requirement Name",
+              "Domain",
+              "Classification",
+              "Threshold Constraint",
+              "Evaluation Scope"
+            ],
+            "rows": [
+              [
+                "Minimum Total Geometric Sunlight Duration",
+                "SOLAR",
+                "HARD_CONSTRAINT",
+                ">= 150.0 hours",
+                "Full Mission Duration"
+              ],
+              [
+                "Maximum Continuous Darkness Duration",
+                "SOLAR",
+                "HARD_CONSTRAINT",
+                "<= 48.0 hours",
+                "Full Mission Duration"
+              ],
+              [
+                "Minimum Sunlight Percentage",
+                "SOLAR",
+                "SOFT_PREFERENCE",
+                ">= 55.0 %",
+                "Full Mission Duration"
+              ],
+              [
+                "Minimum Total Geometric Earth Visibility",
+                "EARTH",
+                "HARD_CONSTRAINT",
+                ">= 100.0 hours",
+                "Full Mission Duration"
+              ],
+              [
+                "Maximum Continuous Earth LOS Blackout",
+                "EARTH",
+                "SOFT_PREFERENCE",
+                "<= 24.0 hours",
+                "Full Mission Duration"
+              ],
+              [
+                "Maximum Allowable Landing Site Slope",
+                "TERRAIN",
+                "HARD_CONSTRAINT",
+                "<= 15.0 deg",
+                "Full Mission Duration"
+              ]
+            ]
+          }
+        ],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 4,
+        "section_id": "sec-candidates",
+        "title": "Candidate Landing Sites & Geodetic Overview",
+        "summary": "Overview of 2 candidate landing sites in the lunar south polar circumpolar region. Referenced to IAU Moon 2000 Sphere / Lunar Mean Earth reference frame.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Candidate Landing Sites Geodetic Coordinates",
+            "headers": [
+              "Candidate Name",
+              "Site ID",
+              "Latitude",
+              "Longitude",
+              "Start Epoch",
+              "End Epoch",
+              "DEM Source"
+            ],
+            "rows": [
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "site01",
+                "-89.4632\u00b0",
+                "-137.4896\u00b0",
+                "2026-10-04",
+                "2026-10-07",
+                "NASA LOLA 5m/px"
+              ],
+              [
+                "Connecting Ridge \u2014 Candidate 01A",
+                "site01",
+                "-89.3615\u00b0",
+                "-151.2131\u00b0",
+                "2026-10-04",
+                "2026-10-07",
+                "NASA LOLA 5m/px"
+              ]
+            ]
+          }
+        ],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 5,
+        "section_id": "sec-screening-results",
+        "title": "Candidate Screening & Hard Constraint Matrix",
+        "summary": "Verification results for all active hard constraints. Every candidate must satisfy 100% of hard constraints.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Hard Constraint Verification Matrix",
+            "headers": [
+              "Candidate",
+              "Constraint",
+              "Threshold",
+              "Measured Value",
+              "Verdict"
+            ],
+            "rows": [
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "Minimum Total Geometric Sunlight Duration",
+                "\u2265 150.0 hours",
+                "72.00 hours",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "Maximum Continuous Darkness Duration",
+                "\u2264 48.0 hours",
+                "0.00 hours",
+                "PASS"
+              ],
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "Minimum Total Geometric Earth Visibility",
+                "\u2265 100.0 hours",
+                "56.43 hours",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "Maximum Allowable Landing Site Slope",
+                "\u2264 15.0 deg",
+                "3.69 deg",
+                "PASS"
+              ],
+              [
+                "Connecting Ridge \u2014 Candidate 01A",
+                "Minimum Total Geometric Sunlight Duration",
+                "\u2265 150.0 hours",
+                "0.00 hours",
+                "INDETERMINATE"
+              ],
+              [
+                "Connecting Ridge \u2014 Candidate 01A",
+                "Maximum Continuous Darkness Duration",
+                "\u2264 48.0 hours",
+                "0.00 hours",
+                "INDETERMINATE"
+              ],
+              [
+                "Connecting Ridge \u2014 Candidate 01A",
+                "Minimum Total Geometric Earth Visibility",
+                "\u2265 100.0 hours",
+                "0.00 hours",
+                "INDETERMINATE"
+              ],
+              [
+                "Connecting Ridge \u2014 Candidate 01A",
+                "Maximum Allowable Landing Site Slope",
+                "\u2264 15.0 deg",
+                "24.17 deg",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 South Rim Ridge",
+                "Minimum Total Geometric Sunlight Duration",
+                "\u2265 150.0 hours",
+                "0.00 hours",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 South Rim Ridge",
+                "Maximum Continuous Darkness Duration",
+                "\u2264 48.0 hours",
+                "74.00 hours",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 South Rim Ridge",
+                "Minimum Total Geometric Earth Visibility",
+                "\u2265 100.0 hours",
+                "72.00 hours",
+                "FAIL"
+              ],
+              [
+                "Connecting Ridge \u2014 South Rim Ridge",
+                "Maximum Allowable Landing Site Slope",
+                "\u2264 15.0 deg",
+                "19.41 deg",
+                "FAIL"
+              ]
+            ]
+          }
+        ],
+        "callouts": [
+          "Any single hard constraint failure strictly disqualifies an alternative from recommendation."
+        ],
+        "disclaimers": []
+      },
+      {
+        "section_number": 6,
+        "section_id": "sec-window-analysis",
+        "title": "Mission Window Planner & Celestial Temporal Analysis",
+        "summary": "Temporal simulation of solar illumination and direct Earth line-of-sight visibility computed using topocentric horizons and SPICE ephemerides.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Evaluated Mission Start Windows",
+            "headers": [
+              "Window ID",
+              "Start Epoch (UTC)",
+              "Total Sun",
+              "Max Dark",
+              "Earth Vis",
+              "Max Blackout",
+              "Classification"
+            ],
+            "rows": [
+              [
+                "win-001",
+                "2026-10-04 00:00",
+                "26.0 h",
+                "38.0 h",
+                "60.0 h",
+                "14.0 h",
+                "NON_COMPLIANT"
+              ],
+              [
+                "win-002",
+                "2026-10-04 04:00",
+                "30.0 h",
+                "34.0 h",
+                "56.0 h",
+                "18.0 h",
+                "NON_COMPLIANT"
+              ],
+              [
+                "win-003",
+                "2026-10-04 08:00",
+                "34.0 h",
+                "30.0 h",
+                "52.0 h",
+                "22.0 h",
+                "NON_COMPLIANT"
+              ],
+              [
+                "win-004",
+                "2026-10-04 12:00",
+                "38.0 h",
+                "26.0 h",
+                "48.0 h",
+                "26.0 h",
+                "NON_COMPLIANT"
+              ],
+              [
+                "win-005",
+                "2026-10-04 16:00",
+                "42.0 h",
+                "22.0 h",
+                "44.0 h",
+                "30.0 h",
+                "NON_COMPLIANT"
+              ],
+              [
+                "win-006",
+                "2026-10-04 20:00",
+                "46.0 h",
+                "18.0 h",
+                "40.0 h",
+                "34.0 h",
+                "NON_COMPLIANT"
+              ]
+            ]
+          }
+        ],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 7,
+        "section_id": "sec-terrain-assessment",
+        "title": "Terrain Suitability & Topographic Assessment",
+        "summary": "Topographic analysis derived from NASA LOLA 5m/pixel polar digital elevation model.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Candidate Topographic Characterization",
+            "headers": [
+              "Candidate",
+              "Elevation (m)",
+              "Local Slope",
+              "Max Slope",
+              "Coverage (Valid %)",
+              "Suitability Status"
+            ],
+            "rows": [
+              [
+                "Connecting Ridge \u2014 Crater Rim Crest",
+                "1944.6 m",
+                "3.69\u00b0",
+                "11.87\u00b0",
+                "COMPLETE (100.0%)",
+                "COMPLIANT"
+              ]
+            ]
+          }
+        ],
+        "callouts": [],
+        "disclaimers": [
+          "Official LOLA surface roughness dataset is not loaded; micro-roughness (<5m scale) remains unsupported.",
+          "Topographic slope alone does not guarantee rover traversability or landing gear touchdown stability."
+        ]
+      },
+      {
+        "section_number": 8,
+        "section_id": "sec-horizon-celestial",
+        "title": "Terrain Horizon & Topocentric Celestial Geometry",
+        "summary": "Evaluation of 360\u00b0 regional terrain horizon elevation profiles and celestial body elevation tracks. Finite solar disk integration resolves full, partial, and occulted illumination states.",
+        "details": {
+          "horizon_azimuth_steps": 360,
+          "observer_elevation_model": "IAU Moon 2000 Sphere + DEM Topography",
+          "ephemeris_source": "NASA JPL DE421 / SPICE Planetary Ephemerides",
+          "finite_disk_quadrature": "Adaptive Circular Segment Integration"
+        },
+        "tables": [],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 9,
+        "section_id": "sec-trade-off-analysis",
+        "title": "Multi-Criteria Mission Trade-off Analysis",
+        "summary": "Evaluation of candidate alternatives across user-configured preference dimensions. Normalization uses Min-Max reference bounds. Strict separation of hard constraints from soft preferences.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Alternative Trade-off Scoring & Pareto Frontier",
+            "headers": [
+              "Alternative",
+              "Preference Score",
+              "Score Status",
+              "Eligibility",
+              "Official Rank",
+              "Pareto Status"
+            ],
+            "rows": [
+              [
+                "Site Alpha",
+                "16.4 / 100",
+                "INCOMPLETE",
+                "INELIGIBLE_INDETERMINATE",
+                "Unranked",
+                "INCOMPARABLE_INCOMPLETE"
+              ],
+              [
+                "Site Beta",
+                "0.6 / 100",
+                "INCOMPLETE",
+                "INELIGIBLE_INDETERMINATE",
+                "Unranked",
+                "INCOMPARABLE_INCOMPLETE"
+              ]
+            ]
+          }
+        ],
+        "callouts": [
+          "A composite preference score is a decision support metric, not a physical landing safety rating."
+        ],
+        "disclaimers": []
+      },
+      {
+        "section_number": 10,
+        "section_id": "sec-comparison-matrix",
+        "title": "Comprehensive Alternatives Comparison Matrix",
+        "summary": "Side-by-side technical comparison of candidate alternatives across all mission domains.",
+        "details": {},
+        "tables": [
+          {
+            "title": "Comprehensive Multi-Domain Comparison Matrix",
+            "headers": [
+              "Candidate",
+              "Compliance",
+              "Sunlight",
+              "Max Dark",
+              "Earth Vis",
+              "Local Slope",
+              "Score",
+              "Pareto"
+            ],
+            "rows": [
+              [
+                "Connecting Ridge",
+                "COMPLIANT",
+                "54.2 h",
+                "17.8 h",
+                "72.0 h",
+                "7.5\u00b0",
+                "80.4",
+                "PARETO_OPTIMAL"
+              ],
+              [
+                "Connecting Ridge",
+                "COMPLIANT",
+                "54.2 h",
+                "17.8 h",
+                "72.0 h",
+                "7.5\u00b0",
+                "80.4",
+                "PARETO_OPTIMAL"
+              ]
+            ]
+          }
+        ],
+        "callouts": [],
+        "disclaimers": []
+      },
+      {
+        "section_number": 11,
+        "section_id": "sec-uncertainty-limitations",
+        "title": "Uncertainty, Data Limitations & Epistemic Boundaries",
+        "summary": "Transparent documentation of scientific and operational boundaries.",
+        "details": {},
+        "tables": [],
+        "callouts": [],
+        "disclaimers": [
+          "DEM resolution is limited to 5 meters per pixel; sub-pixel boulders and micro-craters are unresolved.",
+          "Surface roughness data is unavailable in the current raster catalogue and excluded from scoring.",
+          "Direct Earth line-of-sight indicates geometric visibility only; RF link budget must be independently verified.",
+          "Solar disk illumination does not compute solar array electrical power output or thermal equilibrium.",
+          "Topographic slope does not establish geotechnical bearing capacity or landing touchdown stability."
+        ]
+      },
+      {
+        "section_number": 12,
+        "section_id": "sec-final-findings",
+        "title": "Final Findings & Human Decision Authority Checklist",
+        "summary": "Final synthesis of mission candidate evaluations. The decision support system presents factual trade-offs, Pareto non-dominated alternatives, and constraint compliance. The final landing site selection requires explicit multi-disciplinary mission planner sign-off.",
+        "details": {},
+        "tables": [],
+        "callouts": [
+          "Candidate Alternatives Evaluated: 2",
+          "Fully Compliant Candidates: 0",
+          "Automated Winner Recommendation: NONE (Human Decision Authority Reserved)"
+        ],
+        "disclaimers": []
+      }
+    ],
+    "frozen_study_data": {
+      "id": "study-7a5734ee",
+      "name": "Study for Report Testing",
+      "description": null,
+      "created_at_iso": "2026-11-14T19:31:57.484826+00:00",
+      "updated_at_iso": "2026-11-15T01:42:34.021898+00:00",
+      "profile_id": "profile-5b1696c1",
+      "profile_name": "Report Verification Profile",
+      "profile_version": 1,
+      "nominal_duration_days": 3.0,
+      "alternatives": [
+        {
+          "id": "alt-01",
+          "name": "Site Alpha",
+          "description": null,
+          "notes": null,
+          "candidate_id": "scenario-cr-crest",
+          "candidate_name": "MUTATED SCENARIO NAME",
+          "site_id": "site01",
+          "latitude": -89.4632,
+          "longitude": -137.4896,
+          "start_timestamp_iso": "2026-10-04T12:00:00Z",
+          "end_timestamp_iso": "2026-10-07T12:00:00Z",
+          "duration_days": 3.0,
+          "duration_hours": 72.0,
+          "profile_id": "profile-5b1696c1",
+          "profile_version": 1,
+          "profile_snapshot": {
+            "id": "profile-5b1696c1",
+            "name": "Report Verification Profile",
+            "description": "Profile used for verifying technical mission decision report generation",
+            "mission_type": "robotic_lander",
+            "duration_days": 3.0,
+            "start_timestamp_iso": "2026-10-04T12:00:00Z",
+            "end_timestamp_iso": "2026-10-11T12:00:00Z",
+            "observer_height_m": 2.0,
+            "time_display_preference": "UTC",
+            "requirements": {
+              "solar": {
+                "min_total_sunlight_hours": {
+                  "id": "min_total_sunlight_hours",
+                  "name": "Minimum Total Geometric Sunlight Duration",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 72.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration of geometric illumination across the user-configured mission analysis window.",
+                  "scientific_disclaimer": "Geometric illumination accounts for terrain line-of-sight and finite-disk clearance; it does not model photovoltaic panel angle of incidence or electrical power generation."
+                },
+                "min_full_sunlight_hours": {
+                  "id": "min_full_sunlight_hours",
+                  "name": "Minimum Full Sunlight Duration",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 48.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+                  "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+                },
+                "max_continuous_darkness_hours": {
+                  "id": "max_continuous_darkness_hours",
+                  "name": "Maximum Continuous Darkness Duration",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 24.0,
+                  "unit": "hours",
+                  "operator": "le",
+                  "description": "Maximum uninterrupted duration of darkness (battery energy storage limit).",
+                  "scientific_disclaimer": "Evaluates uninterrupted periods where solar disk visible fraction is zero."
+                },
+                "min_sunlight_percentage": {
+                  "id": "min_sunlight_percentage",
+                  "name": "Minimum Sunlight Percentage",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": true,
+                  "value": 60.0,
+                  "unit": "%",
+                  "operator": "ge",
+                  "description": "Ratio of total illuminated hours to total mission duration (expressed in %).",
+                  "scientific_disclaimer": "Denominator is the total user-configured mission duration."
+                },
+                "min_daily_sunlight_hours": {
+                  "id": "min_daily_sunlight_hours",
+                  "name": "Minimum Daily Sunlight Duration",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 6.0,
+                  "unit": "hours/day",
+                  "operator": "ge",
+                  "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+                  "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+                }
+              },
+              "earth": {
+                "min_total_earth_visible_hours": {
+                  "id": "min_total_earth_visible_hours",
+                  "name": "Minimum Total Geometric Earth Visibility",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 48.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration of direct geometric line-of-sight to Earth across the mission analysis window.",
+                  "scientific_disclaimer": "Geometric Earth visibility does not guarantee an operational radio link; RF link budget, antenna pointing, and data rates are not modeled."
+                },
+                "max_continuous_earth_blackout_hours": {
+                  "id": "max_continuous_earth_blackout_hours",
+                  "name": "Maximum Continuous Earth LOS Blackout",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 12.0,
+                  "unit": "hours",
+                  "operator": "le",
+                  "description": "Maximum allowable duration of continuous Direct-to-Earth loss of signal (LOS).",
+                  "scientific_disclaimer": "Periods where Earth disk is completely obstructed by local terrain."
+                },
+                "min_daily_earth_visible_hours": {
+                  "id": "min_daily_earth_visible_hours",
+                  "name": "Minimum Daily Earth Visibility",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 4.0,
+                  "unit": "hours/day",
+                  "operator": "ge",
+                  "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+                  "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+                },
+                "min_full_disk_earth_visible_hours": {
+                  "id": "min_full_disk_earth_visible_hours",
+                  "name": "Minimum Full-Disk Earth Visibility",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 24.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+                  "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+                }
+              },
+              "terrain": {
+                "max_local_slope_deg": {
+                  "id": "max_local_slope_deg",
+                  "name": "Maximum Allowable Landing Site Slope",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 10.0,
+                  "unit": "deg",
+                  "operator": "le",
+                  "description": "Maximum local slope at the landing/observation site (lander tip-over safety threshold).",
+                  "scientific_disclaimer": "Derived from NASA LOLA 5 m DEM slope maps. Geomorphic slope alone does not guarantee boulder clearance or regolith trafficability."
+                },
+                "min_elevation_m": {
+                  "id": "min_elevation_m",
+                  "name": "Minimum Surface Elevation",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 0.0,
+                  "unit": "m",
+                  "operator": "ge",
+                  "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+                  "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+                },
+                "max_elevation_m": {
+                  "id": "max_elevation_m",
+                  "name": "Maximum Surface Elevation",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 2500.0,
+                  "unit": "m",
+                  "operator": "le",
+                  "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+                  "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+                },
+                "max_roughness_factor": {
+                  "id": "max_roughness_factor",
+                  "name": "Maximum Local Terrain Roughness Factor",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 5.0,
+                  "unit": "deg_std",
+                  "operator": "le",
+                  "description": "Local standard deviation of slope within the landing area footprint.",
+                  "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+                }
+              }
+            },
+            "version": 1,
+            "is_template": false,
+            "created_at_iso": "2026-11-14T19:31:57.443420+00:00",
+            "updated_at_iso": "2026-11-14T19:31:57.443420+00:00"
+          },
+          "source_screening_id": null,
+          "source_window_id": null,
+          "source_terrain_assessment_id": null,
+          "hard_constraint_status": "INDETERMINATE",
+          "terrain_suitability_status": null,
+          "hard_constraints_passed": 0,
+          "hard_constraints_failed": 0,
+          "hard_constraints_indeterminate": 0,
+          "total_hard_constraints": 0,
+          "extracted_metrics": {
+            "total_sunlight_hours": null,
+            "full_sunlight_hours": null,
+            "longest_darkness_hours": null,
+            "total_earth_visible_hours": null,
+            "longest_earth_blackout_hours": null,
+            "local_slope_deg": 3.69,
+            "surface_elevation_m": 1944.633
+          },
+          "hard_constraint_verdicts": [],
+          "missing_metrics": [
+            "total_sunlight_hours",
+            "full_sunlight_hours",
+            "longest_darkness_hours",
+            "total_earth_visible_hours",
+            "longest_earth_blackout_hours"
+          ],
+          "data_completeness_pct": 28.6,
+          "provenance": {
+            "scenario_id": "scenario-cr-crest",
+            "scenario_name": "MUTATED SCENARIO NAME",
+            "site_id": "site01",
+            "window_search_id": null,
+            "window_id": null,
+            "screening_run_id": null,
+            "terrain_assessment_id": null
+          },
+          "warnings": []
+        },
+        {
+          "id": "alt-02",
+          "name": "Site Beta",
+          "description": null,
+          "notes": null,
+          "candidate_id": "scenario-cr-alpha",
+          "candidate_name": "Connecting Ridge \u2014 Candidate 01A",
+          "site_id": "site01",
+          "latitude": -89.3615,
+          "longitude": -151.2131,
+          "start_timestamp_iso": "2026-10-04T12:00:00Z",
+          "end_timestamp_iso": "2026-10-07T12:00:00Z",
+          "duration_days": 3.0,
+          "duration_hours": 72.0,
+          "profile_id": "profile-5b1696c1",
+          "profile_version": 1,
+          "profile_snapshot": {
+            "id": "profile-5b1696c1",
+            "name": "Report Verification Profile",
+            "description": "Profile used for verifying technical mission decision report generation",
+            "mission_type": "robotic_lander",
+            "duration_days": 3.0,
+            "start_timestamp_iso": "2026-10-04T12:00:00Z",
+            "end_timestamp_iso": "2026-10-11T12:00:00Z",
+            "observer_height_m": 2.0,
+            "time_display_preference": "UTC",
+            "requirements": {
+              "solar": {
+                "min_total_sunlight_hours": {
+                  "id": "min_total_sunlight_hours",
+                  "name": "Minimum Total Geometric Sunlight Duration",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 72.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration of geometric illumination across the user-configured mission analysis window.",
+                  "scientific_disclaimer": "Geometric illumination accounts for terrain line-of-sight and finite-disk clearance; it does not model photovoltaic panel angle of incidence or electrical power generation."
+                },
+                "min_full_sunlight_hours": {
+                  "id": "min_full_sunlight_hours",
+                  "name": "Minimum Full Sunlight Duration",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 48.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration where the solar disk is 100% unoccluded by terrain. Full sunlight is a geometric subset of total sunlight.",
+                  "scientific_disclaimer": "Requires 100% solar disk clearance above local horizon."
+                },
+                "max_continuous_darkness_hours": {
+                  "id": "max_continuous_darkness_hours",
+                  "name": "Maximum Continuous Darkness Duration",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 24.0,
+                  "unit": "hours",
+                  "operator": "le",
+                  "description": "Maximum uninterrupted duration of darkness (battery energy storage limit).",
+                  "scientific_disclaimer": "Evaluates uninterrupted periods where solar disk visible fraction is zero."
+                },
+                "min_sunlight_percentage": {
+                  "id": "min_sunlight_percentage",
+                  "name": "Minimum Sunlight Percentage",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": true,
+                  "value": 60.0,
+                  "unit": "%",
+                  "operator": "ge",
+                  "description": "Ratio of total illuminated hours to total mission duration (expressed in %).",
+                  "scientific_disclaimer": "Denominator is the total user-configured mission duration."
+                },
+                "min_daily_sunlight_hours": {
+                  "id": "min_daily_sunlight_hours",
+                  "name": "Minimum Daily Sunlight Duration",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 6.0,
+                  "unit": "hours/day",
+                  "operator": "ge",
+                  "description": "Minimum geometric illumination required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative hours with solar disk clearance f_disk > 0 in each standard 24h operational window.",
+                  "scientific_disclaimer": "Applies per standard 24.0-hour Earth operational day. Partial illumination (f_disk > 0) contributes to geometric duration; does not evaluate solar incident cosine angle or battery charge efficiency."
+                }
+              },
+              "earth": {
+                "min_total_earth_visible_hours": {
+                  "id": "min_total_earth_visible_hours",
+                  "name": "Minimum Total Geometric Earth Visibility",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 48.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Minimum cumulative duration of direct geometric line-of-sight to Earth across the mission analysis window.",
+                  "scientific_disclaimer": "Geometric Earth visibility does not guarantee an operational radio link; RF link budget, antenna pointing, and data rates are not modeled."
+                },
+                "max_continuous_earth_blackout_hours": {
+                  "id": "max_continuous_earth_blackout_hours",
+                  "name": "Maximum Continuous Earth LOS Blackout",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 12.0,
+                  "unit": "hours",
+                  "operator": "le",
+                  "description": "Maximum allowable duration of continuous Direct-to-Earth loss of signal (LOS).",
+                  "scientific_disclaimer": "Periods where Earth disk is completely obstructed by local terrain."
+                },
+                "min_daily_earth_visible_hours": {
+                  "id": "min_daily_earth_visible_hours",
+                  "name": "Minimum Daily Earth Visibility",
+                  "classification": "SOFT_PREFERENCE",
+                  "enabled": false,
+                  "value": 4.0,
+                  "unit": "hours/day",
+                  "operator": "ge",
+                  "description": "Minimum Direct-to-Earth line-of-sight required per standard 24.0-hour Earth day interval (distinct from the ~708.7 h lunar synodic day). Evaluates cumulative visible contact hours in each standard 24h operational window.",
+                  "scientific_disclaimer": "Applies per standard 24.0-hour Earth day. Line-of-sight clearance does not evaluate RF link budget or ground station scheduling."
+                },
+                "min_full_disk_earth_visible_hours": {
+                  "id": "min_full_disk_earth_visible_hours",
+                  "name": "Minimum Full-Disk Earth Visibility",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 24.0,
+                  "unit": "hours",
+                  "operator": "ge",
+                  "description": "Cumulative duration where the entire Earth disk is completely unoccluded by terrain. Full-disk visibility is a geometric subset of total visibility.",
+                  "scientific_disclaimer": "Full-disk clearance without partial atmospheric limb clipping."
+                }
+              },
+              "terrain": {
+                "max_local_slope_deg": {
+                  "id": "max_local_slope_deg",
+                  "name": "Maximum Allowable Landing Site Slope",
+                  "classification": "HARD_CONSTRAINT",
+                  "enabled": true,
+                  "value": 10.0,
+                  "unit": "deg",
+                  "operator": "le",
+                  "description": "Maximum local slope at the landing/observation site (lander tip-over safety threshold).",
+                  "scientific_disclaimer": "Derived from NASA LOLA 5 m DEM slope maps. Geomorphic slope alone does not guarantee boulder clearance or regolith trafficability."
+                },
+                "min_elevation_m": {
+                  "id": "min_elevation_m",
+                  "name": "Minimum Surface Elevation",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 0.0,
+                  "unit": "m",
+                  "operator": "ge",
+                  "description": "Minimum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+                  "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+                },
+                "max_elevation_m": {
+                  "id": "max_elevation_m",
+                  "name": "Maximum Surface Elevation",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 2500.0,
+                  "unit": "m",
+                  "operator": "le",
+                  "description": "Maximum surface elevation above the IAU 1,737,400 m lunar sphere datum.",
+                  "scientific_disclaimer": "Reference datum is the IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+                },
+                "max_roughness_factor": {
+                  "id": "max_roughness_factor",
+                  "name": "Maximum Local Terrain Roughness Factor",
+                  "classification": "INFORMATIONAL_METRIC",
+                  "enabled": false,
+                  "value": 5.0,
+                  "unit": "deg_std",
+                  "operator": "le",
+                  "description": "Local standard deviation of slope within the landing area footprint.",
+                  "scientific_disclaimer": "Derived from local 5 m DEM neighborhood variance."
+                }
+              }
+            },
+            "version": 1,
+            "is_template": false,
+            "created_at_iso": "2026-11-14T19:31:57.443420+00:00",
+            "updated_at_iso": "2026-11-14T19:31:57.443420+00:00"
+          },
+          "source_screening_id": null,
+          "source_window_id": null,
+          "source_terrain_assessment_id": null,
+          "hard_constraint_status": "INDETERMINATE",
+          "terrain_suitability_status": null,
+          "hard_constraints_passed": 0,
+          "hard_constraints_failed": 0,
+          "hard_constraints_indeterminate": 0,
+          "total_hard_constraints": 0,
+          "extracted_metrics": {
+            "total_sunlight_hours": null,
+            "full_sunlight_hours": null,
+            "longest_darkness_hours": null,
+            "total_earth_visible_hours": null,
+            "longest_earth_blackout_hours": null,
+            "local_slope_deg": 24.17,
+            "surface_elevation_m": 1442.086
+          },
+          "hard_constraint_verdicts": [],
+          "missing_metrics": [
+            "total_sunlight_hours",
+            "full_sunlight_hours",
+            "longest_darkness_hours",
+            "total_earth_visible_hours",
+            "longest_earth_blackout_hours"
+          ],
+          "data_completeness_pct": 28.6,
+          "provenance": {
+            "scenario_id": "scenario-cr-alpha",
+            "scenario_name": "Connecting Ridge \u2014 Candidate 01A",
+            "site_id": "site01",
+            "window_search_id": null,
+            "window_id": null,
+            "screening_run_id": null,
+            "terrain_assessment_id": null
+          },
+          "warnings": []
+        }
+      ],
+      "preference_model": {
+        "criteria": [
+          {
+            "id": "pref-total-sunlight",
+            "name": "Total Sunlight Duration",
+            "metric_key": "total_sunlight_hours",
+            "unit": "hours",
+            "category": "solar",
+            "enabled": true,
+            "weight": 1.0,
+            "direction": "HIGHER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 72.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Cumulative geometric sunlight duration (full + partial disk illumination)."
+          },
+          {
+            "id": "pref-full-sunlight",
+            "name": "Full Sunlight Duration",
+            "metric_key": "full_sunlight_hours",
+            "unit": "hours",
+            "category": "solar",
+            "enabled": true,
+            "weight": 0.8,
+            "direction": "HIGHER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 72.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Duration where 100% of solar disk is above regional terrain horizon."
+          },
+          {
+            "id": "pref-longest-darkness",
+            "name": "Longest Continuous Darkness",
+            "metric_key": "longest_darkness_hours",
+            "unit": "hours",
+            "category": "solar",
+            "enabled": true,
+            "weight": 1.0,
+            "direction": "LOWER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 72.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Maximum uninterrupted duration of zero solar disk visibility (critical battery limit)."
+          },
+          {
+            "id": "pref-earth-visibility",
+            "name": "Earth Direct Visibility",
+            "metric_key": "total_earth_visible_hours",
+            "unit": "hours",
+            "category": "earth",
+            "enabled": true,
+            "weight": 0.8,
+            "direction": "HIGHER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 72.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Cumulative geometric Earth line-of-sight visibility above terrain horizon."
+          },
+          {
+            "id": "pref-longest-earth-blackout",
+            "name": "Longest Earth Blackout",
+            "metric_key": "longest_earth_blackout_hours",
+            "unit": "hours",
+            "category": "earth",
+            "enabled": true,
+            "weight": 0.6,
+            "direction": "LOWER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 72.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Maximum continuous duration of zero Earth line-of-sight visibility."
+          },
+          {
+            "id": "pref-local-slope",
+            "name": "Local Topographic Slope",
+            "metric_key": "local_slope_deg",
+            "unit": "deg",
+            "category": "terrain",
+            "enabled": true,
+            "weight": 1.0,
+            "direction": "LOWER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": 0.0,
+            "reference_max": 25.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Evaluated local slope in degrees from NASA LOLA 5m/px DEM."
+          },
+          {
+            "id": "pref-surface-elevation",
+            "name": "Surface Elevation",
+            "metric_key": "surface_elevation_m",
+            "unit": "m",
+            "category": "terrain",
+            "enabled": false,
+            "weight": 0.4,
+            "direction": "HIGHER_IS_BETTER",
+            "normalization_method": "MIN_MAX",
+            "reference_min": -4000.0,
+            "reference_max": -1500.0,
+            "target_min": null,
+            "target_max": null,
+            "is_relative_to_alternatives": false,
+            "description": "Surface elevation referenced to IAU Moon 2000 Sphere (R = 1,737,400.0 m)."
+          }
+        ],
+        "use_relative_bounds": false,
+        "version": "1.0"
+      },
+      "scores": {
+        "alt-01": {
+          "alternative_id": "alt-01",
+          "alternative_name": "Site Alpha",
+          "composite_score": 16.39,
+          "score_status": "INCOMPLETE",
+          "available_weight_fraction": 0.1923,
+          "ranking_eligibility": "INELIGIBLE_INDETERMINATE",
+          "eligible_rank": null,
+          "ineligibility_reason": "Hard constraints are indeterminate or unverified. Cannot be certified as compliant.",
+          "normalized_metrics": [
+            {
+              "criterion_id": "pref-total-sunlight",
+              "criterion_name": "Total Sunlight Duration",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1923,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-full-sunlight",
+              "criterion_name": "Full Sunlight Duration",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1538,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-longest-darkness",
+              "criterion_name": "Longest Continuous Darkness",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1923,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-earth-visibility",
+              "criterion_name": "Earth Direct Visibility",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1538,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-longest-earth-blackout",
+              "criterion_name": "Longest Earth Blackout",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1154,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-local-slope",
+              "criterion_name": "Local Topographic Slope",
+              "raw_value": 3.69,
+              "unit": "deg",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 25.0,
+              "normalized_value": 0.8524,
+              "normalized_weight": 0.1923,
+              "score_contribution": 16.39,
+              "formula_str": "min(1.0, max(0.0, (25.00 - 3.69) / (25.00 - 0.00)))",
+              "is_available": true,
+              "note": "Linear cost scaling"
+            }
+          ],
+          "explanation": "Composite score: 16.39 / 100.0 (Status: INCOMPLETE, Evaluated Weight: 19.2%).",
+          "limitations": [
+            "Incomplete score: evaluates only 19.2% of configured preference weight. Not directly comparable to alternatives with 100% data completeness.",
+            "Alternative has indeterminate or unverified hard constraints due to partial DEM coverage or missing assessment."
+          ]
+        },
+        "alt-02": {
+          "alternative_id": "alt-02",
+          "alternative_name": "Site Beta",
+          "composite_score": 0.64,
+          "score_status": "INCOMPLETE",
+          "available_weight_fraction": 0.1923,
+          "ranking_eligibility": "INELIGIBLE_INDETERMINATE",
+          "eligible_rank": null,
+          "ineligibility_reason": "Hard constraints are indeterminate or unverified. Cannot be certified as compliant.",
+          "normalized_metrics": [
+            {
+              "criterion_id": "pref-total-sunlight",
+              "criterion_name": "Total Sunlight Duration",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1923,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-full-sunlight",
+              "criterion_name": "Full Sunlight Duration",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1538,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-longest-darkness",
+              "criterion_name": "Longest Continuous Darkness",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1923,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-earth-visibility",
+              "criterion_name": "Earth Direct Visibility",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "HIGHER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1538,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-longest-earth-blackout",
+              "criterion_name": "Longest Earth Blackout",
+              "raw_value": null,
+              "unit": "hours",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 72.0,
+              "normalized_value": null,
+              "normalized_weight": 0.1154,
+              "score_contribution": null,
+              "formula_str": "UNAVAILABLE: No measured value",
+              "is_available": false,
+              "note": "Measurement unavailable"
+            },
+            {
+              "criterion_id": "pref-local-slope",
+              "criterion_name": "Local Topographic Slope",
+              "raw_value": 24.17,
+              "unit": "deg",
+              "direction": "LOWER_IS_BETTER",
+              "reference_min": 0.0,
+              "reference_max": 25.0,
+              "normalized_value": 0.0332,
+              "normalized_weight": 0.1923,
+              "score_contribution": 0.64,
+              "formula_str": "min(1.0, max(0.0, (25.00 - 24.17) / (25.00 - 0.00)))",
+              "is_available": true,
+              "note": "Linear cost scaling"
+            }
+          ],
+          "explanation": "Composite score: 0.64 / 100.0 (Status: INCOMPLETE, Evaluated Weight: 19.2%).",
+          "limitations": [
+            "Incomplete score: evaluates only 19.2% of configured preference weight. Not directly comparable to alternatives with 100% data completeness.",
+            "Alternative has indeterminate or unverified hard constraints due to partial DEM coverage or missing assessment."
+          ]
+        }
+      },
+      "pareto_results": {
+        "alt-01": {
+          "alternative_id": "alt-01",
+          "status": "INCOMPARABLE_INCOMPLETE",
+          "dominated_by": [],
+          "dominates": [],
+          "dominating_criteria_by_alternative": {},
+          "is_fully_comparable": false,
+          "explanation": "Incomplete measurements prevent definitive Pareto dominance classification. Cannot establish dominance or non-dominance without full measurement coverage."
+        },
+        "alt-02": {
+          "alternative_id": "alt-02",
+          "status": "INCOMPARABLE_INCOMPLETE",
+          "dominated_by": [],
+          "dominates": [],
+          "dominating_criteria_by_alternative": {},
+          "is_fully_comparable": false,
+          "explanation": "Incomplete measurements prevent definitive Pareto dominance classification. Cannot establish dominance or non-dominance without full measurement coverage."
+        }
+      },
+      "sensitivity_summary": {
+        "study_id": "study-7a5734ee",
+        "current_leader_id": null,
+        "has_eligible_leader": false,
+        "tested_scenarios": [
+          {
+            "scenario_id": "scen-current",
+            "scenario_name": "Current User Configuration",
+            "scenario_description": "User-selected preference weights.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-total-sunlight": 1.0,
+              "pref-full-sunlight": 0.8,
+              "pref-longest-darkness": 1.0,
+              "pref-earth-visibility": 0.8,
+              "pref-longest-earth-blackout": 0.6,
+              "pref-local-slope": 1.0
+            },
+            "scores": {
+              "alt-01": 16.39,
+              "alt-02": 0.64
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          },
+          {
+            "scenario_id": "scen-equal",
+            "scenario_name": "Equal Weights Baseline",
+            "scenario_description": "Balanced 1/K (0.1667) weight across all 6 enabled criteria.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-total-sunlight": 1.0,
+              "pref-full-sunlight": 1.0,
+              "pref-longest-darkness": 1.0,
+              "pref-earth-visibility": 1.0,
+              "pref-longest-earth-blackout": 1.0,
+              "pref-local-slope": 1.0
+            },
+            "scores": {
+              "alt-01": 14.21,
+              "alt-02": 0.55
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          },
+          {
+            "scenario_id": "scen-solar",
+            "scenario_name": "Solar Illumination Priority",
+            "scenario_description": "70% weight distributed equally among enabled solar illumination criteria; 30% among remaining criteria.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-total-sunlight": 0.35,
+              "pref-full-sunlight": 0.35,
+              "pref-longest-darkness": 0.075,
+              "pref-earth-visibility": 0.075,
+              "pref-longest-earth-blackout": 0.075,
+              "pref-local-slope": 0.075
+            },
+            "scores": {
+              "alt-01": 6.39,
+              "alt-02": 0.25
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          },
+          {
+            "scenario_id": "scen-earth",
+            "scenario_name": "Earth Communications Priority",
+            "scenario_description": "70% weight distributed equally among enabled Earth visibility criteria; 30% among remaining criteria.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-earth-visibility": 0.35,
+              "pref-longest-earth-blackout": 0.35,
+              "pref-total-sunlight": 0.075,
+              "pref-full-sunlight": 0.075,
+              "pref-longest-darkness": 0.075,
+              "pref-local-slope": 0.075
+            },
+            "scores": {
+              "alt-01": 6.39,
+              "alt-02": 0.25
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          },
+          {
+            "scenario_id": "scen-terrain",
+            "scenario_name": "Terrain Safety Priority",
+            "scenario_description": "70% weight distributed equally among enabled terrain criteria; 30% among remaining criteria.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-local-slope": 0.7,
+              "pref-total-sunlight": 0.06,
+              "pref-full-sunlight": 0.06,
+              "pref-longest-darkness": 0.06,
+              "pref-earth-visibility": 0.06,
+              "pref-longest-earth-blackout": 0.06
+            },
+            "scores": {
+              "alt-01": 59.67,
+              "alt-02": 2.32
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          },
+          {
+            "scenario_id": "scen-darkness",
+            "scenario_name": "Darkness Minimization Priority",
+            "scenario_description": "70% weight allocated to longest continuous darkness; 30% distributed among remaining criteria.",
+            "is_available": true,
+            "warning": null,
+            "weights": {
+              "pref-longest-darkness": 0.7,
+              "pref-total-sunlight": 0.06,
+              "pref-full-sunlight": 0.06,
+              "pref-earth-visibility": 0.06,
+              "pref-longest-earth-blackout": 0.06,
+              "pref-local-slope": 0.06
+            },
+            "scores": {
+              "alt-01": 5.11,
+              "alt-02": 0.2
+            },
+            "rankings": {
+              "alt-01": 1,
+              "alt-02": 2
+            },
+            "eligible_rankings": {
+              "alt-01": null,
+              "alt-02": null
+            },
+            "ineligibility_reasons": {
+              "alt-01": "INDETERMINATE (unverified constraint coverage)",
+              "alt-02": "INDETERMINATE (unverified constraint coverage)"
+            },
+            "leading_alternative_id": null,
+            "leading_alternative_name": "No eligible complete alternative"
+          }
+        ],
+        "leader_stability": {},
+        "robust_alternatives": [],
+        "summary_notes": [
+          "Evaluated 6 available deterministic sensitivity scenarios (70% priority / 30% remainder).",
+          "Notice: No candidate alternative satisfies both 100% hard-constraint compliance and 100% preference score completeness. No eligible complete ranking can be produced.",
+          "No alternative maintained top-2 ranking in >= 60% of sensitivity scenarios.",
+          "Sensitivity analysis tests discrete priority models; it does not replace operational risk evaluation."
+        ]
+      },
+      "analysis_timestamp_iso": "2026-11-14T19:31:57.484826+00:00",
+      "warnings": [],
+      "scientific_disclaimers": [
+        "A composite preference score is a user-configured decision aid, not a physical landing safety rating.",
+        "Pareto optimality indicates absence of strictly superior alternatives under selected dimensions, not absolute mission feasibility.",
+        "Hard constraint compliance does not establish lunar landing safety, geotechnical bearing capacity, or hazard absence.",
+        "Geometric Earth line-of-sight visibility does not establish an operational RF communications link budget.",
+        "Solar disk visibility does not calculate solar array electrical power output or thermal equilibrium.",
+        "Topographic slope alone does not guarantee rover traversability or lander touchdown stability.",
+        "Official LOLA roughness data is not loaded; roughness remains unsupported and is excluded from preference scoring.",
+        "Missing or incomplete measurements are never replaced with zero and are explicitly designated as INCOMPLETE.",
+        "Candidate alternatives must never be declared as universally best or safest."
+      ]
+    },
+    "frozen_scenarios_data": [
+      {
+        "id": "scenario-cr-crest",
+        "name": "Connecting Ridge \u2014 Crater Rim Crest",
+        "description": "High-elevation crest candidate along Connecting Ridge offering extensive line-of-sight visibility and prolonged solar illumination.",
+        "site_id": "site01",
+        "latitude": -89.4632,
+        "longitude": -137.4896,
+        "observer_height_m": 2.0,
+        "start_timestamp_iso": "2026-10-04T12:00:00Z",
+        "end_timestamp_iso": "2026-10-07T12:00:00Z",
+        "step_interval_hours": 2.0,
+        "azimuth_resolution_deg": 2.0,
+        "max_search_distance_m": 5000.0,
+        "aberration_correction": "LT+S",
+        "created_at_iso": "2026-10-01T00:00:00Z",
+        "updated_at_iso": "2026-11-14T19:31:05.943638+00:00"
+      },
+      {
+        "id": "scenario-cr-alpha",
+        "name": "Connecting Ridge \u2014 Candidate 01A",
+        "description": "Artemis candidate landing zone along the southern ridge saddle with moderate local slopes and extended sunlight windows.",
+        "site_id": "site01",
+        "latitude": -89.3615,
+        "longitude": -151.2131,
+        "observer_height_m": 2.0,
+        "start_timestamp_iso": "2026-10-04T12:00:00Z",
+        "end_timestamp_iso": "2026-10-07T12:00:00Z",
+        "step_interval_hours": 2.0,
+        "azimuth_resolution_deg": 2.0,
+        "max_search_distance_m": 5000.0,
+        "aberration_correction": "LT+S",
+        "created_at_iso": "2026-10-01T00:00:00Z",
+        "updated_at_iso": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "provenance_metadata": {
+      "software_version": "LUNAVISTA 2.0-MVP7",
+      "raster_dataset": "NASA LOLA South Pole 5m DEM",
+      "ephemeris_kernel": "de421.bsp / Moon 2000 Sphere",
+      "generation_timestamp_iso": "2026-11-15T01:43:01.308784+00:00"
+    },
+    "scientific_disclaimers": [
+      "A composite preference score is a user-configured decision aid, not a physical landing safety rating.",
+      "Pareto optimality indicates absence of strictly superior alternatives under selected dimensions, not absolute mission feasibility.",
+      "Hard constraint compliance does not establish lunar landing safety, geotechnical bearing capacity, or hazard absence.",
+      "Geometric Earth line-of-sight visibility does not establish an operational RF communications link budget.",
+      "Solar disk visibility does not calculate solar array electrical power output or thermal equilibrium.",
+      "Candidate alternatives must never be declared as universally best or safest."
+    ],
+    "human_decision_checklist": [
+      {
+        "item": "Review and approve all candidate hard-constraint evaluation results",
+        "status": "PENDING_REVIEW"
+      },
+      {
+        "item": "Verify direct Earth RF communications link margin under local terrain horizon",
+        "status": "PENDING_REVIEW"
+      },
+      {
+        "item": "Assess lander touchdown stability under local slope and boulder distribution",
+        "status": "PENDING_REVIEW"
+      },
+      {
+        "item": "Verify battery state-of-charge margin for maximum continuous darkness intervals",
+        "status": "PENDING_REVIEW"
+      },
+      {
+        "item": "Concurrence by Mission Operations Directorate on final landing site selection",
+        "status": "PENDING_REVIEW"
+      }
+    ]
   }
 ]

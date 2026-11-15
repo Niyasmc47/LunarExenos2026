@@ -47,7 +47,7 @@ export const TerrainExplorer: React.FC = () => {
   const [showTransect, setShowTransect] = useState(false);
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-4rem)] overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
+    <div className="terrain-workspace relative flex-1 flex flex-col xl:flex-row h-full min-h-0 overflow-hidden bg-[#070b12] p-2 md:p-3 gap-2 md:gap-3">
       {/* Main Workspace Area */}
       <div className="flex-1 flex flex-col gap-2 min-h-0 min-w-0 overflow-hidden">
         {/* Workspace Mode Sub-Navigation Strip */}
@@ -55,15 +55,16 @@ export const TerrainExplorer: React.FC = () => {
           <div className="flex items-center gap-2">
             <Mountain className="w-4 h-4 text-emerald-400" />
             <span className="font-bold text-slate-200 uppercase tracking-wider hidden sm:inline">
-              LUNAR TERRAIN EXPLORER
+              Explore local terrain
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
               NASA LOLA DATA
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-[#070b12] p-1 rounded-lg border border-slate-800">
+          <div className="terrain-mode-switcher flex flex-wrap items-center gap-1.5 bg-[#070b12] p-1 rounded-lg border border-slate-800">
             <button
+              aria-pressed={workspaceMode === '3d-terrain'}
               onClick={() => setWorkspaceMode('3d-terrain')}
               title="Interactive 3D lunar terrain mesh with altitude relief and orbit controls"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
@@ -73,10 +74,11 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Box className="w-3.5 h-3.5" />
-              <span>3D TERRAIN VIEW</span>
+              <span>3D terrain</span>
             </button>
 
             <button
+              aria-pressed={workspaceMode === '2d-map'}
               onClick={() => setWorkspaceMode('2d-map')}
               title="2D map with elevation, slope hazard classification and transects"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
@@ -86,10 +88,11 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Map className="w-3.5 h-3.5" />
-              <span>2D MAP VIEW</span>
+              <span>Terrain map</span>
             </button>
 
             <button
+              aria-pressed={workspaceMode === 'horizon'}
               onClick={() => setWorkspaceMode('horizon')}
               title="Lunar terrain skyline elevation angles across 360° azimuth"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
@@ -99,10 +102,11 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
-              <span>HORIZON ENGINE</span>
+              <span>Local skyline</span>
             </button>
 
             <button
+              aria-pressed={workspaceMode === 'ephemeris'}
               onClick={() => setWorkspaceMode('ephemeris')}
               title="Topocentric Sun & Earth positions, trajectory time-series, and SPICE ephemerides"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
@@ -112,10 +116,11 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Sun className="w-3.5 h-3.5 text-amber-400" />
-              <span>EPHEMERIS ENGINE</span>
+              <span>Sun & Earth positions</span>
             </button>
 
             <button
+              aria-pressed={workspaceMode === 'visibility'}
               onClick={() => setWorkspaceMode('visibility')}
               title="Terrain-aware Sun & Earth visibility, disk partial illumination, and mission timelines"
               className={`flex items-center gap-1.5 px-3 py-1 rounded font-bold transition-all ${
@@ -125,7 +130,7 @@ export const TerrainExplorer: React.FC = () => {
               }`}
             >
               <Eye className="w-3.5 h-3.5 text-cyan-400" />
-              <span>VISIBILITY ENGINE</span>
+              <span>Visibility</span>
             </button>
           </div>
         </div>
@@ -170,7 +175,7 @@ export const TerrainExplorer: React.FC = () => {
                 }`}
               >
                 <LineChart className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{showTransect ? 'HIDE ELEVATION TRANSECT' : 'SHOW ELEVATION TRANSECT'}</span>
+                <span>{showTransect ? 'Hide elevation profile' : 'Show elevation profile'}</span>
               </button>
 
               <ExportToolbar />
@@ -188,7 +193,7 @@ export const TerrainExplorer: React.FC = () => {
         <button
           onClick={() => setPanelOpen(!panelOpen)}
           title={panelOpen ? 'Collapse Terrain Info' : 'Expand Terrain Info'}
-          className="hidden md:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-40 items-center justify-center w-7 h-12 bg-[#0c121e] border border-slate-700 hover:border-emerald-500 rounded-l-md text-slate-400 hover:text-emerald-400 shadow-xl transition-colors"
+          className="hidden xl:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-40 items-center justify-center w-7 h-12 bg-[#0c121e] border border-slate-700 hover:border-emerald-500 rounded-l-md text-slate-400 hover:text-emerald-400 shadow-xl transition-colors"
         >
           {panelOpen ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -216,10 +221,10 @@ export const TerrainExplorer: React.FC = () => {
       {!panelOpen && (
         <button
           onClick={() => setPanelOpen(true)}
-          className="hidden md:flex absolute right-4 bottom-4 z-40 items-center gap-2 bg-[#0c121e]/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-mono shadow-2xl transition-all"
+          className="flex absolute right-4 bottom-4 z-40 items-center gap-2 bg-[#0c121e]/90 hover:bg-slate-800 text-emerald-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-mono shadow-2xl transition-all"
         >
           <SlidersHorizontal className="w-4 h-4" />
-          <span>SHOW STATS</span>
+          <span>Show details</span>
         </button>
       )}
     </div>

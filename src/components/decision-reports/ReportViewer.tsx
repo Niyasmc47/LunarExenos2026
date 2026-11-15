@@ -29,7 +29,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
     report.sections.find((s) => s.section_id === activeSectionId) || report.sections[0];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#080d19] overflow-hidden text-xs font-mono">
+    <div className="report-reader flex-1 flex flex-col h-full bg-[#080d19] overflow-hidden text-xs font-mono">
       {/* Top Action Bar */}
       <div className="p-4 bg-slate-900/90 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
               <span>•</span>
               <span>Author: {report.author_organization}</span>
               <span>•</span>
-              <span>Published: {report.created_at_iso.replace('T', ' ').slice(0, 19)} UTC</span>
+              <span>Created: {report.created_at_iso.replace('T', ' ').slice(0, 19)} UTC</span>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <a
             href={getReportPdfExportUrl(report.id)}
             download={`${report.id}.pdf`}
-            className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-red-950/40 text-xs"
+            className="report-pdf px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold flex items-center gap-1.5 transition-all shadow-md shadow-red-950/40 text-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export PDF</span>
@@ -91,7 +91,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
           <span className="text-lg font-bold text-white block mt-0.5">
             {report.total_candidates_evaluated} Alternatives
           </span>
-          <span className="text-[10px] text-slate-400">South polar circumpolar sites</span>
+          <span className="text-[10px] text-slate-400">Candidates included in this report</span>
         </div>
 
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
@@ -124,7 +124,7 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
         <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
           <span className="text-[10px] text-slate-500 uppercase block">Automated Recommendation</span>
           <span className="text-xs font-bold text-cyan-300 block mt-1">
-            HUMAN AUTHORITY RESERVED
+            Final decision: mission team
           </span>
           <span className="text-[9px] text-slate-400 mt-0.5 block">
             System identifies trade-offs; planners decide
@@ -135,13 +135,14 @@ export const ReportViewer: React.FC<ReportViewerProps> = ({ report }) => {
       {/* Main Content Area: Split Navigation + Active Section */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Section Navigation */}
-        <div className="w-64 border-r border-slate-800 bg-slate-950/60 p-3 overflow-y-auto space-y-1 shrink-0">
+        <div className="report-section-nav w-64 border-r border-slate-800 bg-slate-950/60 p-3 overflow-y-auto space-y-1 shrink-0">
           <div className="px-2 py-1 text-[10px] text-slate-500 uppercase tracking-wider font-bold">
-            Report Sections (12)
+            Report sections ({report.sections.length})
           </div>
           {report.sections.map((s) => (
             <button
               key={s.section_id}
+              aria-current={activeSection?.section_id === s.section_id ? 'step' : undefined}
               onClick={() => setActiveSectionId(s.section_id)}
               className={`w-full text-left px-3 py-2 rounded-lg text-xs font-mono transition-all flex items-center gap-2 ${
                 activeSectionId === s.section_id

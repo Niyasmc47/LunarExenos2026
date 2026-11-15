@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect } from 'react';
 import { VisibilityControlToolbar } from './VisibilityControlToolbar';
 import { VisibilityOverviewCards } from './VisibilityOverviewCards';
@@ -31,6 +32,7 @@ export const VisibilityExplorerView: React.FC = () => {
 
   return (
     <div className="w-full h-full flex flex-col gap-2.5 overflow-y-auto pr-1">
+      <ResultIntro title="When is the sky clear?" description="Read the timeline to find sunlight and Earth visibility, including terrain obstruction." />
       {/* Simulation Controls Toolbar */}
       <VisibilityControlToolbar />
 

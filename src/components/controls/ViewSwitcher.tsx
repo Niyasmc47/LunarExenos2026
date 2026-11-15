@@ -8,9 +8,9 @@ export const ViewSwitcher: React.FC = () => {
   const setActiveView = useLocationStore((state) => state.setActiveView);
 
   const views: { id: ActiveView; label: string; icon: React.ReactNode }[] = [
-    { id: 'split', label: 'SPLIT VIEW', icon: <Columns2 className="w-3.5 h-3.5" /> },
-    { id: '3d', label: '3D GLOBE', icon: <Globe className="w-3.5 h-3.5" /> },
-    { id: '2d', label: '2D MAP', icon: <MapIcon className="w-3.5 h-3.5" /> },
+    { id: 'split', label: 'Both views', icon: <Columns2 className="w-3.5 h-3.5" /> },
+    { id: '3d', label: '3D globe', icon: <Globe className="w-3.5 h-3.5" /> },
+    { id: '2d', label: '2D map', icon: <MapIcon className="w-3.5 h-3.5" /> },
   ];
 
   return (

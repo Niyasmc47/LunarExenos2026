@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect, useState } from 'react';
 import { useHorizonStore } from '../../stores/horizonStore';
 import { useLocationStore } from '../../stores/locationStore';
@@ -34,13 +35,14 @@ export const HorizonExplorerView: React.FC = () => {
   }, [observerLat, observerLon, computeHorizon]);
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden gap-2">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto gap-2">
+      <ResultIntro title="Your local skyline" description="Click the terrain to move the observer. The skyline shows where nearby ground blocks the sky." />
       {/* View Layout Controls & Quick Help */}
       <div className="shrink-0 flex items-center justify-between bg-[#0c121e]/90 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">
             <MousePointerClick className="w-3.5 h-3.5" />
-            <span className="font-bold">CLICK 3D TERRAIN TO MOVE OBSERVER</span>
+            <span className="font-bold">Click terrain to move the observer</span>
           </div>
           <span className="text-slate-400 hidden md:inline text-[11px]">
             Selected: <span className="text-slate-200 font-bold">{observerLat.toFixed(4)}°, {observerLon.toFixed(4)}°</span>
@@ -59,7 +61,7 @@ export const HorizonExplorerView: React.FC = () => {
             }`}
           >
             <Box className="w-3 h-3" />
-            <span>3D + HORIZON</span>
+            <span>Terrain & skyline</span>
           </button>
 
           <button
@@ -72,7 +74,7 @@ export const HorizonExplorerView: React.FC = () => {
             }`}
           >
             <Maximize2 className="w-3 h-3" />
-            <span>FULL 3D</span>
+            <span>Terrain only</span>
           </button>
 
           <button
@@ -149,7 +151,7 @@ export const HorizonExplorerView: React.FC = () => {
           </div>
         )}
 
-        {/* LAYOUT 2: FULL 3D TERRAIN (100% View with floating Horizon badge) */}
+        {/* LAYOUT 2: Terrain only TERRAIN (100% View with floating Horizon badge) */}
         {viewLayout === '3d-full' && (
           <div className="relative w-full h-full">
             <TerrainViewer3D />

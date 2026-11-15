@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React from 'react';
 import { useTradeOffStore } from '../../stores/tradeOffStore';
 import { getTradeOffExportJsonUrl, getTradeOffExportCsvUrl } from '../../services/tradeOffApi';
@@ -14,7 +15,7 @@ export const TradeOffExportModal: React.FC = () => {
   const csvUrl = getTradeOffExportCsvUrl(activeStudy.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <DialogSurface label="Export trade-off study" onClose={closeExportModal} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-800">
@@ -33,7 +34,7 @@ export const TradeOffExportModal: React.FC = () => {
           </div>
 
           <button
-            onClick={closeExportModal}
+            aria-label="Close dialog" onClick={closeExportModal}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -96,6 +97,6 @@ export const TradeOffExportModal: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

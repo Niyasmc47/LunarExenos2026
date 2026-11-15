@@ -10,6 +10,7 @@ test('manual coordinates validate, recenter map, and survive view switches', asy
   const errors: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/');
+  await page.getByText('Enter exact coordinates', { exact: true }).click();
   await page.getByLabel('Latitude', { exact: false }).fill('91');
   await page.getByRole('button', { name: 'Apply coordinates' }).click();
   await expect(page.getByRole('alert')).toContainText('Latitude must be');
@@ -19,12 +20,12 @@ test('manual coordinates validate, recenter map, and survive view switches', asy
   await page.locator('#latitude').fill('-25'); await page.locator('#longitude').fill('125');
   await page.getByRole('button', { name: 'Apply coordinates' }).click();
   await expect(page.getByTestId('selected-coordinates')).toContainText('25.00000° S, 125.00000° E');
-  for (const mode of ['2D MAP', '3D GLOBE', 'SPLIT VIEW']) {
+  for (const mode of ['2D map', '3D globe', 'Both views']) {
     await page.getByRole('button', { name: mode, exact: true }).click();
     await expect(page.getByRole('button', { name: mode, exact: true })).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByTestId('selected-coordinates')).toContainText('125.00000° E');
   }
-  await page.getByRole('button', { name: '2D MAP', exact: true }).click();
+  await page.getByRole('button', { name: '2D map', exact: true }).click();
   const box = await page.locator('.map-canvas').boundingBox();
   await page.locator('.map-canvas').click({ position: { x: box!.width / 2, y: box!.height / 2 } });
   await expect.poll(async () => Number(await page.locator('#latitude').inputValue())).toBeCloseTo(-25, 1);
@@ -34,6 +35,7 @@ test('manual coordinates validate, recenter map, and survive view switches', asy
 
 test('catalogue search, filters, provenance, coverage and keyboard selection', async ({ page }) => {
   await page.goto('/');
+  await page.getByText('Enter exact coordinates', { exact: true }).click();
   await page.getByLabel('Search places').fill('apollo');
   await expect(page.locator('.site-list button')).toHaveCount(3);
   await page.getByRole('button', { name: /Apollo 12/ }).focus(); await page.keyboard.press('Enter');
@@ -53,7 +55,8 @@ test('catalogue search, filters, provenance, coverage and keyboard selection', a
 
 test('globe click updates shared selection; drag does not relocate', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '3D GLOBE', exact: true }).click();
+  await page.getByText('Enter exact coordinates', { exact: true }).click();
+  await page.getByRole('button', { name: '3D globe', exact: true }).click();
   await page.getByRole('button', { name: 'Prime meridian', exact: true }).click();
   const canvas = page.locator('.globe-canvas canvas');
   await expect(canvas).toBeVisible();
@@ -64,12 +67,13 @@ test('globe click updates shared selection; drag does not relocate', async ({ pa
   await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2);
   await page.mouse.down(); await page.mouse.move(bounds!.x + bounds!.width / 2 + 70, bounds!.y + bounds!.height / 2, { steps: 12 }); await page.mouse.up();
   await expect(page.getByTestId('selected-coordinates')).toHaveText(before!);
-  await page.getByRole('button', { name: '2D MAP', exact: true }).click();
+  await page.getByRole('button', { name: '2D map', exact: true }).click();
   await expect(page.getByTestId('map-coordinates')).toHaveText(before!);
 });
 
 test('mobile controls and canvases remain reachable without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
+  await page.getByText('Enter exact coordinates', { exact: true }).click();
   await expect(page.locator('.map-canvas')).toBeVisible();
   await expect(page.locator('.globe-canvas')).toBeVisible();
   await page.locator('#latitude').fill('-90'); await page.locator('#longitude').fill('180');
@@ -86,6 +90,7 @@ test('failed imagery is reported, retry recovers, coordinate flow stays usable',
   await page.unroute('https://trek.nasa.gov/**');
   await page.route('https://trek.nasa.gov/**', route => route.abort());
   await page.goto('/');
+  await page.getByText('Enter exact coordinates', { exact: true }).click();
   await expect(page.getByRole('button', { name: 'Retry map imagery' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Retry globe imagery' })).toBeVisible();
   await page.locator('#latitude').fill('10'); await page.locator('#longitude').fill('20');

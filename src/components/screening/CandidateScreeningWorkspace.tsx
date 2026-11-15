@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect, useState } from 'react';
 import { useScreeningStore } from '../../stores/screeningStore';
 import { ScreeningControls } from './ScreeningControls';
@@ -36,12 +37,13 @@ export const CandidateScreeningWorkspace: React.FC = () => {
   ) || activeRun?.candidates[0] || null;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+    <div className="analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
       {/* Top Configuration & Execution Controls */}
       <ScreeningControls />
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="analysis-results p-6 space-y-6">
+        <ResultIntro title="Which sites meet your requirements?" description="Select a candidate to inspect passed checks, failed limits, and missing evidence." />
         {/* Screening Run Header / History Selector */}
         {runs.length > 0 && activeRun && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
@@ -52,7 +54,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
                     Active Run:
                   </span>
                   <select
-                    value={activeRun.id}
+                    aria-label="Saved screenings" value={activeRun.id}
                     onChange={(e) => selectRun(e.target.value)}
                     className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-2.5 py-1 rounded focus:outline-none focus:border-emerald-500"
                   >
@@ -103,7 +105,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
         {/* Screening Results Body */}
         {loading ? (
           <div className="flex-1 flex items-center justify-center py-20 text-slate-400 font-mono text-sm">
-            Loading candidate screening engine...
+            Loading saved screenings…
           </div>
         ) : !activeRun ? (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-3 bg-[#0b101c] border border-slate-800 rounded-2xl p-8">
@@ -111,11 +113,11 @@ export const CandidateScreeningWorkspace: React.FC = () => {
               <Inbox className="w-8 h-8" />
             </div>
             <h3 className="text-sm font-bold text-slate-200 font-mono">
-              No Screening Runs Executed Yet
+              Your shortlist starts here
             </h3>
             <p className="text-xs text-slate-400 font-sans max-w-md leading-relaxed">
               Select a mission profile and one or more candidate scenarios above, then click{' '}
-              <strong className="text-emerald-400">Run Candidate Screening</strong> to perform deterministic, evidence-backed requirement evaluations.
+              <strong className="text-emerald-400">Screen selected sites</strong> to see which requirements each site meets.
             </p>
           </div>
         ) : (
@@ -126,7 +128,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <h2 className="text-xs font-bold text-slate-100 font-mono tracking-wider">
-                    CANDIDATE SCREENING SUMMARIES ({activeRun.candidates.length} CANDIDATES)
+                    Candidate summaries ({activeRun.candidates.length} candidates)
                   </h2>
                 </div>
                 <div className="text-xs font-mono text-slate-300 flex items-center gap-2">
@@ -162,7 +164,7 @@ export const CandidateScreeningWorkspace: React.FC = () => {
               <div className="space-y-6 pt-4 border-t border-slate-800">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-bold text-slate-100 font-mono tracking-wide">
-                    DETAILED REQUIREMENT AUDIT: {selectedCandidate.candidate_name}
+                    Requirement details: {selectedCandidate.candidate_name}
                   </h2>
                   <span className="text-xs font-mono text-slate-400">
                     Profile: {activeRun.profile_name} (v{activeRun.profile_version})

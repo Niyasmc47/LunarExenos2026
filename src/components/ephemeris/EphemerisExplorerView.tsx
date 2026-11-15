@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect } from 'react';
 import { useEphemerisStore } from '../../stores/ephemerisStore';
 import { useLocationStore } from '../../stores/locationStore';
@@ -36,19 +37,20 @@ export const EphemerisExplorerView: React.FC = () => {
   const isEarthUp = earth ? earth.elevation_deg >= 0 : false;
 
   const sunStatus = !sun
-    ? 'Sun Position Available — Terrain Visibility Pending'
+    ? 'Sun position not loaded'
     : isSunUp
     ? 'Sun Above Local Horizontal'
     : 'Sun Below Local Horizontal';
 
   const earthStatus = !earth
-    ? 'Earth Position Available — Terrain Visibility Pending'
+    ? 'Earth position not loaded'
     : isEarthUp
     ? 'Earth Above Local Horizontal'
     : 'Earth Below Local Horizontal';
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden gap-2">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto gap-2">
+      <ResultIntro title="Where are the Sun and Earth?" description="These positions are relative to the observer. Use Visibility to include terrain blocking the view." />
       {/* Top Ephemeris Control Toolbar */}
       <EphemerisControlToolbar observerLat={observerLat} observerLon={observerLon} />
 

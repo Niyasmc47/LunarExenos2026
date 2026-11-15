@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React from 'react';
 import { ScreeningRunRecord } from '../../types/screening';
 import { getScreeningExportJsonUrl, getScreeningExportCsvUrl } from '../../services/screeningApi';
@@ -13,7 +14,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, run }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <DialogSurface label="Export screening results" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="relative w-full max-w-md bg-[#0b101c] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
@@ -24,7 +25,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, run }
             </h3>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close dialog" onClick={onClose}
             className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -87,6 +88,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, run }
           Run ID: {run.id}
         </div>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

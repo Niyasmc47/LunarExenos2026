@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React, { useState } from 'react';
 import { X, Plus, AlertCircle } from 'lucide-react';
 import { useScenarioStore } from '../../stores/scenarioStore';
@@ -65,7 +66,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs">
+    <DialogSurface label="Create a scenario" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-mono text-xs">
       <div className="bg-[#0c121e] border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-slate-800">
@@ -74,7 +75,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <span className="font-bold text-slate-100 text-sm">CREATE CANDIDATE MISSION SCENARIO</span>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close dialog" onClick={onClose}
             className="text-slate-400 hover:text-slate-100 p-1 rounded-lg hover:bg-slate-800 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -226,7 +227,7 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
+              aria-label="Close dialog" onClick={onClose}
               className="px-4 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 font-bold"
             >
               CANCEL
@@ -241,6 +242,6 @@ export const ScenarioCreateModal: React.FC<Props> = ({ isOpen, onClose }) => {
           </div>
         </form>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

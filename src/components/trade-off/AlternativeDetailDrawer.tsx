@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React from 'react';
 import { useTradeOffStore } from '../../stores/tradeOffStore';
 import {
@@ -24,7 +25,7 @@ export const AlternativeDetailDrawer: React.FC = () => {
   const pareto = activeStudy.pareto_results[alt.id];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <DialogSurface label="Candidate alternative details" onClose={closeDetailDrawer} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="bg-[#0b101c] border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-[#0b101c]/95 backdrop-blur z-10">
@@ -63,7 +64,7 @@ export const AlternativeDetailDrawer: React.FC = () => {
           </div>
 
           <button
-            onClick={closeDetailDrawer}
+            aria-label="Close dialog" onClick={closeDetailDrawer}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -277,6 +278,6 @@ export const AlternativeDetailDrawer: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DialogSurface>
   );
 };

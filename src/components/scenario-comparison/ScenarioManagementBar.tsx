@@ -43,7 +43,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
         <div className="flex items-center gap-2">
           <GitCompare className="w-4 h-4 text-cyan-400" />
           <span className="font-bold text-slate-100 uppercase tracking-wide">
-            MISSION SCENARIO COMPARISON ENGINE
+            Choose scenarios to compare
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
             {selectedScenarioIds.length} / 4 Selected (Min 2)
@@ -57,7 +57,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
             className="flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold bg-[#070b12] hover:bg-slate-800 text-slate-300 hover:text-emerald-300 border border-slate-700 transition-colors"
           >
             <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            <span>NEW SCENARIO</span>
+            <span>Add scenario</span>
           </button>
 
           <button
@@ -70,7 +70,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{isComparing ? 'COMPARING...' : 'RUN COMPARISON'}</span>
+            <span>{isComparing ? 'Comparing…' : 'Compare selected'}</span>
           </button>
 
           {/* Export Dropdown */}
@@ -81,7 +81,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold bg-[#070b12] hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700 transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-cyan-400" />
-              <span>EXPORT</span>
+              <span>Export results</span>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
 
@@ -115,7 +115,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
 
       {/* Candidate Scenario Selection Pills */}
       <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-800/80">
-        <span className="text-[10px] text-slate-400 uppercase tracking-wider">CANDIDATES:</span>
+        <span className="text-[10px] text-slate-400 uppercase tracking-wider">Candidate sites</span>
         {scenarios.map((sc) => {
           const isSelected = selectedScenarioIds.includes(sc.id);
           return (
@@ -155,7 +155,7 @@ export const ScenarioManagementBar: React.FC<Props> = ({ onOpenCreateModal }) =>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400 uppercase">ANALYSIS WINDOW:</span>
+          <span className="text-[10px] text-slate-400 uppercase">Shared time window</span>
           {[
             { label: '24h', days: 1.0, step: 0.5 },
             { label: '3d', days: 3.0, step: 1.0 },

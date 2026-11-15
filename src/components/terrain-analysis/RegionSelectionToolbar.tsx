@@ -83,7 +83,7 @@ export const RegionSelectionToolbar: React.FC = () => {
         <div className="flex items-center gap-1.5 flex-wrap">
           <div className="flex items-center gap-1.5 text-slate-300 font-semibold mr-1">
             <Bookmark className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-[11px] uppercase">LANDING SITE:</span>
+            <span className="text-[11px] uppercase">Terrain region</span>
           </div>
 
           {PREDEFINED_SITES.map((site) => (
@@ -110,7 +110,7 @@ export const RegionSelectionToolbar: React.FC = () => {
           className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#070b12] hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-[11px] transition-colors"
         >
           <SlidersHorizontal className="w-3 h-3" />
-          <span>{showAdvanced ? 'Hide Technical Details' : 'Advanced Coordinates & NASA Data'}</span>
+          <span>{showAdvanced ? 'Hide data settings' : 'Data source & boundaries'}</span>
           {showAdvanced ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       </div>
@@ -165,7 +165,7 @@ export const RegionSelectionToolbar: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-black font-bold transition-all shadow-md disabled:opacity-50"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>{isDiscovering ? 'SCANNING...' : 'DISCOVER DATA'}</span>
+            <span>{isDiscovering ? 'Searching…' : 'Find terrain data'}</span>
           </button>
         </div>
 
@@ -187,7 +187,7 @@ export const RegionSelectionToolbar: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span className="font-bold text-slate-200">AUTOMATIC NASA DATA DISCOVERY:</span>
+              <span className="font-bold text-slate-200">Available terrain data</span>
               <span className="text-slate-400">
                 Found {discoveryResponse.all_candidates.length} compatible datasets
               </span>

@@ -7,8 +7,8 @@ import { ViewSwitcher } from '../controls/ViewSwitcher';
 export function Dashboard() {
   const activeView = useLocationStore(s => s.activeView);
   const [panelOpen, setPanelOpen] = useState(true);
-  return <main id="main-content" className="explorer-layout" tabIndex={-1}>
-    <div className="explorer-toolbar"><div><p className="eyebrow">LUNAR EXPLORER</p><p>One Moon. Many perspectives.</p></div><ViewSwitcher />
+  return <section className="explorer-layout" aria-label="Moon explorer">
+    <div className="explorer-toolbar"><div className="explorer-instruction">Choose a named place, or click the Moon to explore</div><ViewSwitcher />
       <button className="secondary-button" aria-expanded={panelOpen} aria-controls="location-panel" onClick={() => setPanelOpen(!panelOpen)}>{panelOpen ? 'Hide location controls' : 'Show location controls'}</button>
     </div>
     <div className={'explorer-body ' + (panelOpen ? '' : 'controls-hidden')}>
@@ -18,5 +18,5 @@ export function Dashboard() {
       </div>
       <aside id="location-panel" hidden={!panelOpen}><CoordinatePanel /></aside>
     </div>
-  </main>;
+  </section>;
 }

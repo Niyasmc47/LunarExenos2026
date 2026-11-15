@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect } from 'react';
 import { useTradeOffStore } from '../../stores/tradeOffStore';
 import { AlternativeComparisonTable } from './AlternativeComparisonTable';
@@ -50,7 +51,7 @@ export const TradeOffWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+    <div className="tradeoff-page analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
       {/* Top Workspace Bar */}
       <div className="bg-[#090e1a] border-b border-slate-800 px-6 py-3.5 shrink-0 flex flex-wrap items-center justify-between gap-4">
         {/* Study Selector & Title */}
@@ -62,11 +63,11 @@ export const TradeOffWorkspace: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono font-bold text-white tracking-wide">
-                MISSION TRADE-OFF STUDY:
+                Saved study
               </span>
               {studies.length > 0 ? (
                 <select
-                  value={activeStudy?.id || ''}
+                  aria-label="Saved trade-off studies" value={activeStudy?.id || ''}
                   onChange={(e) => selectStudy(e.target.value)}
                   className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-3 py-1 rounded-lg focus:outline-none focus:border-purple-500"
                 >
@@ -100,7 +101,7 @@ export const TradeOffWorkspace: React.FC = () => {
                 title="Recalculate multi-criteria scores and Pareto frontier"
               >
                 <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isLoading ? 'animate-spin' : ''}`} />
-                <span>Re-Score</span>
+                <span>Recalculate</span>
               </button>
 
               <button
@@ -136,7 +137,7 @@ export const TradeOffWorkspace: React.FC = () => {
       {activeStudy && (
         <div className="bg-[#0b1120] border-b border-slate-800/80 px-6 shrink-0 flex items-center gap-1 overflow-x-auto">
           <button
-            onClick={() => setActiveTab('comparison')}
+            aria-pressed={activeTab === 'comparison'} onClick={() => setActiveTab('comparison')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'comparison'
                 ? 'border-emerald-500 text-emerald-400 bg-slate-900/50'
@@ -144,11 +145,11 @@ export const TradeOffWorkspace: React.FC = () => {
             }`}
           >
             <Table className="w-3.5 h-3.5" />
-            <span>COMPARISON MATRIX</span>
+            <span>Rankings</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('radar')}
+            aria-pressed={activeTab === 'radar'} onClick={() => setActiveTab('radar')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'radar'
                 ? 'border-cyan-500 text-cyan-400 bg-slate-900/50'
@@ -156,11 +157,11 @@ export const TradeOffWorkspace: React.FC = () => {
             }`}
           >
             <Compass className="w-3.5 h-3.5" />
-            <span>RADAR PROFILE</span>
+            <span>Strengths at a glance</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('pareto')}
+            aria-pressed={activeTab === 'pareto'} onClick={() => setActiveTab('pareto')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'pareto'
                 ? 'border-emerald-500 text-emerald-400 bg-slate-900/50'
@@ -168,11 +169,11 @@ export const TradeOffWorkspace: React.FC = () => {
             }`}
           >
             <Award className="w-3.5 h-3.5" />
-            <span>PARETO FRONTIER</span>
+            <span>Best trade-offs</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('sensitivity')}
+            aria-pressed={activeTab === 'sensitivity'} onClick={() => setActiveTab('sensitivity')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'sensitivity'
                 ? 'border-purple-500 text-purple-400 bg-slate-900/50'
@@ -180,11 +181,11 @@ export const TradeOffWorkspace: React.FC = () => {
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5" />
-            <span>SENSITIVITY ANALYSIS</span>
+            <span>What if priorities change?</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('preferences')}
+            aria-pressed={activeTab === 'preferences'} onClick={() => setActiveTab('preferences')}
             className={`px-3.5 py-2.5 text-xs font-mono font-semibold border-b-2 flex items-center gap-2 transition-all ${
               activeTab === 'preferences'
                 ? 'border-indigo-500 text-indigo-400 bg-slate-900/50'
@@ -192,13 +193,13 @@ export const TradeOffWorkspace: React.FC = () => {
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>PREFERENCE MODEL</span>
+            <span>Your priorities</span>
           </button>
         </div>
       )}
 
       {/* Main Workspace Scrollable Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="analysis-results p-6 space-y-6">
         {error && (
           <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -216,11 +217,12 @@ export const TradeOffWorkspace: React.FC = () => {
 
         {activeStudy ? (
           <div>
+            <ResultIntro title={{ comparison: 'Compare your alternatives', radar: 'See each candidate’s strengths', pareto: 'Find options without a better all-round alternative', sensitivity: 'Check how stable your decision is', preferences: 'Set what matters most' }[activeTab]} description={{ comparison: 'Review scores alongside safety checks and evidence quality.', radar: 'Compare the shape of each profile. Larger values reflect better normalized scores.', pareto: 'These candidates cannot be improved on one criterion without a trade-off on another.', sensitivity: 'Explore whether changing your weights changes the ranking.', preferences: 'Adjust relative weights, then recalculate to see their effect.' }[activeTab]} />
             {activeTab === 'comparison' && <AlternativeComparisonTable />}
             {activeTab === 'radar' && <RadarComparisonChart />}
             {activeTab === 'pareto' && <ParetoAnalysisView />}
             {activeTab === 'sensitivity' && <SensitivityAnalysisView />}
-            {activeTab === 'preferences' && <PreferenceConfigPanel />}
+            {activeTab === 'preferences' && <PreferenceConfigPanel key={activeStudy.id} />}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
@@ -229,7 +231,7 @@ export const TradeOffWorkspace: React.FC = () => {
             </div>
             <div>
               <h3 className="text-base font-mono font-bold text-white">
-                No Mission Trade-off Study Selected
+                Find the balance that fits your mission
               </h3>
               <p className="text-xs font-mono text-slate-400 max-w-md mt-1 leading-relaxed">
                 Create a study to compare 2–10 candidate alternatives across multi-criteria solar illumination, Earth communications, and terrain safety.
@@ -240,7 +242,7 @@ export const TradeOffWorkspace: React.FC = () => {
               className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span>Create First Trade-off Study</span>
+              <span>Create your first study</span>
             </button>
           </div>
         )}

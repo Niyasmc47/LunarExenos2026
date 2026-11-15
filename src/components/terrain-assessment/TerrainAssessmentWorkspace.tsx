@@ -1,3 +1,4 @@
+import { ResultIntro } from '../ui/MissionSetup';
 import React, { useEffect, useMemo } from 'react';
 import { useTerrainAssessmentStore } from '../../stores/terrainAssessmentStore';
 import { AssessmentControls } from './AssessmentControls';
@@ -36,12 +37,13 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
   }, [activeAssessment, filterStatus]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#070b14] overflow-hidden">
+    <div className="analysis-page flex-1 flex flex-col h-full bg-[#070b14] overflow-y-auto">
       {/* Top Configuration Controls */}
       <AssessmentControls />
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5">
+      <div className="analysis-results p-6 space-y-5">
+        <ResultIntro title="Review landing terrain" description="Filter candidates by status and open a site to inspect its terrain evidence." />
         {/* Active Assessment Run Header */}
         {assessments.length > 0 && activeAssessment && (
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#090e1a] border border-slate-800 p-4 rounded-xl">
@@ -50,13 +52,13 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
                 Assessment Run:
               </span>
               <select
-                value={activeAssessment.id}
+                aria-label="Saved terrain assessments" value={activeAssessment.id}
                 onChange={(e) => selectAssessment(e.target.value)}
                 className="bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono px-3 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500 max-w-xs truncate"
               >
                 {assessments.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.name} ({a.id})
+                    {a.name}
                   </option>
                 ))}
               </select>
@@ -99,7 +101,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
             {/* Filter Tabs */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
               <button
-                onClick={() => setFilterStatus('ALL')}
+                aria-pressed={filterStatus === 'ALL'} onClick={() => setFilterStatus('ALL')}
                 className={`px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'ALL'
                     ? 'bg-emerald-600 text-white font-semibold shadow-sm'
@@ -110,7 +112,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
               </button>
 
               <button
-                onClick={() => setFilterStatus('COMPLIANT')}
+                aria-pressed={filterStatus === 'COMPLIANT'} onClick={() => setFilterStatus('COMPLIANT')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'COMPLIANT'
                     ? 'bg-emerald-600 text-white font-semibold shadow-sm'
@@ -122,7 +124,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
               </button>
 
               <button
-                onClick={() => setFilterStatus('NON_COMPLIANT')}
+                aria-pressed={filterStatus === 'NON_COMPLIANT'} onClick={() => setFilterStatus('NON_COMPLIANT')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'NON_COMPLIANT'
                     ? 'bg-rose-600 text-white font-semibold shadow-sm'
@@ -134,7 +136,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
               </button>
 
               <button
-                onClick={() => setFilterStatus('INDETERMINATE')}
+                aria-pressed={filterStatus === 'INDETERMINATE'} onClick={() => setFilterStatus('INDETERMINATE')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-all shrink-0 ${
                   filterStatus === 'INDETERMINATE'
                     ? 'bg-amber-600 text-white font-semibold shadow-sm'
@@ -172,7 +174,7 @@ export const TerrainAssessmentWorkspace: React.FC = () => {
             </div>
             <div className="max-w-md space-y-1.5">
               <h3 className="text-base font-mono font-bold text-slate-200">
-                No Terrain Assessments Yet
+                Ready to inspect your landing sites?
               </h3>
               <p className="text-xs font-mono text-slate-400">
                 Configure a mission profile, select candidate lunar landing locations, and specify the assessment footprint radius above to evaluate elevation, slope, and data coverage.

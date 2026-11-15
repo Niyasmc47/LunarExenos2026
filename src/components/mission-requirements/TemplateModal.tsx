@@ -1,3 +1,4 @@
+import { DialogSurface } from '../ui/DialogSurface';
 import React from 'react';
 import { useMissionProfileStore } from '../../stores/missionProfileStore';
 import { Sparkles, X, Check, Clock, Sun, Radio, Mountain } from 'lucide-react';
@@ -21,7 +22,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <DialogSurface label="Choose a mission template" onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="relative w-full max-w-4xl bg-[#0b101c] border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
@@ -32,7 +33,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
             </h2>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close dialog" onClick={onClose}
             className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -130,6 +131,6 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({ isOpen, onClose })
           </button>
         </div>
       </div>
-    </div>
+    </DialogSurface>
   );
 };
